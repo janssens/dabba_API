@@ -35,9 +35,15 @@ class Container
      */
     private $movements;
 
+    /**
+     * @ORM\OneToMany(targetEntity=CartItem::class, mappedBy="container", orphanRemoval=true)
+     */
+    private $cartItems;
+
     public function __construct()
     {
         $this->movements = new ArrayCollection();
+        $this->cartItems = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -93,6 +99,36 @@ class Container
             // set the owning side to null (unless already changed)
             if ($movement->getContainer() === $this) {
                 $movement->setContainer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CartItem[]
+     */
+    public function getCartItems(): Collection
+    {
+        return $this->cartItems;
+    }
+
+    public function addCartItem(CartItem $cartItem): self
+    {
+        if (!$this->cartItems->contains($cartItem)) {
+            $this->cartItems[] = $cartItem;
+            $cartItem->setContainer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCartItem(CartItem $cartItem): self
+    {
+        if ($this->cartItems->removeElement($cartItem)) {
+            // set the owning side to null (unless already changed)
+            if ($cartItem->getContainer() === $this) {
+                $cartItem->setContainer(null);
             }
         }
 
