@@ -4,7 +4,6 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    maps_api_key: AIzaSyC6AwL_iu8XoqHkvJX2El3NEavBKv1kwnA
 
 services:
     # default configuration for services in *this* file
@@ -37,7 +36,7 @@ services:
         arguments:
             - '@csa_guzzle.client.google_maps'
             - '@jms_serializer'
-            - '%maps_api_key%'
+            - '%env(GMAP_API_KEY)%'
     League\OAuth2\Server\AuthorizationServer:
         arguments:
             $clientRepository: '@App\Infrastructure\oAuth2Server\Bridge\ClientRepository'
