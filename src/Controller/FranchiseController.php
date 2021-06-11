@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Container;
-use App\Entity\Franchise;
+use App\Entity\Zone;
 use App\Entity\Restaurant;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -26,7 +26,7 @@ class FranchiseController extends AbstractFOSRestController
      *     )
      * @Rest\View()
      */
-    public function showAction(Franchise $franchise)
+    public function showAction(Zone $franchise)
     {
         return $franchise;
     }
@@ -39,7 +39,7 @@ class FranchiseController extends AbstractFOSRestController
      * @Rest\View(StatusCode = 201)
      * @ParamConverter("franchise", converter="fos_rest.request_body")
      */
-    public function createAction(Franchise $franchise)
+    public function createAction(Zone $franchise)
     {
         $em = $this->getDoctrine()->getManager();
 

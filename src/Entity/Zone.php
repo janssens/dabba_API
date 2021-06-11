@@ -2,18 +2,18 @@
 
 namespace App\Entity;
 
-use App\Repository\FranchiseRepository;
+use App\Repository\ZoneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity(repositoryClass=FranchiseRepository::class)
+ * @ORM\Entity(repositoryClass=ZoneRepository::class)
  *
  * @Serializer\ExclusionPolicy("all")
  */
-class Franchise
+class Zone
 {
     /**
      * @ORM\Id
@@ -35,14 +35,20 @@ class Franchise
     private $restaurants;
 
     /**
-     * @ORM\OneToMany(targetEntity=User::class, mappedBy="franchise")
+     * @ORM\OneToMany(targetEntity=User::class, mappedBy="owned_zone")
      */
     private $admins;
+
+    /**
+     * @ORM\OneToMany(targetEntity=User::class, mappedBy="zone")
+     */
+    private $users;
 
     public function __construct()
     {
         $this->restaurants = new ArrayCollection();
         $this->admins = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -104,7 +110,7 @@ class Franchise
     {
         if (!$this->admins->contains($admin)) {
             $this->admins[] = $admin;
-            $admin->setFranchise($this);
+            $admin->setOwnedZone($this);
         }
 
         return $this;
@@ -114,8 +120,38 @@ class Franchise
     {
         if ($this->admins->removeElement($admin)) {
             // set the owning side to null (unless already changed)
-            if ($admin->getFranchise() === $this) {
-                $admin->setFranchise(null);
+            if ($admin->getOwnedZone() === $this) {
+                $admin->setOwnedZone(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->setZone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getZone() === $this) {
+                $user->setZone(null);
             }
         }
 

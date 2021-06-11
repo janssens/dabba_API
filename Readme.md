@@ -25,3 +25,5 @@ ENUM Movement reason
 - LOGISTIC (FRANCHISE -> RESTAURANT or RESTAURANT -> FRANCHISE)
 
 https://yuml.me/diagram/scruffy/class/draw
+
+https://oauth2.thephpleague.com/installation/
