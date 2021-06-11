@@ -45,6 +45,14 @@ class Movement
      */
     private $container;
 
+    const TYPE_BUY = 1; // FROM STOCK TO USER, ONE WAY
+    const TYPE_EXCHANGE = 2; // FROM USER TO STOCK, BOTH WAYS
+    const TYPE_RETURN = 4; // FROM USER TO STOCK, ONE WAY
+    const TYPE_INVENTORY = 8; // INVENTORY CORRECTION
+    const TYPE_LOGISTICS = 16; // INTERNAL MOVEMENTS
+    const TYPE_BROKEN = 32; // BROKEN
+    const TYPE_LOST = 64; // LOST
+
     public function __construct()
     {
         $this->stock_from = new ArrayCollection();
