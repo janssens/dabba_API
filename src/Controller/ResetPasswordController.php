@@ -17,8 +17,6 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Annotations as OA;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 /**
@@ -41,7 +39,6 @@ class ResetPasswordController extends AbstractController
      * @Rest\Post(
      *     name = "app_forgot_password_request",
      *     )
-     * @OA\Tag(name="app")
      */
     //     * @OA\Parameter(in="body", ref=@Model(type=ResetPasswordRequestFormType::class))
     public function request(Request $request, MailerInterface $mailer): Response

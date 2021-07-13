@@ -37,12 +37,6 @@ class DefaultController extends AbstractFOSRestController
      *     name = "api_home"
      *     )
      * @Rest\View(StatusCode = 200)
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the home data",
-     *     @OA\JsonContent(ref=@Model(type=HomeResponse::class))
-     * )
-     * @OA\Tag(name="app")
      */
     public function api_home()
     {
