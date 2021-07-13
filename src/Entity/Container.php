@@ -6,27 +6,37 @@ use App\Repository\ContainerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use OpenApi\Annotations as OA;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=ContainerRepository::class)
+ * @Serializer\ExclusionPolicy("ALL")
+ * @OA\Tag(name="container")
  */
-class Container
+class Container extends AbstractFOSRestController
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
+     * @OA\Property(description="The unique identifier of the container")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Expose
+     * @OA\Property(description="The name of the container")
      */
     private $name;
 
     /**
      * @ORM\Column(type="float")
+     * @Serializer\Expose
+     * @OA\Property(description="Container price")
      */
     private $price;
 

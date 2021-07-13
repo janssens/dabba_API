@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Container;
 use App\Entity\Restaurant;
+use App\Entity\User;
 use App\Exception\ResourceValidationException;
 use App\Representation\Restaurants;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -17,17 +18,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 
 class RestaurantController extends AbstractFOSRestController implements TokenAuthenticatedController
 {
 
     /**
      * @Rest\Get(
-     *     path = "/restaurants/{id}",
+     *     path = "/api/restaurants/{id}",
      *     name = "app_restaurant_show",
      *     requirements = {"id"="\d+"}
      *     )
      * @Rest\View()
+     * @OA\Tag(name="restaurant")
+     * @OA\Response(
+     *     response=200,
+     *     description="Return a restaurant",
+     *     @OA\JsonContent(ref=@Model(type=Restaurant::class)),
+     * )
      */
     public function showAction(Restaurant $restaurant)
     {
@@ -36,11 +45,22 @@ class RestaurantController extends AbstractFOSRestController implements TokenAut
 
     /**
      * @Rest\Post(
-     *    path = "/restaurants",
+     *    path = "/api/restaurants",
      *    name = "app_restaurant_create"
      * )
+     * @OA\Post(
+     *     path="/api/restaurants",
+     *     summary="Create a restaurant",
+     *     description="Create a new restaurant",
+     * )
+     * @OA\Parameter(
+     *     in="body",
+     *     required=true,
+     *     ref=@Model(Restaurant::class)
+     * ),
      * @Rest\View(StatusCode = 201)
      * @ParamConverter("restaurant", converter="fos_rest.request_body")
+     * @OA\Tag(name="restaurant")
      */
     public function createAction(Restaurant $restaurant, ConstraintViolationList $violations)
     {
@@ -64,7 +84,115 @@ class RestaurantController extends AbstractFOSRestController implements TokenAut
     }
 
     /**
-     * @Rest\Get("/restaurants", name="app_restaurant_list")
+     * @Rest\Get("/api/restaurants/favorites/list", name="app_restaurant_favorite_list")
+     * @Rest\View(StatusCode = 200)
+     * @OA\Get(
+     *     path="/api/restaurants/favorites/list",
+     *     summary="Returns user favorite restaurants",
+     *     description="Returns the list of current user favorite restaurants",
+     * )
+     * @OA\Response(
+     *     response=200,
+     *     description="List of restaurants",
+     *     @OA\JsonContent(
+     *            type="array",
+     *            @OA\Items(ref=@Model(type=Restaurant::class))
+     *         ),
+     * )
+     * @OA\Tag(name="restaurant")
+     */
+    public function listFavoriteAction()
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user){
+            throw new \Exception('Use a valid user');
+        }
+        return $user->getRestaurants();
+    }
+
+    /**
+     * @Rest\View(StatusCode = 204)
+     * @Rest\Put(
+     *     path = "/api/restaurants/favorites/{id}",
+     *     name = "app_restaurant_favorite_add",
+     *     requirements = {"id"="\d+"}
+     * )
+     * @OA\Put(
+     *     path="/api/restaurants/favorites/{id}",
+     *     summary="Add restaurant to favorites",
+     *     description="Add restaurant to user's favorites",
+     * )
+     * @OA\Parameter(
+     *     description="ID of restaurant to add",
+     *     in="path",
+     *     name="id",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="integer",
+     *         format="int64"
+     *     )
+     * ),
+     * @OA\Tag(name="restaurant")
+     */
+    public function addFavoriteAction(Restaurant $restaurant)
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user){
+            throw new \Exception('Use a valid user');
+        }
+        $user->addRestaurant($restaurant);
+        $em = $this->getDoctrine()->getManager();
+
+        $em->persist($user);
+        $em->flush();
+
+        return;
+    }
+
+    /**
+     * @Rest\View(StatusCode = 204)
+     * @Rest\Delete(
+     *     path = "/api/restaurants/favorite/{id}",
+     *     name = "app_restaurant_favorite_remove",
+     *     requirements = {"id"="\d+"}
+     * )
+     * @OA\Delete(
+     *     path="/api/restaurants/favorite/{id}",
+     *     summary="Remove restaurant from favorites",
+     *     description="Remove restaurant form user's favorites",
+     * )
+     * @OA\Parameter(
+     *     description="ID of restaurant to remove",
+     *     in="path",
+     *     name="id",
+     *     required=true,
+     *     @OA\Schema(
+     *         type="integer",
+     *         format="int64"
+     *     )
+     * ),
+     * @OA\Tag(name="restaurant")
+     */
+    public function removeFavoriteAction(Restaurant $restaurant)
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user){
+            throw new \Exception('Use a valid user');
+        }
+        $user->removeRestaurant($restaurant);
+        $em = $this->getDoctrine()->getManager();
+
+        $em->persist($user);
+        $em->flush();
+
+        return;
+    }
+
+    /**
+     * @Rest\Get("/api/restaurants", name="app_restaurant_list")
      * @Rest\QueryParam(
      *     name="keyword",
      *     requirements="[a-zA-Z0-9]",
@@ -90,6 +218,7 @@ class RestaurantController extends AbstractFOSRestController implements TokenAut
      *     description="The pagination offset"
      * )
      * @Rest\View()
+     * @OA\Tag(name="restaurant")
      */
     public function listAction(ParamFetcherInterface $paramFetcher)
     {
@@ -106,11 +235,12 @@ class RestaurantController extends AbstractFOSRestController implements TokenAut
     /**
      * @Rest\View(StatusCode = 200)
      * @Rest\Put(
-     *     path = "/restaurants/{id}",
+     *     path = "/api/restaurants/{id}",
      *     name = "app_restaurant_update",
      *     requirements = {"id"="\d+"}
      * )
      * @ParamConverter("newRestaurant", converter="fos_rest.request_body")
+     * @OA\Tag(name="restaurant")
      */
     public function updateAction(Restaurant $restaurant, Restaurant $newRestaurant, ConstraintViolationList $violations)
     {
@@ -135,10 +265,11 @@ class RestaurantController extends AbstractFOSRestController implements TokenAut
     /**
      * @Rest\View(StatusCode = 204)
      * @Rest\Delete(
-     *     path = "/restaurants/{id}",
+     *     path = "/api/restaurants/{id}",
      *     name = "app_restaurant_delete",
      *     requirements = {"id"="\d+"}
      * )
+     * @OA\Tag(name="restaurant")
      */
     public function deleteAction(Restaurant $restaurant)
     {

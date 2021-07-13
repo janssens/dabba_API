@@ -1,4 +1,7 @@
 {
+    "baptiste-dulac/systempay-bundle": {
+        "version": "v0.3.2"
+    },
     "beberlei/assert": {
         "version": "v3.3.1"
     },
@@ -159,6 +162,9 @@
             "config/packages/prod/jms_serializer.yaml"
         ]
     },
+    "khalyomede/systempay": {
+        "version": "v0.3.0"
+    },
     "laminas/laminas-code": {
         "version": "4.1.0"
     },
@@ -203,6 +209,9 @@
     },
     "paragonie/random_compat": {
         "version": "v9.99.100"
+    },
+    "payum/iso4217": {
+        "version": "1.0.1"
     },
     "php": {
         "version": "7.4"

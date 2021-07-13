@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RestaurantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serializer;
@@ -81,6 +83,16 @@ class Restaurant
      */
     private $google_place_id;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="restaurants")
+     */
+    private $fans;
+
+    public function __construct()
+    {
+        $this->fans = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -142,6 +154,30 @@ class Restaurant
     public function setGooglePlaceId(?string $google_place_id): self
     {
         $this->google_place_id = $google_place_id;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getFans(): Collection
+    {
+        return $this->fans;
+    }
+
+    public function addFan(User $fan): self
+    {
+        if (!$this->fans->contains($fan)) {
+            $this->fans[] = $fan;
+        }
+
+        return $this;
+    }
+
+    public function removeFan(User $fan): self
+    {
+        $this->fans->removeElement($fan);
 
         return $this;
     }

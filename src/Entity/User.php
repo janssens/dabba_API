@@ -8,10 +8,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use OpenApi\Annotations as OA;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
+ * @Serializer\ExclusionPolicy("ALL")
  */
 class User implements UserInterface
 {
@@ -19,11 +22,15 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
+     * @OA\Property(description="The unique identifier of user.")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Expose
+     * @OA\Property(description="User mail")
      */
     private $email;
 
@@ -44,6 +51,8 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="users")
+     * @Serializer\Expose
+     * @OA\Property(description="Zone on which the user depends",nullable=true)
      */
     private $zone;
 
@@ -54,21 +63,29 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serializer\Expose
+     * @OA\Property(description="Firstname")
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serializer\Expose
+     * @OA\Property(description="Lastname")
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Serializer\Expose
+     * @OA\Property(description="Date of bird")
      */
     private $dob;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Serializer\Expose
+     * @OA\Property(description="Is verified")
      */
     private $isVerified = false;
 
@@ -82,10 +99,16 @@ class User implements UserInterface
      */
     private $roles = [];
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Restaurant::class, mappedBy="fans")
+     */
+    private $restaurants;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
         $this->accessTokens = new ArrayCollection();
+        $this->restaurants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -321,6 +344,33 @@ class User implements UserInterface
             if ($accessToken->getUser() === $this) {
                 $accessToken->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Restaurant[]
+     */
+    public function getRestaurants(): Collection
+    {
+        return $this->restaurants;
+    }
+
+    public function addRestaurant(Restaurant $restaurant): self
+    {
+        if (!$this->restaurants->contains($restaurant)) {
+            $this->restaurants[] = $restaurant;
+            $restaurant->addFan($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRestaurant(Restaurant $restaurant): self
+    {
+        if ($this->restaurants->removeElement($restaurant)) {
+            $restaurant->removeFan($this);
         }
 
         return $this;

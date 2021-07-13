@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class ClientController
  * @package App\Controller
- * @Route("/client")
+ * @Route("/admin/client")
  */
 class ClientController extends AbstractController
 {

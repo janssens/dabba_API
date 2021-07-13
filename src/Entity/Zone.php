@@ -6,11 +6,11 @@ use App\Repository\ZoneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=ZoneRepository::class)
- *
  * @Serializer\ExclusionPolicy("all")
  */
 class Zone
@@ -20,12 +20,14 @@ class Zone
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Serializer\Expose()
+     * @OA\Property(description="The unique identifier of the zone")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Expose()
+     * @OA\Property(description="Name of the zone")
      */
     private $name;
 

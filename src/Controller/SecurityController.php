@@ -7,11 +7,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 
 class SecurityController extends AbstractController
 {
     /**
-     * @Route("/login", name="app_login")
+     * @Route("/login", name="app_login", methods={"GET","POST"})
+     * @Rest\Post(
+     *     path = "/login",
+     *     name = "app_login",
+     *     )
+     * @OA\Response(
+     *     response=200,
+     *     description="Login to app",
+     * )
+     * @OA\Tag(name="app")
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {

@@ -19,6 +19,14 @@ class ZoneRepository extends ServiceEntityRepository
         parent::__construct($registry, Zone::class);
     }
 
+    public function number(): ?int
+    {
+        return $this->createQueryBuilder('f')
+            ->select('count(f.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     // /**
     //  * @return Franchise[] Returns an array of Franchise objects
     //  */

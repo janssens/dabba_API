@@ -19,6 +19,14 @@ class MovementRepository extends ServiceEntityRepository
         parent::__construct($registry, Movement::class);
     }
 
+    public function countAvoidedWaste(): ?int
+    {
+        return $this->createQueryBuilder('m')
+            ->select('count(m.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     // /**
     //  * @return Movement[] Returns an array of Movement objects
     //  */

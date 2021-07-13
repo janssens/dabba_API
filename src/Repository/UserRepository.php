@@ -36,6 +36,13 @@ class UserRepository extends ServiceEntityRepository
     }
     */
 
+    public function number(): ?int
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
     public function findOneByEmail($value): ?User
     {

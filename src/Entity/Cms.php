@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use App\Repository\CmsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=CmsRepository::class)
+ * @Serializer\ExclusionPolicy("ALL")
  */
 class Cms
 {
@@ -14,36 +17,50 @@ class Cms
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
+     * @OA\Property(description="The unique identifier of the cms block")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Expose
+     * @OA\Property(description="Title in the block")
      */
     private $title;
 
     /**
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
+     * @OA\Property(description="Sort order of the block")
      */
     private $position;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="json")
+     * @Serializer\Expose
+     * @OA\Property(description="Css properties")
      */
-    private $class;
+    private $css = [];
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Serializer\Expose
+     * @OA\Property(description="Text content")
      */
     private $content;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serializer\Expose
+     * @OA\Property(description="Url for link",nullable=true)
      */
     private $url;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serializer\Expose
+     * @OA\Property(description="Label for button")
      */
     private $button_label;
 
@@ -86,15 +103,20 @@ class Cms
         return $this;
     }
 
-    public function getClass(): ?string
+    public function getCss(): array
     {
-        return $this->class;
+        return $this->css;
     }
 
-    public function setClass(?string $class): self
+    public function setCss(array $css): self
     {
-        $this->class = $class;
+        $this->css = $css;
+        return $this;
+    }
 
+    public function addCss(string $key,string $value): self
+    {
+        $this->css[$key] = $value;
         return $this;
     }
 

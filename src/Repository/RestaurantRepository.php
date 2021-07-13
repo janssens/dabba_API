@@ -19,6 +19,14 @@ class RestaurantRepository extends AbstractRepository
         parent::__construct($registry, Restaurant::class);
     }
 
+    public function number(): ?int
+    {
+        return $this->createQueryBuilder('r')
+            ->select('count(r.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function search($term, $order = 'asc', $limit = 20, $offset = 0)
     {
         $qb = $this
