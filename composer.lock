@@ -406,6 +406,7 @@
                 }
             ],
             "description": "A bundle integrating GuzzleHttp >= 4.0",
+            "abandoned": "symfony/http-client",
             "time": "2019-11-26T09:34:44+00:00"
         },
         {
@@ -461,6 +462,7 @@
                 }
             ],
             "description": "A Cache middleware for GuzzleHttp >= 6.0",
+            "abandoned": "kevinrob/guzzle-cache-middleware",
             "time": "2019-11-26T09:34:53+00:00"
         },
         {
@@ -507,6 +509,7 @@
                 }
             ],
             "description": "A History middleware for GuzzleHttp >= 6.0",
+            "abandoned": true,
             "time": "2019-11-26T09:34:58+00:00"
         },
         {
@@ -554,6 +557,7 @@
                 }
             ],
             "description": "A Stopwatch middleware for GuzzleHttp >= 6.0",
+            "abandoned": true,
             "time": "2019-11-26T09:35:03+00:00"
         },
         {

@@ -15,6 +15,7 @@
     </head>
     <body>
     <header>
+        <a href="/">home</a> |
         {% if is_granted('ROLE_USER') %}
              Logged in as {{ app.user.fullname }} - {{ app.user.username }} <a href="{{ path('app_logout') }}">logout</a>
         {% else %}
