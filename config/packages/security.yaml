@@ -4,7 +4,7 @@ security:
     providers:
         users:
             entity:
-                class: 'App\Entity\User'
+                class: App\Entity\User
                 property: 'email'
     encoders:
         # use your user class name here
@@ -17,6 +17,13 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api:
+            pattern: ^/api/
+            stateless: true
+            provider: users
+            guard:
+                authenticators:
+                    - App\Security\AccessTokenAuthenticator
         main:
             lazy: true
             provider: users
@@ -27,26 +34,19 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 target: app_home
-            json_login:
-                check_path: app_login
-                username_path: email
-                password_path: password
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#firewalls-authentication
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-#        secured_area:
-#            pattern: ^/api/
-#            stateless: true
-#            simple_preauth:
-#                authenticator: github_authenticator
-#            provider: provider.github_user
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/users, roles: PUBLIC_ACCESS, methods: [POST] }
+        - { path: ^/admin/super, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/api/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Allows accessing the Swagger UI
+        - { path: ^/api/accessToken, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/profile, roles: ROLE_USER }
+
+    role_hierarchy:
+        ROLE_SUPER_ADMIN:   [ROLE_ADMIN]
+        ROLE_ADMIN:     [ROLE_USER]

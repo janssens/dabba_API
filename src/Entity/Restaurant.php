@@ -7,40 +7,29 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use JMS\Serializer\Annotation as Serializer;
-use Hateoas\Configuration\Annotation as Hateoas;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 
 /**
+ * @ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"security"="is_granted('ROLE_ADMIN')"}
+ *     },
+ *     itemOperations={"get"},
+ *     normalizationContext={"groups"={"restaurant:read"}},
+ *     denormalizationContext={"groups"={"restaurant:write"}}
+ * )
+ * @ApiFilter(SearchFilter::class, properties={
+ *     "name": "partial"
+ *     })
+ * @ApiFilter(RangeFilter::class, properties={"lat","lng"})
+ * @ApiFilter(NumericFilter::class, properties={"zone.id"})
  * @ORM\Entity(repositoryClass=RestaurantRepository::class)
- * @Hateoas\Relation(
- *      "self",
- *      href = @Hateoas\Route(
- *          "app_restaurant_show",
- *          parameters = { "id" = "expr(object.getId())" },
- *          absolute = true
- *      )
- * )
- * @Hateoas\Relation(
- *      "modify",
- *      href = @Hateoas\Route(
- *          "app_restaurant_update",
- *          parameters = { "id" = "expr(object.getId())" },
- *          absolute = true
- *      )
- * )
- * @Hateoas\Relation (
- *      "delete",
- *      href = @Hateoas\Route(
- *          "app_restaurant_delete",
- *          parameters = { "id" = "expr(object.getId())" },
- *          absolute = true
- *      )
- * )
- * @Hateoas\Relation  (
- *     "openning_hours",
- *     embedded = @Hateoas\Embedded("expr(service('app.service.place').getOpenningHours(object.getGooglePlaceId()))"),
- * )
- * @Serializer\ExclusionPolicy ("all")
  */
 class Restaurant
 {
@@ -48,33 +37,32 @@ class Restaurant
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Serializer\Expose()
+     * @Groups({"restaurant:read","user:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255,unique=true)
      * @Assert\NotBlank()
-     * @Serializer\Expose()
+     * @Groups({"restaurant:read", "restaurant:write"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="float")
-     * @Serializer\Expose()
+     * @Groups({"restaurant:read", "restaurant:write"})
      */
     private $lat;
 
     /**
      * @ORM\Column(type="float")
-     * @Serializer\Expose()
+     * @Groups({"restaurant:read", "restaurant:write"})
      */
     private $lng;
 
     /**
      * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="restaurants",cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
-     * @Serializer\Expose()
      */
     private $zone;
 

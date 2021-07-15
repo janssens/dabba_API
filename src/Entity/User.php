@@ -9,11 +9,23 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use JMS\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
- * @Serializer\ExclusionPolicy("ALL")
+ * @ApiResource(
+ *     collectionOperations={
+ *         "get"={"security"="is_granted('ROLE_ADMIN')"},
+ *         "post"
+ *     },
+ *     itemOperations={"get"},
+ *     normalizationContext={"groups"={"user:read"}},
+ *     denormalizationContext={"groups"={"user:write"}}
+ * )
  */
 class User implements UserInterface
 {
@@ -22,12 +34,13 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Serializer\Expose
+     * @Groups({"user:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Serializer\Expose
+     * @Groups({"user:read","user:write"})
      */
     private $email;
 
@@ -48,9 +61,15 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="users")
-     * @Serializer\Expose
+     * @Groups({"user:read"})
      */
     private $zone;
+
+    /**
+     * @Groups("user:write")
+     * @SerializedName("password")
+     */
+    private $plainPassword;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -59,25 +78,24 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Expose
+     * @Groups({"user:read","user:write"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Expose
+     * @Groups({"user:read","user:write"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Serializer\Expose
+     * @Groups({"user:write"})
      */
     private $dob;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Serializer\Expose
      */
     private $isVerified = false;
 
@@ -93,6 +111,8 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity=Restaurant::class, mappedBy="fans")
+     * @Groups({"user:read"})
+     * @ApiSubresource
      */
     private $restaurants;
 
@@ -198,12 +218,25 @@ class User implements UserInterface
 
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
+        // If you store any temporary, sensitive data on the user, clear it here
+        $this->plainPassword = null;
     }
 
     public function getPassword(): ?string
     {
         return $this->password;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $password): ? self
+    {
+        $this->plainPassword = $password;
+
+        return $this;
     }
 
     public function getRoles(): array
