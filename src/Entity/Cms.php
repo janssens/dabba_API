@@ -5,8 +5,26 @@ namespace App\Entity;
 use App\Repository\CmsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
+ * @ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"security"="is_granted('ROLE_SUPER_ADMIN')"}
+ *     },
+ *     itemOperations={
+ *          "get"={
+ *             "method"="GET",
+ *             "controller"=NotFoundAction::class,
+ *             "read"=false,
+ *             "output"=false,
+ *         },
+ *     },
+ *     normalizationContext={"groups"={"cms:read"}},
+ *     denormalizationContext={"groups"={"cms:write"}}
+ * )
  * @ORM\Entity(repositoryClass=CmsRepository::class)
  * @Serializer\ExclusionPolicy("ALL")
  */
@@ -23,48 +41,56 @@ class Cms
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Expose
+     * @Groups({"cms:read"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="integer")
-     * @Serializer\Expose
+     * @Groups({"cms:read"})
      */
     private $position;
 
     /**
      * @ORM\Column(type="json")
-     * @Serializer\Expose
+     * @Groups({"cms:read"})
      */
     private $css = [];
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Serializer\Expose
+     * @Groups({"cms:read"})
      */
     private $content;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Expose
+     * @Groups({"cms:read"})
      */
     private $url;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Expose
+     * @Groups({"cms:read"})
      */
     private $button_label;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"cms:read"})
      */
     private $from_date;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"cms:read"})
      */
     private $to_date;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $image;
 
     public function getId(): ?int
     {
@@ -168,6 +194,18 @@ class Cms
     public function setToDate(?\DateTimeInterface $to_date): self
     {
         $this->to_date = $to_date;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

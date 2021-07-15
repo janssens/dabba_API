@@ -10,13 +10,11 @@
     <h1>home</h1>
 
     {% if is_granted('ROLE_ADMIN') %}
-    <h2>admin</h2>
-    <a href="{{ path('client_index') }}">clients</a>
+    <a href="{{ path('admin') }}">admin</a>
     {% endif %}
 
     {% if is_granted('ROLE_SUPER_ADMIN') %}
-    <h2>super admin</h2>
-    <a href="{{ path('zone_index') }}">zone</a>
+        <a href="{{ path('super_admin') }}">super admin</a>
     {% endif %}
 
 {% endblock %}

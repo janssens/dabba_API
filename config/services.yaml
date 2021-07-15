@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     app.transactional_mail_sender: '%env(TRANSACTIONAL_MAIL_SENDER)%'
+    app.path.restaurant_images: /uploads/images/restaurant
+    app.path.cms_images: /uploads/images/cms
 services:
     # default configuration for services in *this* file
     _defaults:

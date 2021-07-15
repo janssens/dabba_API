@@ -76,6 +76,23 @@ class Restaurant
      */
     private $fans;
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     * @Groups({"restaurant:read"})
+     */
+    private $opening_hours = [];
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"restaurant:read"})
+     */
+    private $image;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updatedAt;
+
     public function __construct()
     {
         $this->fans = new ArrayCollection();
@@ -166,6 +183,42 @@ class Restaurant
     public function removeFan(User $fan): self
     {
         $this->fans->removeElement($fan);
+
+        return $this;
+    }
+
+    public function getOpeningHours(): ?array
+    {
+        return $this->opening_hours;
+    }
+
+    public function setOpeningHours(?array $opening_hours): self
+    {
+        $this->opening_hours = $opening_hours;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

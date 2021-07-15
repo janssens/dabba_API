@@ -22,6 +22,7 @@
         "doctrine/doctrine-bundle": "^2.3",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.8",
+        "easycorp/easyadmin-bundle": "^3.4",
         "friendsofsymfony/rest-bundle": "^3.0",
         "jms/serializer-bundle": "^3.9",
         "khalyomede/systempay": "0.*",
@@ -63,7 +64,6 @@
         "symfonycasts/verify-email-bundle": "^1.5",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "vich/uploader-bundle": "^1.18",
         "willdurand/hateoas": "^3.7",
         "zendframework/zend-diactoros": "^2.2"
     },

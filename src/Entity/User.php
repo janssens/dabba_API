@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
  *         "get"={"security"="is_granted('ROLE_ADMIN')"},
  *         "post"
  *     },
- *     itemOperations={"get"},
+ *     itemOperations={"get","put"},
  *     normalizationContext={"groups"={"user:read"}},
  *     denormalizationContext={"groups"={"user:write"}}
  * )
@@ -111,7 +111,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToMany(targetEntity=Restaurant::class, mappedBy="fans")
-     * @Groups({"user:read"})
+     * @Groups({"user:read","user:write"})
      * @ApiSubresource
      */
     private $restaurants;
