@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Action\NotFoundAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
+use Doctrine\ORM\Mapping\JoinColumn;
 
 /**
  * @ApiResource(
@@ -101,12 +102,14 @@ class Cms
 
     /**
      * @ORM\ManyToOne(targetEntity=Color::class)
+     * @JoinColumn(onDelete="CASCADE")
      * @Groups({"cms:read","zone:read"})
      */
     private $textColor;
 
     /**
      * @ORM\ManyToOne(targetEntity=Color::class)
+     * @JoinColumn(onDelete="CASCADE")
      * @Groups({"cms:read","zone:read"})
      */
     private $backgroundColor;
