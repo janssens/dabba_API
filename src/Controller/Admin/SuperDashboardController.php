@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Client;
 use App\Entity\Cms;
+use App\Entity\Zone;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -31,5 +32,6 @@ class SuperDashboardController extends AbstractDashboardController
         yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToCrud('API client', 'fas fa-key', Client::class);
         yield MenuItem::linkToCrud('CMS blocs', 'fas fa-edit', Cms::class);
+        yield MenuItem::linkToCrud('Zones', 'fas fa-map-marker-alt', Zone::class);
     }
 }
