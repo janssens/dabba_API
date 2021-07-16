@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Action\NotFoundAction;
 
 /**
  * @ApiResource(
@@ -23,7 +24,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *         },
  *     },
  *     normalizationContext={"groups"={"cms:read"}},
- *     denormalizationContext={"groups"={"cms:write"}}
+ *     denormalizationContext={"groups"={"cms:write"}},
+ *     attributes={"order"={"position": "ASC"}}
  * )
  * @ORM\Entity(repositoryClass=CmsRepository::class)
  * @Serializer\ExclusionPolicy("ALL")

@@ -6,14 +6,16 @@ use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\PasswordGrant;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Zend\Diactoros\Response as Psr7Response;
+use ApiPlatform\Core\Documentation\Documentation;
 
 /**
  * @Route("/api")
  */
-final class AuthController
+final class AuthController extends AbstractController
 {
     /**
      * @var AuthorizationServer

@@ -7,7 +7,9 @@
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
 
-    <h1>home</h1>
+    <h1>Dabba consigne</h1>
+
+    <a href="/api/docs">Api doc</a>
 
     {% if is_granted('ROLE_ADMIN') %}
     <a href="{{ path('admin') }}">admin</a>

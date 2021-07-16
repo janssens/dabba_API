@@ -7,6 +7,8 @@ parameters:
     app.transactional_mail_sender: '%env(TRANSACTIONAL_MAIL_SENDER)%'
     app.path.restaurant_images: /uploads/images/restaurant
     app.path.cms_images: /uploads/images/cms
+    app.api.client_id: '%env(API_CLIENT_ID)%'
+    app.api.client_secret: '%env(API_CLIENT_SECRET)%'
 services:
     # default configuration for services in *this* file
     _defaults:

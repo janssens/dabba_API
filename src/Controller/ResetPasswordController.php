@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use ApiPlatform\Core\Action\NotFoundAction;
 use App\Entity\User;
 use App\Form\ChangePasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
@@ -12,15 +13,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Message;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 /**
- *  @Route("/reset-password")
+ *  @Route("")
  */
 class ResetPasswordController extends AbstractController
 {
@@ -35,7 +38,7 @@ class ResetPasswordController extends AbstractController
 
     /**
      * Display & process form to request a password reset.
-     * @Route("", name="app_forgot_password_request")
+     * @Route("/reset-password", name="app_forgot_password_request")
      * @Rest\Post(
      *     name = "app_forgot_password_request",
      *     )
@@ -59,8 +62,56 @@ class ResetPasswordController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param MailerInterface $mailer
+     * @Route("/api/users/reset-password", name="api_forgot_password_request")
+     */
+    public function apiRequestAction(Request $request, MailerInterface $mailer): Response
+    {
+            $username = $request->get('username');
+
+            if (!$username){
+                return $this->json(['message'=>'Please provide an username','code'=>400],400);
+            }
+            if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+                return $this->json(['message'=>'Invalid email format','code'=>400],400);
+            }
+
+            $user = $this->getDoctrine()->getRepository(User::class)->findOneBy([
+                'email' => $username,
+            ]);
+            if (!$user) {
+                return $this->json([],200);
+            }
+
+            try {
+                $resetToken = $this->resetPasswordHelper->generateResetToken($user);
+            } catch (ResetPasswordExceptionInterface $e) {
+                return $this->json([],200);
+            }
+
+            $email = (new TemplatedEmail())
+                ->from(new Address($this->getParameter('app.transactional_mail_sender'), 'dabba consigne'))
+                ->to($user->getEmail())
+                ->subject('Your password reset request')
+                ->htmlTemplate('reset_password/email.html.twig')
+                ->context([
+                    'resetToken' => $resetToken,
+                ])
+            ;
+
+            $mailer->send($email);
+
+            // Store the token object in session for retrieval in check-email route.
+            $this->setTokenObjectInSession($resetToken);
+
+            return $this->json([],200);
+
+    }
+
+    /**
      * Confirmation page after a user has requested a password reset.
-     * @Route("/check-email", name="app_check_email")
+     * @Route("/reset-password/check-email", name="app_check_email")
      */
     public function checkEmail(): Response
     {
@@ -77,7 +128,7 @@ class ResetPasswordController extends AbstractController
 
     /**
      * Validates and process the reset URL that the user clicked in their email.
-     * @Route("/reset/{token}", name="app_reset_password")
+     * @Route("/reset-password/reset/{token}", name="app_reset_password")
      */
     public function reset(Request $request, UserPasswordEncoderInterface $passwordEncoder, string $token = null): Response
     {

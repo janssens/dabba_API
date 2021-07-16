@@ -17,8 +17,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 /**
  * @ApiResource(
  *     collectionOperations={
- *         "get",
- *         "post"={"security"="is_granted('ROLE_ADMIN')"}
+ *         "get"
  *     },
  *     itemOperations={"get"},
  *     normalizationContext={"groups"={"restaurant:read"}},

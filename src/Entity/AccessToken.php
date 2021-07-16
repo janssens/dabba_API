@@ -4,9 +4,45 @@ namespace App\Entity;
 
 use App\Repository\AccessTokenRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Action\NotFoundAction;
+use App\Controller\AuthController;
 
 /**
  * @ORM\Entity(repositoryClass=AccessTokenRepository::class)
+ * @ApiResource(
+ *     itemOperations={},
+ *     collectionOperations={
+ *          "post"={
+ *              "method" = "POST",
+ *              "route_name" = "api_get_access_token",
+ *              "openapi_context"={
+ *                  "summary"="Get access token",
+ *                  "description"="Query an access token",
+ *                  "requestBody"={
+ *                      "content"={
+ *                          "application/x-www-form-urlencoded"={
+ *                              "schema"={
+ *                                  "type"="object",
+ *                                  "properties"={
+ *                                      "grant_type"={"type"="string"},
+ *                                      "scope"={"type"="string"},
+ *                                      "client_id"={"type"="string"},
+ *                                      "client_secret"={"type"="string"},
+ *                                      "username"={"type"="string"},
+ *                                      "password"={"type"="string"},
+ *                                  },
+ *                              },
+ *                          },
+ *                      },
+ *                  },
+ *              },
+ *          },
+ *      },
+ *     normalizationContext={"groups"={"cms:read"}},
+ *     denormalizationContext={"groups"={"cms:write"}},
+ *     attributes={"order"={"position": "ASC"}}
+ * )
  */
 class AccessToken
 {

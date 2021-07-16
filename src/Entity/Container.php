@@ -8,8 +8,18 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use JMS\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
+ * @ApiResource(
+ *     collectionOperations={
+ *         "get"
+ *     },
+ *     itemOperations={"get"},
+ *     normalizationContext={"groups"={"container:read"}},
+ *     denormalizationContext={"groups"={"container:write"}}
+ * )
  * @ORM\Entity(repositoryClass=ContainerRepository::class)
  * @Serializer\ExclusionPolicy("ALL")
  */
@@ -19,19 +29,19 @@ class Container extends AbstractFOSRestController
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Serializer\Expose
+     * @Groups({"container:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Serializer\Expose
+     * @Groups({"container:read"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="float")
-     * @Serializer\Expose
+     * @Groups({"container:read"})
      */
     private $price;
 

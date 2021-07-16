@@ -19,10 +19,30 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
  * @ApiResource(
  *     collectionOperations={
- *         "get"={"security"="is_granted('ROLE_ADMIN')"},
- *         "post"
+ *          "post",
+ *          "reset_password" = {
+ *              "method" = "POST",
+ *              "route_name" = "api_forgot_password_request",
+ *              "openapi_context"={
+ *                  "summary"="Request a reset password link",
+ *                  "description"="Request a reset password link",
+ *                  "requestBody"={
+ *                      "required"=true,
+ *                      "content"={
+ *                          "application/x-www-form-urlencoded"={
+ *                              "schema"={
+ *                                  "type"="object",
+ *                                  "properties"={
+ *                                      "username"={"type"="string"},
+ *                                  },
+ *                              },
+ *                          },
+ *                      },
+ *                  },
+ *              },
+ *          },
  *     },
- *     itemOperations={"get","put"},
+ *     itemOperations={"get","put"={"security"="is_granted('edit', object)"}},
  *     normalizationContext={"groups"={"user:read"}},
  *     denormalizationContext={"groups"={"user:write"}}
  * )
@@ -261,6 +281,11 @@ class User implements UserInterface
         $roles[] = $role;
         $this->roles = array_unique($roles);
         return $this;
+    }
+
+    public function hasRoles(string $roles): bool
+    {
+        return in_array($roles, $this->roles);
     }
 
     public function getSalt()
