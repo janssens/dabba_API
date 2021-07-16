@@ -5,9 +5,16 @@ namespace App\Entity;
 use App\Repository\ColorRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ORM\Entity(repositoryClass=ColorRepository::class)
+ * @ApiResource(
+ *     collectionOperations={"get"},
+ *     itemOperations={"get"},
+ *     normalizationContext={"groups"={"color:read"}},
+ *     denormalizationContext={"groups"={"color:write"}}
+ * )
  */
 class Color
 {
@@ -15,18 +22,19 @@ class Color
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"color:read","cms:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=25)
-     * @Groups({"cms:read"})
+     * @Groups({"color:read","cms:read"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=7)
-     * @Groups({"cms:read"})
+     * @Groups({"color:read","cms:read"})
      */
     private $code;
 
