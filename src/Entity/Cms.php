@@ -12,16 +12,10 @@ use ApiPlatform\Core\Action\NotFoundAction;
 /**
  * @ApiResource(
  *     collectionOperations={
- *         "get",
- *         "post"={"security"="is_granted('ROLE_SUPER_ADMIN')"}
+ *         "get"
  *     },
  *     itemOperations={
- *          "get"={
- *             "method"="GET",
- *             "controller"=NotFoundAction::class,
- *             "read"=false,
- *             "output"=false,
- *         },
+ *          "get"
  *     },
  *     normalizationContext={"groups"={"cms:read"}},
  *     denormalizationContext={"groups"={"cms:write"}},
@@ -36,28 +30,26 @@ class Cms
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Serializer\Expose
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     * @Serializer\Expose
+     * @ORM\Column(type="string", length=50)
      * @Groups({"cms:read"})
      */
     private $title;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"cms:read"})
+     */
+    private $subtitle;
 
     /**
      * @ORM\Column(type="integer")
      * @Groups({"cms:read"})
      */
     private $position;
-
-    /**
-     * @ORM\Column(type="json")
-     * @Groups({"cms:read"})
-     */
-    private $css = [];
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -91,8 +83,30 @@ class Cms
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"cms:read"})
      */
     private $image;
+
+    /**
+     * @ORM\Column(type="smallint")
+     * @Groups({"cms:read"})
+     */
+    private $format;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Color::class)
+     * @Groups({"cms:read"})
+     */
+    private $textColor;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Color::class)
+     * @Groups({"cms:read"})
+     */
+    private $backgroundColor;
+
+    const FORMAT_SMALL = 1;
+    const FORMAT_FULL = 2;
 
     public function getId(): ?int
     {
@@ -120,23 +134,6 @@ class Cms
     {
         $this->position = $position;
 
-        return $this;
-    }
-
-    public function getCss(): array
-    {
-        return $this->css;
-    }
-
-    public function setCss(array $css): self
-    {
-        $this->css = $css;
-        return $this;
-    }
-
-    public function addCss(string $key,string $value): self
-    {
-        $this->css[$key] = $value;
         return $this;
     }
 
@@ -208,6 +205,54 @@ class Cms
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getFormat(): ?int
+    {
+        return $this->format;
+    }
+
+    public function setFormat(int $format): self
+    {
+        $this->format = $format;
+
+        return $this;
+    }
+
+    public function getTextColor(): ?Color
+    {
+        return $this->textColor;
+    }
+
+    public function setTextColor(?Color $textColor): self
+    {
+        $this->textColor = $textColor;
+
+        return $this;
+    }
+
+    public function getBackgroundColor(): ?Color
+    {
+        return $this->backgroundColor;
+    }
+
+    public function setBackgroundColor(?Color $backgroundColor): self
+    {
+        $this->backgroundColor = $backgroundColor;
+
+        return $this;
+    }
+
+    public function getSubtitle(): ?string
+    {
+        return $this->subtitle;
+    }
+
+    public function setSubtitle(?string $subtitle): self
+    {
+        $this->subtitle = $subtitle;
 
         return $this;
     }
