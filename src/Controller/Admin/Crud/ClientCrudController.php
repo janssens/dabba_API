@@ -4,6 +4,8 @@ namespace App\Controller\Admin\Crud;
 
 use App\Entity\Client;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class ClientCrudController extends AbstractCrudController
 {
@@ -12,14 +14,20 @@ class ClientCrudController extends AbstractCrudController
         return Client::class;
     }
 
-    /*
+    public function createEntity(string $entityFqcn)
+    {
+        return Client::create("new client ".date('Y-m-d H:i:s'));
+    }
+
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
+            TextField::new('id')->hideOnForm(),
+            TextField::new('name'),
+            TextField::new('secret'),
+            TextField::new('redirect'),
+            BooleanField::new('active'),
         ];
     }
-    */
+
 }

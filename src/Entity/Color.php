@@ -22,19 +22,19 @@ class Color
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"color:read","cms:read"})
+     * @Groups({"color:read","cms:read","zone:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=25)
-     * @Groups({"color:read","cms:read"})
+     * @Groups({"color:read","cms:read","zone:read"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=7)
-     * @Groups({"color:read","cms:read"})
+     * @Groups({"color:read","cms:read","zone:read"})
      */
     private $code;
 

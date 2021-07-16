@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Client;
 use App\Entity\Cms;
 use App\Entity\Color;
+use App\Entity\Container;
 use App\Entity\Zone;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -35,5 +36,6 @@ class SuperDashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('CMS blocs', 'fas fa-edit', Cms::class);
         yield MenuItem::linkToCrud('Zones', 'fas fa-map-marker-alt', Zone::class);
         yield MenuItem::linkToCrud('Colors', 'fas fa-palette', Color::class);
+        yield MenuItem::linkToCrud('Dadda', 'fas fa-toolbox', Container::class);
     }
 }

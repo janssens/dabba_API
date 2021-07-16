@@ -2,28 +2,25 @@
 
 namespace App\Controller\Admin\Crud;
 
-use App\Entity\Zone;
+use App\Entity\Container;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class ZoneCrudController extends AbstractCrudController
+class ContainerCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return Zone::class;
+        return Container::class;
     }
-
 
     public function configureFields(string $pageName): iterable
     {
         return [
             IdField::new('id')->hideOnForm(),
             TextField::new('name'),
-            AssociationField::new('admins')->hideOnIndex(),
-            AssociationField::new('cms')->hideOnIndex(),
+            NumberField::new('price'),
         ];
     }
-
 }

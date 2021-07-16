@@ -30,6 +30,7 @@ class CmsCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
+            AssociationField::new('zone'),
             IntegerField::new('position'),
             DateField::new('from_date'),
             DateField::new('to_date'),

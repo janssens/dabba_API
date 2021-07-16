@@ -3,11 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\CmsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Action\NotFoundAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 
 /**
  * @ApiResource(
@@ -21,6 +25,7 @@ use ApiPlatform\Core\Action\NotFoundAction;
  *     denormalizationContext={"groups"={"cms:write"}},
  *     attributes={"order"={"position": "ASC"}}
  * )
+ * @ApiFilter(NumericFilter::class, properties={"zone.id"})
  * @ORM\Entity(repositoryClass=CmsRepository::class)
  * @Serializer\ExclusionPolicy("ALL")
  */
@@ -30,80 +35,91 @@ class Cms
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"cms:read","zone:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=50)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $subtitle;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $position;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $content;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $url;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $button_label;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $from_date;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $to_date;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="smallint")
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $format;
 
     /**
      * @ORM\ManyToOne(targetEntity=Color::class)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $textColor;
 
     /**
      * @ORM\ManyToOne(targetEntity=Color::class)
-     * @Groups({"cms:read"})
+     * @Groups({"cms:read","zone:read"})
      */
     private $backgroundColor;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Zone::class, inversedBy="cms")
+     */
+    private $zone;
+
+    public function __construct()
+    {
+        $this->zone = new ArrayCollection();
+    }
 
     const FORMAT_SMALL = 1;
     const FORMAT_FULL = 2;
@@ -253,6 +269,30 @@ class Cms
     public function setSubtitle(?string $subtitle): self
     {
         $this->subtitle = $subtitle;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Zone[]
+     */
+    public function getZone(): Collection
+    {
+        return $this->zone;
+    }
+
+    public function addZone(Zone $zone): self
+    {
+        if (!$this->zone->contains($zone)) {
+            $this->zone[] = $zone;
+        }
+
+        return $this;
+    }
+
+    public function removeZone(Zone $zone): self
+    {
+        $this->zone->removeElement($zone);
 
         return $this;
     }
