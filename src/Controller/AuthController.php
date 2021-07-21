@@ -5,6 +5,7 @@ namespace App\Controller;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\PasswordGrant;
+use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,16 +29,24 @@ final class AuthController extends AbstractController
     private $passwordGrant;
 
     /**
+     * @var RefreshTokenGrant
+     */
+    private $refreshTokenGrant;
+
+    /**
      * AuthController constructor.
      * @param AuthorizationServer $authorizationServer
      * @param PasswordGrant $passwordGrant
+     * @param RefreshTokenGrant $refreshTokenGrant
      */
     public function __construct(
         AuthorizationServer $authorizationServer,
-        PasswordGrant $passwordGrant
+        PasswordGrant $passwordGrant,
+        RefreshTokenGrant $refreshTokenGrant
     ) {
         $this->authorizationServer = $authorizationServer;
         $this->passwordGrant = $passwordGrant;
+        $this->refreshTokenGrant = $refreshTokenGrant;
     }
 
     /**
@@ -51,9 +60,20 @@ final class AuthController extends AbstractController
         $this->passwordGrant->setRefreshTokenTTL(new \DateInterval('P1M'));
 
         return $this->withErrorHandling(function () use ($request) {
+            $grant = null;
+            switch ($request->getParsedBody()['grant_type']){
+                case 'refresh_token':
+                    $grant = $this->refreshTokenGrant;
+                    break;
+                case 'password':
+                    $grant = $this->passwordGrant;
+                    break;
+                default:
+                    $grant = $this->passwordGrant; // will fail "unsupported_grant_type"
+            }
             $this->passwordGrant->setRefreshTokenTTL(new \DateInterval('P1M'));
             $this->authorizationServer->enableGrantType(
-                $this->passwordGrant,
+                $grant,
                 new \DateInterval('PT1H')
             );
             return $this->authorizationServer->respondToAccessTokenRequest($request, new Psr7Response());

@@ -67,6 +67,11 @@ class RefreshToken
         return $this->revoked;
     }
 
+    public function isRevoked(): ?bool
+    {
+        return $this->getRevoked();
+    }
+
     public function setRevoked(bool $revoked): self
     {
         $this->revoked = $revoked;

@@ -17,7 +17,7 @@ use App\Controller\AuthController;
  *              "method" = "POST",
  *              "route_name" = "api_get_access_token",
  *              "openapi_context"={
- *                  "summary"="Get access token",
+ *                  "summary"="Get and refresh access token",
  *                  "description"="Query an access token",
  *                  "requestBody"={
  *                      "content"={

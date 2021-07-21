@@ -26,7 +26,9 @@ ENUM Movement reason
 
 https://yuml.me/diagram/scruffy/class/draw
 
-https://oauth2.thephpleague.com/installation/
+REF: https://oauth2.thephpleague.com/installation/
 
-openssl genrsa -out config/jwt/private.pem -aes256 4096
-openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
+openssl genrsa -out private.key 2048
+openssl rsa -in private.key -pubout -out public.key
+
+php -r 'echo base64_encode(random_bytes(32)), PHP_EOL;'

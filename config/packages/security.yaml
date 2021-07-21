@@ -44,7 +44,7 @@ security:
         - { path: ^/admin/super, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/api/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Allows accessing the Swagger UI
-        - { path: ^/api/accessToken, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/accessToken, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/profile, roles: ROLE_USER }
 

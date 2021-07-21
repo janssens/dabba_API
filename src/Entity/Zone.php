@@ -42,7 +42,7 @@ class Zone
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=Restaurant::class, mappedBy="admins", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Restaurant::class, mappedBy="zone", orphanRemoval=true)
      */
     private $restaurants;
 

@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use JMS\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Symfony\Component\Serializer\Annotation\SerializedName;
@@ -41,10 +42,29 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
  *                  },
  *              },
  *          },
+ *          "current_user" = {
+ *              "method" = "GET",
+ *              "route_name" = "api_current_user",
+ *              "openapi_context"={
+ *                  "summary"="Get current user data",
+ *                  "description"="Get current user data",
+ *              },
+ *          }
  *     },
- *     itemOperations={"get","put"={"security"="is_granted('edit', object)"}},
+ *     itemOperations={
+ *         "get"={
+ *             "method"="GET",
+ *             "controller"=NotFoundAction::class,
+ *             "read"=false,
+ *             "output"=false,
+ *         },
+ *         "put"={
+ *              "security"="is_granted('edit', object)"
+ *         }
+ *     },
  *     normalizationContext={"groups"={"user:read"}},
- *     denormalizationContext={"groups"={"user:write"}}
+ *     denormalizationContext={"groups"={"user:write"}},
+ *     attributes={"pagination_enabled"=false}
  * )
  */
 class User implements UserInterface

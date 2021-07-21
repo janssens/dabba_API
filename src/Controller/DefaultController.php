@@ -20,7 +20,7 @@ use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class DefaultController extends AbstractFOSRestController
+class DefaultController extends AbstractController
 {
 
     /**
@@ -32,24 +32,19 @@ class DefaultController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get(
-     *     path = "/api/home",
-     *     name = "api_home"
-     *     )
-     * @Rest\View(StatusCode = 200)
+     * @Route(
+     *     "/api/users/current",
+     *     name="api_current_user",
+     *     methods={"GET"},
+     *     defaults={
+     *          "_api_resource_class" = User::class,
+     *          "_api_collection_operation_name" = "current_user",
+     *     })
      */
-    public function api_home()
+    public function __invoke(): User
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $users_count = $em->getRepository(User::class)->number();
-        $restaurants_count = $em->getRepository(Restaurant::class)->number();
-        $zones_count = $em->getRepository(Zone::class)->number();
-        $waste_avoided = $em->getRepository(Movement::class)->countAvoidedWaste();
-
-        $cms = $em->getRepository(Cms::class)->findAll();
-
-        return new HomeResponse($cms,$this->getUser(),['waste_avoided' => $waste_avoided,'users_count' => $users_count, 'zone_count'=> $zones_count,'restaurants_count' => $restaurants_count]);
+        return $this->getUser();
     }
+
 }
 
