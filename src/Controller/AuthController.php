@@ -71,7 +71,7 @@ final class AuthController extends AbstractController
                 default:
                     $grant = $this->passwordGrant; // will fail "unsupported_grant_type"
             }
-            $this->passwordGrant->setRefreshTokenTTL(new \DateInterval('P1M'));
+            $grant->setRefreshTokenTTL(new \DateInterval('P1M'));
             $this->authorizationServer->enableGrantType(
                 $grant,
                 new \DateInterval('PT1H')

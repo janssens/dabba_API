@@ -1,6 +1,6 @@
 api_platform:
     title: 'Dabba REST API'
-    description: 'A Symfony API to manage dabba consigne app.'
+    description: 'A Symfony API to manage dabba consigne mobile app.'
     version: '0.1.0'
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
@@ -26,3 +26,5 @@ api_platform:
             mime_types: [ 'application/json' ]
         html:
             mime_types: [ 'text/html' ]
+    defaults:
+        pagination_enabled: false
