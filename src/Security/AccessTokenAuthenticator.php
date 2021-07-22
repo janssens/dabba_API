@@ -6,6 +6,7 @@ namespace App\Security;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use App\MyResourceServer;
 use League\OAuth2\Server\ResourceServer;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
@@ -24,16 +25,21 @@ class AccessTokenAuthenticator extends AbstractGuardAuthenticator
 {
     private $em;
     /**
-     * @var ResourceServer
+     * @var MyResourceServer
      */
     private $resourceServer;
+
+    private $error;
+    private $message;
+    private $hint;
+    private $code;
 
     /**
      * TokenSubscriber constructor.
      * @param EntityManagerInterface $em
-     * @param ResourceServer $resourceServer
+     * @param MyResourceServer $resourceServer
      */
-    public function __construct(EntityManagerInterface $em,ResourceServer $resourceServer)
+    public function __construct(EntityManagerInterface $em,MyResourceServer $resourceServer)
     {
         $this->em = $em;
         $this->resourceServer = $resourceServer;
@@ -71,7 +77,17 @@ class AccessTokenAuthenticator extends AbstractGuardAuthenticator
         try {
             $psrRequest = $this->resourceServer->validateAuthenticatedRequest($credentials);
         } catch (OAuthServerException $exception) {
-            throw $exception;
+            $hint = $exception->getHint();
+            if (strpos($hint,'The token is expired')>0){
+                $code = 'expired_token';
+            }else{
+                $code = $exception->getErrorType();
+            }
+            $this->error = $exception->getErrorType();
+            $this->code = $code;
+            $this->message = $exception->getMessage();
+            $this->hint = $hint;
+            return null;
         } catch (\Exception $exception) {
             throw new OAuthServerException($exception->getMessage(), 0, 'unknown_error', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -111,13 +127,23 @@ class AccessTokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $data = [
-            // you may want to customize or obfuscate the message first
-            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
+        if ($this->message === null){
+            $data = [
+                // you may want to customize or obfuscate the message first
+                'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
 
-            // or to translate this message
-            // $this->translator->trans($exception->getMessageKey(), $exception->getMessageData())
-        ];
+                // or to translate this message
+                // $this->translator->trans($exception->getMessageKey(), $exception->getMessageData())
+            ];
+        }else{
+            $data = [
+                'error' => $this->error,
+                'code' => $this->code,
+                'message' => $this->message,
+                'hint' => $this->hint,
+            ];
+        }
+
 
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }

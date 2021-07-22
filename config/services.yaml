@@ -55,7 +55,7 @@ services:
     League\OAuth2\Server\Grant\RefreshTokenGrant:
         arguments:
             $refreshTokenRepository: '@App\Infrastructure\oAuth2Server\Bridge\RefreshTokenRepository'
-    League\OAuth2\Server\ResourceServer:
+    App\MyResourceServer:
         arguments:
             $accessTokenRepository: '@App\Infrastructure\oAuth2Server\Bridge\AccessTokenRepository'
             $publicKey: '%env(OAUTH2_PUBLIC_KEY)%'
