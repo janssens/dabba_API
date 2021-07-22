@@ -36,7 +36,7 @@ class Restaurant
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"restaurant:read","user:read"})
+     * @Groups({"restaurant:read","user:read","user:write"})
      */
     private $id;
 
