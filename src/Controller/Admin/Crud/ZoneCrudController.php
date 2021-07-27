@@ -23,8 +23,7 @@ class ZoneCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('name'),
             BooleanField::new('is_default'),
-            AssociationField::new('admins')->hideOnIndex(),
-            AssociationField::new('cms')->hideOnIndex(),
+            AssociationField::new('admins')->hideOnIndex()
         ];
     }
 
