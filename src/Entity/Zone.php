@@ -62,6 +62,11 @@ class Zone
      */
     private $cms;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $is_default;
+
     public function __toString(){
         return $this->getName();
     }
@@ -204,6 +209,18 @@ class Zone
         if ($this->cms->removeElement($cm)) {
             $cm->removeZone($this);
         }
+
+        return $this;
+    }
+
+    public function getIsDefault(): ?bool
+    {
+        return $this->is_default;
+    }
+
+    public function setIsDefault(?bool $is_default): self
+    {
+        $this->is_default = $is_default;
 
         return $this;
     }

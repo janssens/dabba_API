@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Action\NotFoundAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping\JoinColumn;
 
 /**
@@ -27,6 +28,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
  *     attributes={"order"={"position": "ASC"}}
  * )
  * @ApiFilter(NumericFilter::class, properties={"zone.id"})
+ * @ApiFilter(SearchFilter::class, properties={"category":"exact"})
  * @ORM\Entity(repositoryClass=CmsRepository::class)
  * @Serializer\ExclusionPolicy("ALL")
  */
@@ -119,6 +121,17 @@ class Cms
      */
     private $zone;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $is_public;
+
+    /**
+     * @ORM\Column(type="string", length=50)
+     * @Groups({"cms:read","zone:read"})
+     */
+    private $category;
+
     public function __construct()
     {
         $this->zone = new ArrayCollection();
@@ -126,6 +139,9 @@ class Cms
 
     const FORMAT_SMALL = 1;
     const FORMAT_FULL = 2;
+
+    const CATEGORY_HOME = 'HOME';
+    const CATEGORY_MY_DABBA = 'MY_DABBA';
 
     public function getId(): ?int
     {
@@ -296,6 +312,30 @@ class Cms
     public function removeZone(Zone $zone): self
     {
         $this->zone->removeElement($zone);
+
+        return $this;
+    }
+
+    public function getIsPublic(): ?bool
+    {
+        return $this->is_public;
+    }
+
+    public function setIsPublic(bool $is_public): self
+    {
+        $this->is_public = $is_public;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }

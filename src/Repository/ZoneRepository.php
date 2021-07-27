@@ -27,32 +27,13 @@ class ZoneRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    // /**
-    //  * @return Franchise[] Returns an array of Franchise objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findDefault(): ?Zone
     {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Franchise
-    {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
+        return $this->createQueryBuilder('z')
+            ->andWhere('z.is_default = :val')
+            ->setParameter('val', true)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
 }
