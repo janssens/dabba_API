@@ -163,6 +163,11 @@ class User implements UserInterface
         $this->restaurants = new ArrayCollection();
     }
 
+    public function toString(): ?string
+    {
+        return $this->firstname.' '.$this->lastname.' ('.$this->getEmail().')';
+    }
+
     public function getId(): ?int
     {
         return $this->id;
