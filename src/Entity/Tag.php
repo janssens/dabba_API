@@ -10,6 +10,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 
 
 /**
@@ -41,7 +42,8 @@ class Tag
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Restaurant::class, inversedBy="tags")
+     * @ORM\ManyToMany(targetEntity=Restaurant::class, mappedBy="tags", cascade={"persist", "merge", "remove"})
+     * @ApiSubresource
      */
     private $restaurants;
 
@@ -84,6 +86,7 @@ class Tag
     {
         if (!$this->restaurants->contains($restaurant)) {
             $this->restaurants[] = $restaurant;
+            $restaurant->addTag($this);
         }
 
         return $this;

@@ -13,6 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class RestaurantCrudController extends AbstractCrudController
@@ -30,6 +31,7 @@ class RestaurantCrudController extends AbstractCrudController
                 ->setBasePath($this->getParameter('app.path.restaurant_images'))
                 ->setUploadDir('/public'.$this->getParameter('app.path.restaurant_images')),
             TextField::new('name'),
+            TelephoneField::new('phone'),
             TextField::new('website'),
             AssociationField::new('tags'),
             AssociationField::new('mealTypes'),

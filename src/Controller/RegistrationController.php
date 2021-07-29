@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Zone;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
 use App\Repository\UserRepository;
@@ -43,6 +44,8 @@ class RegistrationController extends AbstractController
             );
 
             $entityManager = $this->getDoctrine()->getManager();
+            if (!$user->getZone())
+                $user->setZone($entityManager->getRepository(Zone::class)->findDefault());
             $entityManager->persist($user);
             $entityManager->flush();
 

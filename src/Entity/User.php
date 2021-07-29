@@ -104,7 +104,6 @@ class User implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="users")
      * @Groups({"user:read"})
-     * @ApiSubresource
      */
     private $zone;
 

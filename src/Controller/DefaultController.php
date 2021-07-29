@@ -6,6 +6,7 @@ use App\Entity\Cms;
 use App\Entity\HomeResponse;
 use App\Entity\Movement;
 use App\Entity\Restaurant;
+use App\Entity\Tag;
 use App\Entity\User;
 use App\Entity\Zone;
 use App\Service\SystemPay;
@@ -59,6 +60,27 @@ class DefaultController extends AbstractController
             'success' => $success,
             'error' => $error,
         ]);
+    }
+
+    /**
+     * @Route("/my_test",name="my_test")
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     */
+    public function my_test()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tag1 = $em->getRepository(Tag::class)->find(1);
+        $tag2 = $em->getRepository(Tag::class)->find(2);
+
+        /** @var Restaurant $restaurant */
+        $restaurant = $em->getRepository(Restaurant::class)->find(1);
+        $restaurant->addTag($tag1);
+        $restaurant->addTag($tag2);
+
+        $em->persist($restaurant);
+        $em->flush();
+
+        return $this->render('admin/my_test.html.twig');
     }
 
 

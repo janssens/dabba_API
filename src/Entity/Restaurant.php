@@ -14,19 +14,17 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use App\Dto\RestaurantOutput;
 
 /**
  * @ApiResource(
- *     collectionOperations={
- *         "get"
- *     },
+ *     output=RestaurantOutput::class,
+ *     collectionOperations={"get"},
  *     itemOperations={"get"},
  *     normalizationContext={"groups"={"restaurant:read"}},
  *     denormalizationContext={"groups"={"restaurant:write"}}
  * )
- * @ApiFilter(SearchFilter::class, properties={
- *     "name": "partial"
- *     })
+ * @ApiFilter(SearchFilter::class, properties={"name": "partial"})
  * @ApiFilter(RangeFilter::class, properties={"lat","lng"})
  * @ApiFilter(NumericFilter::class, properties={"zone.id"})
  * @ORM\Entity(repositoryClass=RestaurantRepository::class)
@@ -37,31 +35,27 @@ class Restaurant
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"restaurant:read","user:read","user:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255,unique=true)
      * @Assert\NotBlank()
-     * @Groups({"restaurant:read", "restaurant:write"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"restaurant:read", "restaurant:write"})
      */
     private $lat;
 
     /**
      * @ORM\Column(type="float")
-     * @Groups({"restaurant:read", "restaurant:write"})
      */
     private $lng;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="restaurants",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="restaurants",cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $zone;
@@ -78,13 +72,11 @@ class Restaurant
 
     /**
      * @ORM\Column(type="json", nullable=true)
-     * @Groups({"restaurant:read"})
      */
     private $opening_hours = [];
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"restaurant:read"})
      */
     private $image;
 
@@ -95,33 +87,26 @@ class Restaurant
 
     /**
      * @ORM\Column(type="string", length=75)
-     * @Groups({"restaurant:read"})
      */
     private $city;
 
     /**
      * @ORM\Column(type="string", length=6)
-     * @Groups({"restaurant:read"})
      */
     private $zip;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"restaurant:read"})
      */
     private $street;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Tag::class, mappedBy="restaurants",cascade={"persist"})
-     * @Groups({"restaurant:read"})
-     * @ApiSubresource
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="restaurants",cascade={"persist", "merge", "remove"})
      */
     private $tags;
 
     /**
-     * @ORM\ManyToMany(targetEntity=MealType::class, mappedBy="restaurants",cascade={"persist"})
-     * @Groups({"restaurant:read"})
-     * @ApiSubresource
+     * @ORM\ManyToMany(targetEntity=MealType::class, inversedBy="restaurants",cascade={"persist", "merge", "remove"})
      */
     private $mealTypes;
 
@@ -130,11 +115,21 @@ class Restaurant
      */
     private $website;
 
+    /**
+     * @ORM\Column(type="string", length=12, nullable=true)
+     */
+    private $phone;
+
     public function __construct()
     {
         $this->fans = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->mealTypes = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        return $this->getName().' ('.$this->getZone()->getName().')';
     }
 
     public function getId(): ?int
@@ -362,5 +357,26 @@ class Restaurant
         $this->website = $website;
 
         return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getAddress(): string
+    {
+        return $this->getStreet().
+            (($this->getStreet()) ? '\n' : $this->getStreet()).
+            $this->getZip().
+            (($this->getZip()) ? ' ' : $this->getZip()).
+            $this->getCity();
     }
 }

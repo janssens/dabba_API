@@ -7,6 +7,7 @@ namespace App\DataPersister;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Restaurant;
 use App\Entity\User;
+use App\Entity\Zone;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -74,8 +75,16 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     }
 
 
+    /**
+     * @param $data
+     * @param array $context
+     * @return object|void
+     */
     public function persist($data, array $context = [])
     {
+        /** @var $data User */
+        $is_new = !$data->getId();
+
         if ($data->getPlainPassword()) {
             $data->setPassword(
                 $this->_passwordEncoder->encodePassword(
@@ -87,18 +96,25 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
             $data->eraseCredentials();
         }
 
+        if ($is_new){
+            if (!$data->getZone())
+                $data->setZone($this->_entityManager->getRepository(Zone::class)->findDefault());
+        }
+
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();
 
-        // generate a signed url and email it to the user
-        $this->_emailVerifier->sendEmailConfirmation('app_verify_email', $data,
-            (new TemplatedEmail())
-                ->from(new Address($this->_params->get('app.transactional_mail_sender'), 'Dabba consigne'))
-                ->to($data->getEmail())
-                ->subject('Please Confirm your Email')
-                ->htmlTemplate('registration/confirmation_email.html.twig')
-        );
-        // do anything else you need here, like send an email
+        if ($is_new && !$data->isVerified()){
+            // generate a signed url and email it to the user
+            $this->_emailVerifier->sendEmailConfirmation('app_verify_email', $data,
+                (new TemplatedEmail())
+                    ->from(new Address($this->_params->get('app.transactional_mail_sender'), 'Dabba consigne'))
+                    ->to($data->getEmail())
+                    ->subject('Please Confirm your Email')
+                    ->htmlTemplate('registration/confirmation_email.html.twig')
+            );
+            // do anything else you need here, like send an email
+        }
     }
 
     public function remove($data, array $context = [])
