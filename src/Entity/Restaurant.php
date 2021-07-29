@@ -112,14 +112,14 @@ class Restaurant
     private $street;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Tag::class, mappedBy="restaurants")
+     * @ORM\ManyToMany(targetEntity=Tag::class, mappedBy="restaurants",cascade={"persist"})
      * @Groups({"restaurant:read"})
      * @ApiSubresource
      */
     private $tags;
 
     /**
-     * @ORM\ManyToMany(targetEntity=MealType::class, mappedBy="restaurants")
+     * @ORM\ManyToMany(targetEntity=MealType::class, mappedBy="restaurants",cascade={"persist"})
      * @Groups({"restaurant:read"})
      * @ApiSubresource
      */
