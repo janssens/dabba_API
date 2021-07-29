@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 
 /**
  * @ApiResource(
@@ -92,9 +93,48 @@ class Restaurant
      */
     private $updatedAt;
 
+    /**
+     * @ORM\Column(type="string", length=75)
+     * @Groups({"restaurant:read"})
+     */
+    private $city;
+
+    /**
+     * @ORM\Column(type="string", length=6)
+     * @Groups({"restaurant:read"})
+     */
+    private $zip;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"restaurant:read"})
+     */
+    private $street;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Tag::class, mappedBy="restaurants")
+     * @Groups({"restaurant:read"})
+     * @ApiSubresource
+     */
+    private $tags;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=MealType::class, mappedBy="restaurants")
+     * @Groups({"restaurant:read"})
+     * @ApiSubresource
+     */
+    private $mealTypes;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $website;
+
     public function __construct()
     {
         $this->fans = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->mealTypes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -218,6 +258,108 @@ class Restaurant
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): self
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getZip(): ?string
+    {
+        return $this->zip;
+    }
+
+    public function setZip(string $zip): self
+    {
+        $this->zip = $zip;
+
+        return $this;
+    }
+
+    public function getStreet(): ?string
+    {
+        return $this->street;
+    }
+
+    public function setStreet(string $street): self
+    {
+        $this->street = $street;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+            $tag->addRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MealType[]
+     */
+    public function getMealTypes(): Collection
+    {
+        return $this->mealTypes;
+    }
+
+    public function addMealType(MealType $mealType): self
+    {
+        if (!$this->mealTypes->contains($mealType)) {
+            $this->mealTypes[] = $mealType;
+            $mealType->addRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMealType(MealType $mealType): self
+    {
+        if ($this->mealTypes->removeElement($mealType)) {
+            $mealType->removeRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    public function setWebsite(?string $website): self
+    {
+        $this->website = $website;
 
         return $this;
     }

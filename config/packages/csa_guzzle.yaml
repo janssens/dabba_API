@@ -7,3 +7,8 @@ csa_guzzle:
         google_maps:
             config:
                 base_uri: 'https://maps.googleapis.com'
+        system_pay:
+            config:
+                headers:
+                    Accept: application/json
+                base_uri: 'https://api.systempay.fr'

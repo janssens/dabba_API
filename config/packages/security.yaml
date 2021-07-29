@@ -40,6 +40,8 @@ security:
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/restaurants, roles: PUBLIC_ACCESS }
+        - { path: ^/api/tags, roles: PUBLIC_ACCESS }
+        - { path: ^/api/meal_types, roles: PUBLIC_ACCESS }
         - { path: ^/api/cms, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api/users, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/colors, roles: PUBLIC_ACCESS, methods: [GET] }

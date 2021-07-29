@@ -8,8 +8,10 @@ use App\Entity\Movement;
 use App\Entity\Restaurant;
 use App\Entity\User;
 use App\Entity\Zone;
+use App\Service\SystemPay;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use http\Header;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +25,12 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class DefaultController extends AbstractController
 {
 
+    private $system_pay_client;
+
+    public function __construct(SystemPay $system_pay_client){
+        $this->system_pay_client = $system_pay_client;
+    }
+
     /**
      * @Route("/",name="app_home")
      */
@@ -30,6 +38,30 @@ class DefaultController extends AbstractController
     {
         return $this->render('home.html.twig');
     }
+
+    /**
+     * @Route("/system_pay_check",name="system_pay_check")
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     */
+    public function system_pay_check()
+    {
+        $value = md5(uniqid());
+        $result = $this->system_pay_client->test($value);
+        $success = false;
+        $error = '';
+        if (isset($result['success']) && $result['success']['value'] === $value){
+            $success = true;
+        }
+        if (isset($result['error'])){
+            $error = $result['error'];
+        }
+        return $this->render('admin/system_pay_check.html.twig', [
+            'success' => $success,
+            'error' => $error,
+        ]);
+    }
+
+
 
     /**
      * @Route(

@@ -41,6 +41,13 @@ services:
             - '@csa_guzzle.client.google_maps'
             - '@jms_serializer'
             - '%env(GMAP_API_KEY)%'
+    App\Service\SystemPay:
+        public: true
+        arguments:
+            - '@csa_guzzle.client.system_pay'
+            - '@jms_serializer'
+            - '%env(API_SYSTEM_PAY_CLIENT_ID)%'
+            - '%env(API_SYSTEM_PAY_CLIENT_SECRET)%'
     League\OAuth2\Server\AuthorizationServer:
         arguments:
             $clientRepository: '@App\Infrastructure\oAuth2Server\Bridge\ClientRepository'

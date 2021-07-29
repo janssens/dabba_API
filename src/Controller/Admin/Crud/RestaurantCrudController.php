@@ -30,11 +30,10 @@ class RestaurantCrudController extends AbstractCrudController
                 ->setBasePath($this->getParameter('app.path.restaurant_images'))
                 ->setUploadDir('/public'.$this->getParameter('app.path.restaurant_images')),
             TextField::new('name'),
-            NumberField::new('lat'),
-            NumberField::new('lng'),
-            AssociationField::new('zone')->hideOnIndex(),
-            TextField::new('google_place_id'),
-            ArrayField::new('opening_hours'),
+            TextField::new('website'),
+            AssociationField::new('tags'),
+            AssociationField::new('mealTypes'),
+            AssociationField::new('zone')->hideOnIndex()
         ];
     }
 }

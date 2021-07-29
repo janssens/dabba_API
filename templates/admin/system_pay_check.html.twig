@@ -1,0 +1,15 @@
+{# templates/admin/system_pay_check.html.twig #}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title 'System Pay Api integration Check' %}
+{% block page_content %}
+{% if success %}
+    Connexion success
+{% else %}
+    This fail <br>
+    <pre>
+        {{ dump(error) }}
+    </pre>
+{% endif %}
+
+{% endblock %}

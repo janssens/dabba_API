@@ -14,6 +14,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use ApiPlatform\Core\Action\NotFoundAction;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -74,13 +75,13 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Serializer\Expose
-     * @Groups({"user:read"})
+     * @Groups({"user:read","order:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:read","user:write"})
+     * @Groups({"user:read","user:write","order:read"})
      */
     private $email;
 
@@ -91,6 +92,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user", orphanRemoval=true)
+     * @ApiSubresource
      */
     private $orders;
 
@@ -102,6 +104,7 @@ class User implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="users")
      * @Groups({"user:read"})
+     * @ApiSubresource
      */
     private $zone;
 
@@ -155,6 +158,12 @@ class User implements UserInterface
      * @ApiSubresource
      */
     private $restaurants;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     * @Groups({"user:read"})
+     */
+    private $wallet;
 
     public function __construct()
     {
@@ -447,6 +456,18 @@ class User implements UserInterface
         if ($this->restaurants->removeElement($restaurant)) {
             $restaurant->removeFan($this);
         }
+
+        return $this;
+    }
+
+    public function getWallet(): ?float
+    {
+        return $this->wallet;
+    }
+
+    public function setWallet(?float $wallet): self
+    {
+        $this->wallet = $wallet;
 
         return $this;
     }
