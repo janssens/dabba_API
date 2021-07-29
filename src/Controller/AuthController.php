@@ -57,8 +57,6 @@ final class AuthController extends AbstractController
      */
     public function getAccessToken(ServerRequestInterface $request): ?Psr7Response
     {
-        $this->passwordGrant->setRefreshTokenTTL(new \DateInterval('P1M'));
-
         return $this->withErrorHandling(function () use ($request) {
             $grant = null;
             switch ($request->getParsedBody()['grant_type']){

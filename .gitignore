@@ -1,5 +1,6 @@
 /.idea
 /php
+/*.sql
 ###> symfony/framework-bundle ###
 /public.key
 /private.key
