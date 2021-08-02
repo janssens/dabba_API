@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Order;
 use GuzzleHttp\Client;
 use JMS\Serializer\Serializer;
+use Symfony\Component\Routing\Router;
 
 class SystemPay
 {
@@ -12,13 +13,15 @@ class SystemPay
     private $serializer;
     private $apiId;
     private $apiSecret;
+    private $router;
 
-    public function __construct(Client $systemPayClient, Serializer $serializer, $apiId, $apiSecret)
+    public function __construct(Client $systemPayClient, Serializer $serializer, $apiId, $apiSecret,Router $router)
     {
         $this->systemPayClient = $systemPayClient;
         $this->serializer = $serializer;
         $this->apiId = $apiId;
         $this->apiSecret = $apiSecret;
+        $this->router = $router;
     }
 
     private function handleResponse($response){
@@ -44,10 +47,10 @@ class SystemPay
     public function getTokenForOrder(Order $order){
         $uri = 'api-payment/V4/Charge/CreatePayment';
         $body = json_encode([
-            "amount" => $order->getAmount(),
+            "amount" => $order->getAmount()*100,
             "currency" => $order->getCurrency(),
             "orderId" =>  $order->getId(),
-            //"ipnTargetUrl" =>
+            "ipnTargetUrl" => $this->router->generate('app_ipn',[],Router::ABSOLUTE_URL),
             "customer" => [
                 "email" => $order->getUser()->getEmail()
             ]]);

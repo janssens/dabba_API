@@ -1,0 +1,42 @@
+{# templates/admin/system_pay_check.html.twig #}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title 'System Pay Api integration Check' %}
+{% block page_content %}
+
+    <!-- Javascript library. Should be loaded in head section -->
+    <script
+            src="https://api.systempay.fr/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
+            kr-public-key="{{ public_key }}"
+            kr-post-url-success="{{ absolute_url(path('app_ipn')) }}">
+    </script>
+
+    <!-- theme and plugins. should be loaded after the javascript library -->
+    <!-- not mandatory but helps to have a nice payment form out of the box -->
+    <link rel="stylesheet"
+          href="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic-reset.css">
+    <script
+            src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">
+    </script>
+
+    <div>
+        order : # {{ order.id }} <br>
+        order amount :  {{ order.amount }}
+    </div>
+<!-- payment form -->
+<div class="kr-embedded"
+     kr-form-token="{{ form_token }}">
+
+    <!-- payment form fields -->
+    <div class="kr-pan"></div>
+    <div class="kr-expiry"></div>
+    <div class="kr-security-code"></div>
+
+    <!-- payment form submit button -->
+    <button class="kr-payment-button"></button>
+
+    <!-- error zone -->
+    <div class="kr-form-error"></div>
+</div>
+
+{% endblock %}

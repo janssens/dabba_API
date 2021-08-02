@@ -9,6 +9,10 @@ parameters:
     app.path.cms_images: /uploads/images/cms
     app.api.client_id: '%env(API_CLIENT_ID)%'
     app.api.client_secret: '%env(API_CLIENT_SECRET)%'
+    app.system_pay.client_id: '%env(API_SYSTEM_PAY_CLIENT_ID)%'
+    app.system_pay.client_secret: '%env(API_SYSTEM_PAY_CLIENT_SECRET)%'
+    app.system_pay.public_key: '%env(API_SYSTEM_PAY_PUBLIC_KEY)%'
+    app.system_pay.hmac: '%env(API_SYSTEM_PAY_HMAC)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -48,6 +52,7 @@ services:
             - '@jms_serializer'
             - '%env(API_SYSTEM_PAY_CLIENT_ID)%'
             - '%env(API_SYSTEM_PAY_CLIENT_SECRET)%'
+            - '@router'
     League\OAuth2\Server\AuthorizationServer:
         arguments:
             $clientRepository: '@App\Infrastructure\oAuth2Server\Bridge\ClientRepository'

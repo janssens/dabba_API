@@ -55,8 +55,6 @@ class Movement
 
     public function __construct()
     {
-        $this->stock_from = new ArrayCollection();
-        $this->stock_to = new ArrayCollection();
     }
 
     public function getId(): ?int

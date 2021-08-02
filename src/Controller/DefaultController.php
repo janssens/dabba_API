@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Cms;
 use App\Entity\HomeResponse;
 use App\Entity\Movement;
+use App\Entity\Order;
 use App\Entity\Restaurant;
 use App\Entity\Tag;
 use App\Entity\User;
@@ -82,6 +83,28 @@ class DefaultController extends AbstractController
         $em->flush();
 
         return $this->render('admin/my_test.html.twig');
+    }
+
+    /**
+     * @Route("/pay_test",name="pay_test")
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     */
+    public function pay_test(){
+
+        $em = $this->getDoctrine()->getManager();
+
+        $order = new Order();
+        $order->setAmount(5*rand(0,20));
+        $order->setUser($this->getUser());
+        $order->setState(Order::STATE_NEW);
+        $order->setStatus(Order::STATUS_NEW);
+
+        $em->persist($order);
+        $em->flush();
+
+        $public_key = $this->getParameter('app.system_pay.client_id').':'.$this->getParameter('app.system_pay.public_key');
+        $form_token = $this->system_pay_client->getTokenForOrder($order);
+        return $this->render('admin/system_pay_form.html.twig',['public_key'=>$public_key,'form_token'=>$form_token,'order'=>$order]);
     }
 
 

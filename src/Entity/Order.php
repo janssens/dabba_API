@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -87,8 +89,14 @@ class Order
      */
     private $created_at;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="parent", orphanRemoval=true)
+     */
+    private $transactions;
+
     public function __construct(){
         $this->created_at = new \DateTime('now');
+        $this->transactions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -145,7 +153,43 @@ class Order
      */
     public function getCurrentState() :string
     {
-        switch ($this->state) {
+        return self::stateToString($this->getState());
+    }
+
+    public function getState(): ?int
+    {
+        return $this->state;
+    }
+
+    public function setState(int $state): self
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    static function stateFromString(string $string) : int
+    {
+        $code = self::STATE_NEW;
+        switch ($string){
+            case 'PAID':
+                $code = self::STATE_PAID;
+                break;
+            case 'RUNNING':
+                $code = self::STATE_RUNNING;
+                break;
+            case 'UNPAID':
+                $code = self::STATE_UNPAID;
+                break;
+            default:
+                break;
+        }
+        return $code;
+    }
+
+    static function stateToString(int $state) : string
+    {
+        switch ($state) {
             case self::STATE_NEW:
                 return 'NEW';
                 break;
@@ -163,16 +207,47 @@ class Order
         }
     }
 
-    public function getState(): ?int
+    static function statusFromString(string $string) : int
     {
-        return $this->state;
-    }
-
-    public function setState(int $state): self
-    {
-        $this->state = $state;
-
-        return $this;
+        $code = self::STATUS_NEW;
+        switch ($string){
+            case 'ACCEPTED':
+                $code = self::STATUS_ACCEPTED;
+                break;
+            case 'AUTHORISED':
+                $code = self::STATUS_AUTHORISED;
+                break;
+            case 'CAPTURED':
+                $code = self::STATUS_CAPTURED;
+                break;
+            case 'PARTIALLY_AUTHORISED':
+                $code = self::STATUS_PARTIALLY_AUTHORISED;
+                break;
+            case 'WAITING_AUTHORISATION':
+                $code = self::STATUS_WAITING_AUTHORISATION;
+                break;
+            case 'AUTHORISED_TO_VALIDATE':
+                $code = self::STATUS_AUTHORISED_TO_VALIDATE;
+                break;
+            case 'WAITING_AUTHORISATION_TO_VALIDATE':
+                $code = self::STATUS_WAITING_AUTHORISATION_TO_VALIDATE;
+                break;
+            case 'REFUSED':
+                $code = self::STATUS_REFUSED;
+                break;
+            case 'ERROR':
+                $code = self::STATUS_ERROR;
+                break;
+            case 'CANCELLED':
+                $code = self::STATUS_CANCELLED;
+                break;
+            case 'EXPIRED':
+                $code = self::STATUS_EXPIRED;
+                break;
+            default:
+                break;
+        }
+        return $code;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface
@@ -183,6 +258,36 @@ class Order
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+
+    public function addTransaction(Transaction $transaction): self
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+            $transaction->setParent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): self
+    {
+        if ($this->transactions->removeElement($transaction)) {
+            // set the owning side to null (unless already changed)
+            if ($transaction->getParent() === $this) {
+                $transaction->setParent(null);
+            }
+        }
 
         return $this;
     }

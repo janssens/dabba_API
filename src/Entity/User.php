@@ -204,6 +204,12 @@ class User implements UserInterface
      */
     private $wallet;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"user:read"})
+     */
+    private $fidelity;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -233,6 +239,14 @@ class User implements UserInterface
     public function getMassOfAvoidedWaste(): ?float
     {
         return 3.1;
+    }
+
+    /**
+     * @Groups({"user:read"})
+     */
+    public function getDabbas(): ?array
+    {
+        return [1=>2];
     }
 
     public function getId(): ?int
@@ -526,6 +540,18 @@ class User implements UserInterface
     public function setWallet(?float $wallet): self
     {
         $this->wallet = $wallet;
+
+        return $this;
+    }
+
+    public function getFidelity(): ?int
+    {
+        return $this->fidelity;
+    }
+
+    public function setFidelity(?int $fidelity): self
+    {
+        $this->fidelity = $fidelity;
 
         return $this;
     }
