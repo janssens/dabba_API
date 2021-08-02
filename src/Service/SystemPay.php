@@ -57,6 +57,7 @@ class SystemPay
             "customer" => [
                 "email" => $order->getUser()->getEmail()
             ]]);
+        $this->logger->info('System Pay '.$uri.' '.$body);
         $response = $this->withErrorHandling($uri,$body);
         if (isset($response['success'])){
             return $response['success']['formToken'];
