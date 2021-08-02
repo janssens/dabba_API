@@ -50,7 +50,6 @@ class OrderDataPersister implements ContextAwareDataPersisterInterface
         return $data instanceof Order;
     }
 
-
     public function persist($data, array $context = [])
     {
         /** @var $data Order */

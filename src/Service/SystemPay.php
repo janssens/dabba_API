@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Order;
 use GuzzleHttp\Client;
 use JMS\Serializer\Serializer;
+use Monolog\Logger;
 use Symfony\Component\Routing\Router;
 
 class SystemPay
@@ -14,14 +15,16 @@ class SystemPay
     private $apiId;
     private $apiSecret;
     private $router;
+    private $logger;
 
-    public function __construct(Client $systemPayClient, Serializer $serializer, $apiId, $apiSecret,Router $router)
+    public function __construct(Client $systemPayClient, Serializer $serializer, $apiId, $apiSecret,Router $router,Logger $logger)
     {
         $this->systemPayClient = $systemPayClient;
         $this->serializer = $serializer;
         $this->apiId = $apiId;
         $this->apiSecret = $apiSecret;
         $this->router = $router;
+        $this->logger = $logger;
     }
 
     private function handleResponse($response){
@@ -50,7 +53,7 @@ class SystemPay
             "amount" => $order->getAmount()*100,
             "currency" => $order->getCurrency(),
             "orderId" =>  $order->getId(),
-            "ipnTargetUrl" => $this->router->generate('app_ipn',[],Router::ABSOLUTE_URL),
+            "ipnTargetUrl" => $this->router->generate('app_ipn',[],0),
             "customer" => [
                 "email" => $order->getUser()->getEmail()
             ]]);
@@ -79,8 +82,7 @@ class SystemPay
                 ]]);
             return $this->handleResponse($response);
         } catch (\Exception $e) {
-            //todo : Penser à logger l'erreur.
-            //$this->logger->error('The weather API returned an error: '.$e->getMessage());
+            $this->logger->error('The System Pay API returned an error: '.$e->getMessage());
             return ['error' => 'error using system pay api'];
         }
     }

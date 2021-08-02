@@ -53,6 +53,7 @@ services:
             - '%env(API_SYSTEM_PAY_CLIENT_ID)%'
             - '%env(API_SYSTEM_PAY_CLIENT_SECRET)%'
             - '@router'
+            - '@logger'
     League\OAuth2\Server\AuthorizationServer:
         arguments:
             $clientRepository: '@App\Infrastructure\oAuth2Server\Bridge\ClientRepository'
