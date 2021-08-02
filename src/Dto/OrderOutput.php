@@ -11,41 +11,41 @@ final class OrderOutput {
      * @var $id int
      * @Groups({"order:read","order:write"})
      */
-    public $id;
+    public int $id;
 
     /**
      * @var $created_at \DateTime
      * @Groups({"order:read","order:write"})
      */
-    public $created_at;
+    public \DateTime $created_at;
 
     /**
      * @var $amount float
      * @Groups({"order:read","order:write"})
      */
-    public $amount;
+    public float $amount;
 
     /**
      * @var $status string
      * @Groups({"order:read","order:write"})
      */
-    public $status;
+    public string $status;
 
     /**
      * @var $state string
      * @Groups({"order:read","order:write"})
      */
-    public $state;
+    public string $state;
 
     /**
      * @var $user User
      * @Groups({"order:read","order:write"})
      */
-    public $user;
+    public User $user;
 
     /**
      * @var $form_token string
      * @Groups({"order:read","order:write"})
      */
-    public $form_token;
+    public string $form_token;
 }

@@ -18,7 +18,32 @@ use Doctrine\ORM\Mapping\JoinColumn;
 /**
  * @ApiResource(
  *     collectionOperations={
- *         "get"
+ *         "get",
+ *         "stat" = {
+ *              "method" = "GET",
+ *              "route_name" = "api_global_stats",
+ *              "openapi_context"={
+ *                  "summary"="Get global app data",
+ *                  "description"="Get global app data",
+ *                  "responses" = {
+ *                      "200" = {
+ *                          "description" = "Global app data",
+ *                          "content" =  {
+ *                              "application/json"={
+ *                                  "schema"={
+ *                                      "type"="object",
+ *                                      "properties"={
+ *                                          "avoidedWaste"={"type"="integer"},
+ *                                          "massOfAvoidedWaste"={"type"="number"},
+ *                                      },
+ *                                  },
+ *                              },
+ *                          }
+ *                      }
+ *                  }
+ *              },
+ *              "filters" = {}
+ *          }
  *     },
  *     itemOperations={
  *          "get"

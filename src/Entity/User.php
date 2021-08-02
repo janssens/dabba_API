@@ -176,6 +176,25 @@ class User implements UserInterface
         return $this->firstname.' '.$this->lastname.' ('.$this->getEmail().')';
     }
 
+    /**
+     * @Groups({"user:read"})
+     */
+    public function getAvoidedWaste():?int
+    {
+        return 42;
+//        $carts = $this->getCart();
+//        $avoided_waste = 0;
+//        foreach ($carts)
+    }
+
+    /**
+     * @Groups({"user:read"})
+     */
+    public function getMassOfAvoidedWaste(): ?float
+    {
+        return 3.1;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

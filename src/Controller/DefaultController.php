@@ -12,6 +12,7 @@ use App\Entity\Zone;
 use App\Service\SystemPay;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use http\Header;
+use PhpParser\Node\Expr\Array_;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,7 +85,6 @@ class DefaultController extends AbstractController
     }
 
 
-
     /**
      * @Route(
      *     "/api/users/current",
@@ -95,9 +95,23 @@ class DefaultController extends AbstractController
      *          "_api_collection_operation_name" = "current_user",
      *     })
      */
-    public function __invoke(): User
+    public function getCurrentUser(): User
     {
         return $this->getUser();
+    }
+    /**
+     * @Route(
+     *     "/api/cms/global_stats",
+     *     name="api_global_stats",
+     *     methods={"GET"},
+     *     defaults={
+     *          "_api_resource_class" = Cms::class,
+     *          "_api_collection_operation_name" = "stat",
+     *     })
+     */
+    public function getGlobalStats(): array
+    {
+        return ["avoidedWaste"=>431762,"massOfAvoidedWaste"=>4000.0];
     }
 
 }
