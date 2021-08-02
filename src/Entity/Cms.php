@@ -33,8 +33,8 @@ use Doctrine\ORM\Mapping\JoinColumn;
  *                                  "schema"={
  *                                      "type"="object",
  *                                      "properties"={
- *                                          "avoidedWaste"={"type"="integer"},
- *                                          "massOfAvoidedWaste"={"type"="number"},
+ *                                          "avoidedWaste"={"type"="integer","example"="431762"},
+ *                                          "massOfAvoidedWaste"={"type"="number","example"="4000.0"},
  *                                      },
  *                                  },
  *                              },

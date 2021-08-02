@@ -87,20 +87,6 @@ class DefaultController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/users/current",
-     *     name="api_current_user",
-     *     methods={"GET"},
-     *     defaults={
-     *          "_api_resource_class" = User::class,
-     *          "_api_collection_operation_name" = "current_user",
-     *     })
-     */
-    public function getCurrentUser(): User
-    {
-        return $this->getUser();
-    }
-    /**
-     * @Route(
      *     "/api/cms/global_stats",
      *     name="api_global_stats",
      *     methods={"GET"},

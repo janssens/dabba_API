@@ -61,7 +61,47 @@ use ApiPlatform\Core\Action\NotFoundAction;
  *         },
  *         "put"={
  *              "security"="is_granted('edit', object)"
- *         }
+ *         },
+ *         "add_to_favorite" = {
+ *              "method" = "GET",
+ *              "route_name" = "api_add_to_favorite",
+ *              "openapi_context"={
+ *                  "summary"="Add restaurant to favorite",
+ *                  "description"="Add restaurant to favorite",
+ *                  "parameters" = {
+ *                      {
+ *                          "in" = "path",
+ *                          "name" = "id",
+ *                          "required" = true,
+ *                          "schema" = {
+ *                              "type" = "integer",
+ *                              "minimum" = 1,
+ *                          },
+ *                          "description" =  "The restaurant Id",
+ *                      }
+ *                  }
+ *              },
+ *          },
+ *         "remove_from_favorite" = {
+ *              "method" = "GET",
+ *              "route_name" = "api_remove_from_favorite",
+ *              "openapi_context"={
+ *                  "summary"="Remove restaurant from favorite",
+ *                  "description"="Remove restaurant from favorite",
+ *                  "parameters" = {
+ *                      {
+ *                          "in" = "path",
+ *                          "name" = "id",
+ *                          "required" = true,
+ *                          "schema" = {
+ *                              "type" = "integer",
+ *                              "minimum" = 1,
+ *                          },
+ *                          "description" =  "The restaurant Id",
+ *                      }
+ *                  }
+ *              },
+ *          },
  *     },
  *     normalizationContext={"groups"={"user:read"}},
  *     denormalizationContext={"groups"={"user:write"}},
