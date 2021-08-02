@@ -52,7 +52,7 @@ class SystemPay
         $body = json_encode([
             "amount" => $order->getAmount()*100,
             "currency" => $order->getCurrency(),
-            "orderId" =>  $order->getId(),
+            "orderId" =>  $order->getSystemPayId(),
             "ipnTargetUrl" => $this->router->generate('app_ipn',[],0),
             "customer" => [
                 "email" => $order->getUser()->getEmail()

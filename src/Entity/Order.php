@@ -291,4 +291,10 @@ class Order
 
         return $this;
     }
+
+    public function getSystemPayId(): ?string
+    {
+        return $this->created_at->format('ymdHis').str_pad($this->id, 10, "0", STR_PAD_LEFT);
+    }
+
 }

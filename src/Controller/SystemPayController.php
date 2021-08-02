@@ -35,11 +35,11 @@ class SystemPayController extends AbstractController
             $order_details = $answer->orderDetails;
 
             $mode = $order_details->mode;
-            $order_id = $order_details->orderId;
+            $system_pay_order_id = $order_details->orderId;
             /** @var Order $order */
-            $order = $em->getRepository(Order::class)->find($order_id);
+            $order = $em->getRepository(Order::class)->findOneBySystemPayId($system_pay_order_id);
             if (!$order){
-                throw new \Exception('Order #'.$order_id.' not found');
+                throw new \Exception('Order #'.$system_pay_order_id.' not found');
             }
             if ($order_details->orderTotalAmount != $order_details->orderEffectiveAmount){
                 throw new \Exception('Order is not fully paid');
