@@ -244,7 +244,7 @@ class User implements UserInterface
     /**
      * @Groups({"user:read"})
      */
-    public function getDabbas(): ?array
+    public function getContainers(): ?array
     {
         return [1=>2];
     }
