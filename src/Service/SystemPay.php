@@ -62,7 +62,8 @@ class SystemPay
         if (isset($response['success'])){
             return $response['success']['formToken'];
         }else{
-            return null;
+            throw new \Exception('System Pay form token cannot be generated. '.$response['error']);
+            //return null;
         }
     }
 
