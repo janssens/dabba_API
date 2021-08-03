@@ -48,7 +48,7 @@ class SystemPay
     }
 
     public function getTokenForOrder(Order $order){
-        $uri = 'api-payment/V4/Charge/CreatePayment';
+        $uri = '/api-payment/V4/Charge/CreatePayment';
         $body = json_encode([
             "amount" => $order->getAmount()*100,
             "currency" => $order->getCurrency(),
@@ -85,11 +85,9 @@ class SystemPay
             return $this->handleResponse($response);
         } catch (\Exception $e) {
             $this->logger->error('The System Pay API returned an error: '.$e->getMessage());
-            $this->logger->error('id are ',[
-                $this->apiId,
-                $this->apiSecret
-            ]);
-            return ['error' => 'error using system pay api. '.$e->getMessage()];
+            $this->logger->error('Body is ',$body);
+            $this->logger->error('Ids are ',[$this->apiId,$this->apiSecret]);
+            return ['error' => 'Error using System Pay API. See logs for details.'];
         }
     }
 }
