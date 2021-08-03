@@ -76,16 +76,16 @@ class SystemPay
     private function withErrorHandling($uri,$body) :array
     {
         try {
-            $response = $this->systemPayClient->post($uri,[
+            $params = [
                 'body' => $body,
                 'auth' => [
                     $this->apiId,
                     $this->apiSecret
-                ]]);
+                ]];
+            $response = $this->systemPayClient->post($uri,$params);
             return $this->handleResponse($response);
         } catch (\Exception $e) {
-            $this->logger->error('The System Pay API returned an error: '.$e->getMessage());
-            $this->logger->error('Body is ',$body);
+            $this->logger->error('The System Pay API returned an error: '.$e->getMessage(),$params);
             $this->logger->error('Ids are ',[$this->apiId,$this->apiSecret]);
             return ['error' => 'Error using System Pay API. See logs for details.'];
         }
