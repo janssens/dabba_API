@@ -85,7 +85,11 @@ class SystemPay
             return $this->handleResponse($response);
         } catch (\Exception $e) {
             $this->logger->error('The System Pay API returned an error: '.$e->getMessage());
-            return ['error' => 'error using system pay api'];
+            $this->logger->error('id are ',[
+                $this->apiId,
+                $this->apiSecret
+            ]);
+            return ['error' => 'error using system pay api. '.$e->getMessage()];
         }
     }
 }
