@@ -23,7 +23,7 @@
         order : # {{ order.id }} <br>
         system pay order id : # {{ order.SystemPayId }} <br>
         order amount :  {{ order.amount }} <br>
-        form token : {% if empty form_token %} IS NOT SET {% else %} IS SET {% endif %}
+        form token : {% if form_token == null %} IS NOT SET {% else %} IS SET {% endif %}
     </div>
 <!-- payment form -->
 <div class="kr-embedded"
