@@ -14,6 +14,8 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-mbstring": "*",
+        "ext-curl": "*",
+        "ext-json": "*",
         "api-platform/core": "^2.6",
         "beberlei/assert": "^3.3",
         "composer/package-versions-deprecated": "1.11.99.1",
@@ -66,8 +68,7 @@
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
         "willdurand/hateoas": "^3.7",
-        "zendframework/zend-diactoros": "^2.2",
-        "ext-json": "*"
+        "zendframework/zend-diactoros": "^2.2"
     },
     "require-dev": {
         "symfony/browser-kit": "^5.2",
