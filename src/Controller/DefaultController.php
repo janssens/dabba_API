@@ -43,6 +43,14 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * @Route("/verify_success",name="app_verify_success")
+     */
+    public function verify_success(): Response
+    {
+        return $this->render('verify_success.html.twig');
+    }
+
+    /**
      * @Route("/system_pay_check",name="system_pay_check")
      * @IsGranted("ROLE_SUPER_ADMIN")
      */
@@ -71,18 +79,23 @@ class DefaultController extends AbstractController
     public function my_test()
     {
         $em = $this->getDoctrine()->getManager();
-        $tag1 = $em->getRepository(Tag::class)->find(1);
-        $tag2 = $em->getRepository(Tag::class)->find(2);
+        /** @var Order $order */
+        $order = $em->getRepository(Order::class)->find(1);
 
-        /** @var Restaurant $restaurant */
-        $restaurant = $em->getRepository(Restaurant::class)->find(1);
-        $restaurant->addTag($tag1);
-        $restaurant->addTag($tag2);
+        $message = '';
 
-        $em->persist($restaurant);
+        if ($order->getState() == Order::STATE_PAID){
+            $order->setState(Order::STATE_NEW);
+            $message = 'Order change from PAID to NEW';
+        }else{
+            $order->setState(Order::STATE_PAID);
+            $message = 'Order change from NEW to PAID.'.$order->getUser()->getEmail().' +'.$order->getAmount();
+        }
+
+        $em->persist($order);
         $em->flush();
 
-        return $this->render('admin/my_test.html.twig');
+        return $this->render('admin/my_test.html.twig',["message"=>$message]);
     }
 
     /**

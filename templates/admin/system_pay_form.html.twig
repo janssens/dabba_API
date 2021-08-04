@@ -20,11 +20,30 @@
     </script>
 
     <div>
-        order : # {{ order.id }} <br>
-        system pay order id : # {{ order.SystemPayId }} <br>
-        order amount :  {{ order.amount }} <br>
-        form token : {% if form_token == null %} IS NOT SET {% else %} IS SET {% endif %}
+        order : #<b>{{ order.id }}</b> <br>
+        system pay order id : #<b>{{ order.SystemPayId }}</b> <br>
+        order amount :  <b>{{ order.amount }}</b> <br>
+        form token : <b>{% if form_token == null %} IS NOT SET {% else %} IS SET {% endif %}</b>
     </div>
+    <div>
+        card for test
+        <table>
+            <tr>
+                <th>CB</th>
+                <th>MasterCard</th>
+                <th>Maestro</th>
+                <th>Visa</th>
+            </tr>
+            <tr>
+                <td>4970100000000014</td>
+                <td>5970100300000018</td>
+                <td>5000550000000029</td>
+                <td>4917480000000008</td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <br>
 <!-- payment form -->
 <div class="kr-embedded"
      kr-form-token="{{ form_token }}">

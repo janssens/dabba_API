@@ -14,15 +14,17 @@ class SystemPay
     private $serializer;
     private $apiId;
     private $apiSecret;
+    private $apiPublic;
     private $router;
     private $logger;
 
-    public function __construct(Client $systemPayClient, Serializer $serializer, $apiId, $apiSecret,Router $router,Logger $logger)
+    public function __construct(Client $systemPayClient, Serializer $serializer, $apiId, $apiSecret, $apiPublic,Router $router,Logger $logger)
     {
         $this->systemPayClient = $systemPayClient;
         $this->serializer = $serializer;
         $this->apiId = $apiId;
         $this->apiSecret = $apiSecret;
+        $this->apiPublic = $apiPublic;
         $this->router = $router;
         $this->logger = $logger;
     }
@@ -38,6 +40,10 @@ class SystemPay
         return [
             'success' => $data['answer'],
         ];
+    }
+
+    public function getPublicKey(){
+        return $this->apiPublic;
     }
 
     public function test(string $value)

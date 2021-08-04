@@ -534,6 +534,8 @@ class User implements UserInterface
 
     public function getWallet(): ?float
     {
+        if (!$this->wallet)
+            return 0;
         return $this->wallet;
     }
 
@@ -546,6 +548,8 @@ class User implements UserInterface
 
     public function getFidelity(): ?int
     {
+        if (!$this->fidelity)
+            return 0;
         return $this->fidelity;
     }
 

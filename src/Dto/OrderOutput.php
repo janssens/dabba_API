@@ -48,4 +48,10 @@ final class OrderOutput {
      * @Groups({"order:read","order:write"})
      */
     public string $form_token;
+
+    /**
+     * @var $public_key string
+     * @Groups({"order:read","order:write"})
+     */
+    public string $public_key;
 }

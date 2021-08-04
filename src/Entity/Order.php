@@ -12,6 +12,7 @@ use App\Dto\OrderOutput;
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
  * @ORM\Table(name="`order`")
+ * @ORM\EntityListeners({"App\EventListener\OrderChangedListener"})
  * @ApiResource(
  *     collectionOperations={
  *          "post"={"output"=OrderOutput::class},

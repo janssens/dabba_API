@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Redirection{% endblock %}
+
+{% block body %}
+    <script>
+        if (isMobile){
+            document.location.replace('dabba://mail_confirmed');
+        }
+    </script>
+
+    <p>Vous pouvez maintenant vous connecter via l'application mobile dabba.</p>
+
+{% endblock %}

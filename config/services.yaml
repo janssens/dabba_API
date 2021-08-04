@@ -52,6 +52,7 @@ services:
             - '@jms_serializer'
             - '%env(API_SYSTEM_PAY_CLIENT_ID)%'
             - '%env(API_SYSTEM_PAY_CLIENT_SECRET)%'
+            - '%env(API_SYSTEM_PAY_PUBLIC_KEY)%'
             - '@router'
             - '@logger'
     League\OAuth2\Server\AuthorizationServer:

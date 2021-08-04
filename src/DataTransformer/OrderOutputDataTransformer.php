@@ -31,6 +31,7 @@ final class OrderOutputDataTransformer implements DataTransformerInterface
         $output->status = $data->getStatus();
         $output->state = $data->getCurrentState();
         $output->form_token = $this->system_pay->getTokenForOrder($data);
+        $output->public_key = $this->system_pay->getPublicKey();
         return $output;
     }
 
