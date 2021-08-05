@@ -45,7 +45,7 @@ class SystemPay
     }
 
     public function getPublicKey(){
-        return $this->apiPublic;
+        return $this->apiId.':'.$this->apiPublic;
     }
 
     public function test(string $value)
