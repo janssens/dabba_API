@@ -15,16 +15,18 @@ class SystemPay
     private $apiId;
     private $apiSecret;
     private $apiPublic;
+    private $apiHmac;
     private $router;
     private $logger;
 
-    public function __construct(Client $systemPayClient, Serializer $serializer, $apiId, $apiSecret, $apiPublic,Router $router,Logger $logger)
+    public function __construct(Client $systemPayClient, Serializer $serializer, $apiId, $apiSecret, $apiPublic,$apiHmac,Router $router,Logger $logger)
     {
         $this->systemPayClient = $systemPayClient;
         $this->serializer = $serializer;
         $this->apiId = $apiId;
         $this->apiSecret = $apiSecret;
         $this->apiPublic = $apiPublic;
+        $this->apiHmac = $apiHmac;
         $this->router = $router;
         $this->logger = $logger;
     }
@@ -51,6 +53,10 @@ class SystemPay
         $uri = '/api-payment/V4/Charge/SDKTest';
         $body = json_encode(["value" => $value ]);
         return $this->withErrorHandling($uri,$body);
+    }
+
+    public function getOrderHash(Order $order){
+        return hash_hmac('sha256', $order->getSystemPayId(), $this->apiHmac);
     }
 
     public function getTokenForOrder(Order $order){

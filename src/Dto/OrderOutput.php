@@ -44,14 +44,14 @@ final class OrderOutput {
     public User $user;
 
     /**
-     * @var $form_token string
+     * @var $hash string
      * @Groups({"order:read","order:write"})
      */
-    public string $form_token;
+    public string $hash;
 
     /**
-     * @var $public_key string
+     * @var $pay_url string
      * @Groups({"order:read","order:write"})
      */
-    public string $public_key;
+    public string $pay_url;
 }

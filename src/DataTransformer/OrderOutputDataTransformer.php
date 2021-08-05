@@ -7,14 +7,17 @@ use ApiPlatform\Core\DataTransformer\DataTransformerInterface;
 use App\Dto\OrderOutput;
 use App\Entity\Order;
 use App\Service\SystemPay;
+use Symfony\Component\Routing\RouterInterface;
 
 final class OrderOutputDataTransformer implements DataTransformerInterface
 {
     private $system_pay;
+    private $router;
 
-    public function __construct(SystemPay $systemPay)
+    public function __construct(SystemPay $systemPay,RouterInterface $router)
     {
         $this->system_pay = $systemPay;
+        $this->router = $router;
     }
 
     /**
@@ -30,8 +33,8 @@ final class OrderOutputDataTransformer implements DataTransformerInterface
         $output->user = $data->getUser();
         $output->status = $data->getStatus();
         $output->state = $data->getCurrentState();
-        $output->form_token = $this->system_pay->getTokenForOrder($data);
-        $output->public_key = $this->system_pay->getPublicKey();
+        $output->hash = $this->system_pay->getOrderHash($data);
+        $output->pay_url = $this->router->generate('app_order_pay',['id'=>$data->getId(),'hash'=>$output->hash],0);
         return $output;
     }
 
