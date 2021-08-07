@@ -36,7 +36,7 @@ final class RestaurantOutputDataTransformer implements DataTransformerInterface
         $output->zone_id = $data->getZone()->getId();
         $output->opening_hours = $data->getOpeningHours();
         $output->image = $data->getImage();
-        $output->address = $data->getAddress();
+        $output->address = $data->getFormattedAddress();
         $output->tags = $data->getTags();
         $output->mealTypes = $data->getMealTypes();
         $output->website = $data->getWebsite();

@@ -86,19 +86,9 @@ class Restaurant
     private $updatedAt;
 
     /**
-     * @ORM\Column(type="string", length=75)
-     */
-    private $city;
-
-    /**
-     * @ORM\Column(type="string", length=6)
-     */
-    private $zip;
-
-    /**
      * @ORM\Column(type="string", length=255)
      */
-    private $street;
+    private $formatted_address;
 
     /**
      * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="restaurants",cascade={"persist", "merge", "remove"})
@@ -116,7 +106,7 @@ class Restaurant
     private $website;
 
     /**
-     * @ORM\Column(type="string", length=12, nullable=true)
+     * @ORM\Column(type="string", length=17, nullable=true)
      */
     private $phone;
 
@@ -257,17 +247,7 @@ class Restaurant
         return $this;
     }
 
-    public function getCity(): ?string
-    {
-        return $this->city;
-    }
 
-    public function setCity(string $city): self
-    {
-        $this->city = $city;
-
-        return $this;
-    }
 
     public function getZip(): ?string
     {
@@ -281,14 +261,14 @@ class Restaurant
         return $this;
     }
 
-    public function getStreet(): ?string
+    public function getFormattedAddress(): ?string
     {
-        return $this->street;
+        return $this->formatted_address;
     }
 
-    public function setStreet(string $street): self
+    public function setFormattedAddress(string $address): self
     {
-        $this->street = $street;
+        $this->formatted_address = $address;
 
         return $this;
     }
@@ -369,14 +349,5 @@ class Restaurant
         $this->phone = $phone;
 
         return $this;
-    }
-
-    public function getAddress(): string
-    {
-        return $this->getStreet().
-            (($this->getStreet()) ? '\n' : $this->getStreet()).
-            $this->getZip().
-            (($this->getZip()) ? ' ' : $this->getZip()).
-            $this->getCity();
     }
 }

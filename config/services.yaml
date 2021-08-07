@@ -38,13 +38,14 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    app.service.place:
+    App\Service\Place:
         class: App\Service\Place
         public: true
         arguments:
             - '@csa_guzzle.client.google_maps'
             - '@jms_serializer'
             - '%env(GMAP_API_KEY)%'
+            - '@logger'
     App\Service\SystemPay:
         public: true
         arguments:
