@@ -1,0 +1,9 @@
+{# templates/admin/crud/qr.html.twig #}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title 'Qr code view' %}
+{% block page_content %}
+    <a href="{{ path('app_restaurant_qr',{'code':code.getCode}) }}">
+        <img src="{{ qr_code_data_uri(absolute_url(path('app_restaurant_qr',{'code':code.getCode}))) }}" />
+    </a>
+{% endblock %}

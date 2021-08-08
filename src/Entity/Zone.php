@@ -16,6 +16,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 
 /**
  * @ORM\Entity(repositoryClass=ZoneRepository::class)
+ * @ORM\EntityListeners({"App\EventListener\ZoneListener"})
  * @ApiResource(
  *     collectionOperations={
  *         "get"

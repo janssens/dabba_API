@@ -110,11 +110,17 @@ class Restaurant
      */
     private $phone;
 
+    /**
+     * @ORM\OneToMany(targetEntity=CodeRestaurant::class, mappedBy="restaurant", orphanRemoval=true)
+     */
+    private $codes;
+
     public function __construct()
     {
         $this->fans = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->mealTypes = new ArrayCollection();
+        $this->codes = new ArrayCollection();
     }
 
     public function __toString()
@@ -347,6 +353,36 @@ class Restaurant
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CodeRestaurant[]
+     */
+    public function getCodes(): Collection
+    {
+        return $this->codes;
+    }
+
+    public function addCode(CodeRestaurant $code): self
+    {
+        if (!$this->codes->contains($code)) {
+            $this->codes[] = $code;
+            $code->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCode(CodeRestaurant $code): self
+    {
+        if ($this->codes->removeElement($code)) {
+            // set the owning side to null (unless already changed)
+            if ($code->getRestaurant() === $this) {
+                $code->setRestaurant(null);
+            }
+        }
 
         return $this;
     }

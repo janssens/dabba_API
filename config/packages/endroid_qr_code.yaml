@@ -1,0 +1,11 @@
+endroid_qr_code:
+    default:
+        writer: Endroid\QrCode\Writer\SvgWriter
+        size: 300
+        margin: 10
+        encoding: 'UTF-8'
+        errorCorrectionLevel: 'low'
+        roundBlockSizeMode: 'none'
+#        logoPath: '%kernel.project_dir%/public/DABBA_LOGO_PRINT-blanc.png'
+#        logoResizeToWidth: 100
+        validateResult: false

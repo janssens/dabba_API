@@ -36,4 +36,16 @@ class ZoneRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    public function findDefaultButThisOne(Zone $zone): ?Zone
+    {
+        return $this->createQueryBuilder('z')
+            ->andWhere('z.is_default = :val')
+            ->andWhere('z.id != :id')
+            ->setParameter('val', true)
+            ->setParameter('id', $zone->getId())
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
 }

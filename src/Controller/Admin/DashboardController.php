@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\CodeRestaurant;
 use App\Entity\Restaurant;
 use App\Entity\Tag;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -32,5 +33,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToUrl('Super admin', 'fas fa-mask', $this->generateUrl('super_admin'));
         yield MenuItem::linkToCrud('The Restaurants', 'fas fa-list', Restaurant::class);
         yield MenuItem::linkToCrud('Tags restaurant', 'fas fa-tag', Tag::class);
+        yield MenuItem::linkToCrud('Codes restaurant', 'fas fa-key', CodeRestaurant::class);
     }
 }

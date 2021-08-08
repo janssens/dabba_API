@@ -53,9 +53,9 @@ class Place
         ];
     }
 
-    public function getDetails($place_id){
+    public function getDetails($place_id,$fields = ['formatted_phone_number','opening_hours','website']){
         $uri = '/maps/api/place/details/json?place_id='.$place_id.'&key='.$this->apiKey.'&language=fr'
-            .'&fields=formatted_phone_number,opening_hours,website';
+            .'&fields='.implode(',',$fields);
         try {
             $response = $this->placeClient->get($uri);
         } catch (\Exception $e) {
@@ -82,24 +82,6 @@ class Place
 
     public function getOpenningHours($place_id)
     {
-        $uri = '/maps/api/place/details/json?place_id='.$place_id.'&hl=fr&gl=FR&fields=opening_hours&key='.$this->apiKey;
-
-        try {
-            $response = $this->placeClient->get($uri);
-        } catch (\Exception $e) {
-            $this->logger->error('The google place API returned an error: '.$e->getMessage());
-            return ['error' => 'error using google maps api'];
-        }
-
-        $data = $this->serializer->deserialize($response->getBody()->getContents(), 'array', 'json');
-
-        if ($data["status"]=="REQUEST_DENIED"){
-            return [
-                'error' => $data["error_message"]
-            ];
-        }
-        return [
-            'weekday_text' => $data['weekday_text'],
-        ];
+        return $this->getDetails($place_id,['opening_hours']);
     }
 }
