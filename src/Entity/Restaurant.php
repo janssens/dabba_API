@@ -115,12 +115,18 @@ class Restaurant
      */
     private $codes;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Trade::class, mappedBy="restaurant", orphanRemoval=true)
+     */
+    private $yes;
+
     public function __construct()
     {
         $this->fans = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->mealTypes = new ArrayCollection();
         $this->codes = new ArrayCollection();
+        $this->yes = new ArrayCollection();
     }
 
     public function __toString()
@@ -381,6 +387,36 @@ class Restaurant
             // set the owning side to null (unless already changed)
             if ($code->getRestaurant() === $this) {
                 $code->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Trade[]
+     */
+    public function getYes(): Collection
+    {
+        return $this->yes;
+    }
+
+    public function addYe(Trade $ye): self
+    {
+        if (!$this->yes->contains($ye)) {
+            $this->yes[] = $ye;
+            $ye->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeYe(Trade $ye): self
+    {
+        if ($this->yes->removeElement($ye)) {
+            // set the owning side to null (unless already changed)
+            if ($ye->getRestaurant() === $this) {
+                $ye->setRestaurant(null);
             }
         }
 

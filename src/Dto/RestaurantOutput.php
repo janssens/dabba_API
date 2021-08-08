@@ -13,7 +13,7 @@ final class RestaurantOutput {
 
     /**
      * @var integer
-     * @Groups({"restaurant:read","user:read","user:write"})
+     * @Groups({"restaurant:read","user:read","user:write","trade:read"})
      */
     public $id;
 

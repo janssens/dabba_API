@@ -115,13 +115,13 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Serializer\Expose
-     * @Groups({"user:read","order:read"})
+     * @Groups({"user:read","order:read","trade:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:read","user:write","order:read"})
+     * @Groups({"user:read","user:write","order:read","trade:read"})
      */
     private $email;
 
@@ -135,11 +135,6 @@ class User implements UserInterface
      * @ApiSubresource
      */
     private $orders;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Cart::class, mappedBy="user", cascade={"persist", "remove"})
-     */
-    private $cart;
 
     /**
      * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="users")
@@ -210,11 +205,17 @@ class User implements UserInterface
      */
     private $fidelity;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Trade::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $trades;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
         $this->accessTokens = new ArrayCollection();
         $this->restaurants = new ArrayCollection();
+        $this->trades = new ArrayCollection();
     }
 
     public function __toString(): ?string
@@ -228,7 +229,7 @@ class User implements UserInterface
     public function getAvoidedWaste():?int
     {
         return 42;
-//        $carts = $this->getCart();
+//        $trades = $this->getTrades();
 //        $avoided_waste = 0;
 //        foreach ($carts)
     }
@@ -304,23 +305,6 @@ class User implements UserInterface
                 $order->setUser(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getCart(): ?Cart
-    {
-        return $this->cart;
-    }
-
-    public function setCart(Cart $cart): self
-    {
-        // set the owning side of the relation if necessary
-        if ($cart->getUser() !== $this) {
-            $cart->setUser($this);
-        }
-
-        $this->cart = $cart;
 
         return $this;
     }
@@ -558,5 +542,13 @@ class User implements UserInterface
         $this->fidelity = $fidelity;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Trade[]
+     */
+    public function getTrades(): Collection
+    {
+        return $this->trades;
     }
 }

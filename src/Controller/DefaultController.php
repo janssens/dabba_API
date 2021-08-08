@@ -79,47 +79,11 @@ class DefaultController extends AbstractController
     public function my_test()
     {
         $em = $this->getDoctrine()->getManager();
-        /** @var Order $order */
-        $order = $em->getRepository(Order::class)->find(1);
 
         $message = '';
 
-        if ($order->getState() == Order::STATE_PAID){
-            $order->setState(Order::STATE_NEW);
-            $message = 'Order change from PAID to NEW';
-        }else{
-            $order->setState(Order::STATE_PAID);
-            $message = 'Order change from NEW to PAID.'.$order->getUser()->getEmail().' +'.$order->getAmount();
-        }
-
-        $em->persist($order);
-        $em->flush();
-
         return $this->render('admin/my_test.html.twig',["message"=>$message]);
     }
-
-    /**
-     * @Route("/pay_test",name="pay_test")
-     * @IsGranted("ROLE_SUPER_ADMIN")
-     */
-    public function pay_test(){
-
-        $em = $this->getDoctrine()->getManager();
-
-        $order = new Order();
-        $order->setAmount(5*rand(0,20));
-        $order->setUser($this->getUser());
-        $order->setState(Order::STATE_NEW);
-        $order->setStatus(Order::STATUS_NEW);
-
-        $em->persist($order);
-        $em->flush();
-
-        $public_key = $this->getParameter('app.system_pay.client_id').':'.$this->getParameter('app.system_pay.public_key');
-        $form_token = $this->system_pay_client->getTokenForOrder($order);
-        return $this->render('admin/system_pay_form.html.twig',['public_key'=>$public_key,'form_token'=>$form_token,'order'=>$order]);
-    }
-
 
     /**
      * @Route(

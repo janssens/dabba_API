@@ -19,8 +19,9 @@ class ContainerCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('name'),
-            NumberField::new('price'),
+            TextField::new('name','nom'),
+            NumberField::new('price','prix'),
+            NumberField::new('weight_of_saved_waste','Poids de l\'équivalent jetable (kg)'),
         ];
     }
 }

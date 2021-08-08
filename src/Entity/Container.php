@@ -10,12 +10,11 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use JMS\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Dto\TradeItemInput;
 
 /**
  * @ApiResource(
- *     collectionOperations={
- *         "get"
- *     },
+ *     collectionOperations={"get"},
  *     itemOperations={"get"},
  *     normalizationContext={"groups"={"container:read"}},
  *     denormalizationContext={"groups"={"container:write"}}
@@ -29,7 +28,7 @@ class Container extends AbstractFOSRestController
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"container:read"})
+     * @Groups({"container:read","trade:read"})
      */
     private $id;
 
@@ -51,9 +50,9 @@ class Container extends AbstractFOSRestController
     private $movements;
 
     /**
-     * @ORM\OneToMany(targetEntity=CartItem::class, mappedBy="container", orphanRemoval=true)
+     * @ORM\Column(type="float")
      */
-    private $cartItems;
+    private $weight_of_saved_waste;
 
     public function __construct()
     {
@@ -120,32 +119,14 @@ class Container extends AbstractFOSRestController
         return $this;
     }
 
-    /**
-     * @return Collection|CartItem[]
-     */
-    public function getCartItems(): Collection
+    public function getWeightOfSavedWaste(): ?float
     {
-        return $this->cartItems;
+        return $this->weight_of_saved_waste;
     }
 
-    public function addCartItem(CartItem $cartItem): self
+    public function setWeightOfSavedWaste(float $weight_of_saved_waste): self
     {
-        if (!$this->cartItems->contains($cartItem)) {
-            $this->cartItems[] = $cartItem;
-            $cartItem->setContainer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCartItem(CartItem $cartItem): self
-    {
-        if ($this->cartItems->removeElement($cartItem)) {
-            // set the owning side to null (unless already changed)
-            if ($cartItem->getContainer() === $this) {
-                $cartItem->setContainer(null);
-            }
-        }
+        $this->weight_of_saved_waste = $weight_of_saved_waste;
 
         return $this;
     }

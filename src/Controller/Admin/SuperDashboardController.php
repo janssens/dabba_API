@@ -36,7 +36,6 @@ class SuperDashboardController extends AbstractDashboardController
         yield MenuItem::linktoDashboard('Super admin', 'fa fa-mask');
         yield MenuItem::linkToUrl('Admin Dashboard', 'fas fa-home', $this->generateUrl('admin'));
         yield MenuItem::linkToRoute('Test System API', 'fas fa-key', 'system_pay_check');
-        yield MenuItem::linkToRoute('Test paiement', 'fas fa-credit-card', 'pay_test');
         yield MenuItem::linkToRoute('My Test', 'fas fa-', 'my_test');
         yield MenuItem::linkToCrud('API clients', 'fas fa-key', Client::class);
         yield MenuItem::linkToCrud('CMS blocs', 'fas fa-edit', Cms::class);
