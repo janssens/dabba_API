@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=MovementRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Movement
 {
@@ -45,6 +46,11 @@ class Movement
      */
     private $container;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $quantity;
+
     const TYPE_BUY = 1; // FROM STOCK TO USER, ONE WAY
     const TYPE_EXCHANGE = 2; // FROM USER TO STOCK, BOTH WAYS
     const TYPE_RETURN = 4; // FROM USER TO STOCK, ONE WAY
@@ -67,10 +73,12 @@ class Movement
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeInterface $created_at): self
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAt(): self
     {
-        $this->created_at = $created_at;
-
+        $this->created_at = new \DateTimeImmutable();
         return $this;
     }
 
@@ -84,6 +92,35 @@ class Movement
         $this->reason = $reason;
 
         return $this;
+    }
+
+    public function getReasonTxt(): ?string
+    {
+        switch ($this->reason){
+            case self::TYPE_BUY:
+                return 'achat';
+                break;
+            case self::TYPE_EXCHANGE:
+                return 'échange';
+                break;
+            case self::TYPE_RETURN:
+                return 'retour';
+                break;
+            case self::TYPE_INVENTORY:
+                return 'inventaire';
+                break;
+            case self::TYPE_LOGISTICS:
+                return 'logistique';
+                break;
+            case self::TYPE_BROKEN:
+                return 'cassé';
+                break;
+            case self::TYPE_LOST:
+                return 'perdu';
+                break;
+            default:
+                return 'N/A';
+        }
     }
 
     public function getStockFrom(): ?Stock
@@ -118,6 +155,18 @@ class Movement
     public function setContainer(?Container $container): self
     {
         $this->container = $container;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
 
         return $this;
     }

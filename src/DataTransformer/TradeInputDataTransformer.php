@@ -4,23 +4,15 @@
 namespace App\DataTransformer;
 
 use ApiPlatform\Core\DataTransformer\DataTransformerInterface;
-use App\Dto\OrderOutput;
-use App\Dto\RestaurantOutput;
 use App\Dto\TradeInput;
 use App\Entity\CodeRestaurant;
 use App\Entity\Container;
-use App\Entity\Order;
-use App\Entity\Restaurant;
 use App\Entity\Trade;
 use App\Entity\TradeItem;
-use App\Entity\User;
-use App\Service\SystemPay;
-use Doctrine\ORM\EntityManager;
+use App\Exception\BadRequest;
+use App\Exception\NotFound;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 final class TradeInputDataTransformer implements DataTransformerInterface
 {
@@ -42,12 +34,12 @@ final class TradeInputDataTransformer implements DataTransformerInterface
         $output = new Trade();
 
         /** @var CodeRestaurant $code */
-        $code = $this->entityManager->getRepository(CodeRestaurant::class)->findOneBy(array('code'=>$data->code_from_qr));
+        $code = $this->entityManager->getRepository(CodeRestaurant::class)->findOneBy(array('code'=>trim($data->code_from_qr)));
         if (!$code){
-            throw new EntityNotFoundException('No restaurant found for this code');
+            throw new NotFound('No restaurant found for this code');
         }else{
             if (!$code->getEnabled()){
-                throw new AccessDeniedException('This code is no longer valid');
+                throw new BadRequest('This code is no longer valid');
             }
             $output->setRestaurant($code->getRestaurant());
         }
@@ -58,13 +50,13 @@ final class TradeInputDataTransformer implements DataTransformerInterface
                 $new_item = new TradeItem();
                 $container = $this->entityManager->getRepository(Container::class)->find($item['container_id']);
                 if (!$container){
-                    throw new NotFoundResourceException('no container found for id #'.$item['container_id']);
+                    throw new NotFound('no container found for id #'.$item['container_id']);
                 }
                 $new_item->setContainer($container);
                 if ($item['quantity']>0){
                     $new_item->setQuantity($item['quantity']);
                 }else{
-                    throw new \Exception('quantity must be gt 0');
+                    throw new BadRequest('quantity must be gt 0');
                 }
                 switch ($item['type']){
                     case "DEPOSIT":
@@ -74,12 +66,12 @@ final class TradeInputDataTransformer implements DataTransformerInterface
                         $new_item->setType(TradeItem::TYPE_WITHDRAW);
                         break;
                     default:
-                        throw new \Exception('Type can be DEPOSIT or WITHDRAW');
+                        throw new BadRequest('Type can be DEPOSIT or WITHDRAW');
                 }
                 //$this->entityManager->persist($item);
                 $output->addItem($new_item);
             }else{
-                throw new \Exception('Missing param(s) for item : '.json_encode($item));
+                throw new BadRequest('Missing param(s) for item : '.json_encode($item),422);
             }
         }
 

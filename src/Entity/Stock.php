@@ -9,9 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=StockRepository::class)
+ * @ORM\EntityListeners({"App\EventListener\StockListener"})
  */
 class Stock
 {
+    const TYPE_USER = '1';
+    const TYPE_RESTAURANT = '2';
+    const TYPE_ZONE = '3';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -20,29 +25,59 @@ class Stock
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="smallint")
      */
     private $type;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $owner;
-
-    /**
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="stock_from")
      */
-    private $movements_from;
+    private $movements_leaving;
 
     /**
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="stock_to")
      */
-    private $movements_to;
+    private $movements_comming;
+
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="stock", cascade={"persist", "remove"})
+     */
+    private $user;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Restaurant::class, inversedBy="stock", cascade={"persist", "remove"})
+     */
+    private $restaurant;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Zone::class, inversedBy="stocks")
+     */
+    private $zone;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $label;
 
     public function __construct()
     {
         $this->movements_from = new ArrayCollection();
         $this->movements_to = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        switch ($this->type){
+            case self::TYPE_RESTAURANT:
+                return 'RESTAURANT '.$this->getRestaurant()->getName();
+                break;
+            case self::TYPE_USER:
+                return 'UTILISATEUR #'.$this->getUser()->getId().' '.$this->getUser()->getFullname();
+                break;
+            case self::TYPE_ZONE:
+                return 'ZONE '.$this->getZone()->getName().' #'.$this->getId().' '.$this->getLabel();
+                break;
+        }
     }
 
     public function getId(): ?int
@@ -55,6 +90,23 @@ class Stock
         return $this->type;
     }
 
+    public function getTypeToString(): string
+    {
+        switch ($this->getType()){
+            case self::TYPE_USER:
+                return 'USER';
+                break;
+            case self::TYPE_ZONE:
+                return 'ZONE';
+                break;
+            case self::TYPE_RESTAURANT:
+                return 'RESTAURANT';
+                break;
+            default:
+                return 'N/A';
+        }
+    }
+
     public function setType(int $type): self
     {
         $this->type = $type;
@@ -62,83 +114,137 @@ class Stock
         return $this;
     }
 
-    public function getOwner(): ?int
+    /**
+     * @return Collection|Movement[]
+     */
+    public function getMovementsLeaving(): Collection
     {
-        return $this->owner;
+        return $this->movements_leaving;
     }
 
-    public function setOwner(int $owner): self
+    public function addMovementsLeaving(Movement $movementsLeaving): self
     {
-        $this->owner = $owner;
+        if (!$this->movements_leaving->contains($movementsLeaving)) {
+            $this->movements_leaving[] = $movementsLeaving;
+            $movementsLeaving->setStockFrom($this);
+        }
+        return $this;
+    }
 
+    public function removeMovementsLeaving(Movement $movementsLeaving): self
+    {
+        if ($this->movements_leaving->removeElement($movementsLeaving)) {
+            // set the owning side to null (unless already changed)
+            if ($movementsLeaving->getStockFrom() === $this) {
+                $movementsLeaving->setStockFrom(null);
+            }
+        }
         return $this;
     }
 
     /**
      * @return Collection|Movement[]
      */
-    public function getMovementsFrom(): Collection
+    public function getMovementsComming(): Collection
     {
-        return $this->movements_from;
+        return $this->movements_comming;
     }
 
-    public function addMovementsFrom(Movement $movementsFrom): self
+    public function addMovementsComming(Movement $movementsComming): self
     {
-        if (!$this->movements_from->contains($movementsFrom)) {
-            $this->movements_from[] = $movementsFrom;
-            $movementsFrom->setStockFrom($this);
+        if (!$this->movements_comming->contains($movementsComming)) {
+            $this->movements_comming[] = $movementsComming;
+            $movementsComming->setStockTo($this);
         }
-
         return $this;
     }
 
-    public function removeMovementsFrom(Movement $movementsFrom): self
+    public function removeMovementsComming(Movement $movementsComming): self
     {
-        if ($this->movements_from->removeElement($movementsFrom)) {
+        if ($this->movements_to->removeElement($movementsComming)) {
             // set the owning side to null (unless already changed)
-            if ($movementsFrom->getStockFrom() === $this) {
-                $movementsFrom->setStockFrom(null);
+            if ($movementsComming->getStockTo() === $this) {
+                $movementsComming->setStockTo(null);
             }
         }
+        return $this;
+    }
+
+    public function getContainersToJson() : string
+    {
+        return json_encode($this->getContainers());
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
 
-    /**
-     * @return Collection|Movement[]
-     */
-    public function getMovementsTo(): Collection
+    public function getRestaurant(): ?Restaurant
     {
-        return $this->movements_to;
+        return $this->restaurant;
     }
 
-    public function addMovementsTo(Movement $movementsTo): self
+    public function setRestaurant(?Restaurant $restaurant): self
     {
-        if (!$this->movements_to->contains($movementsTo)) {
-            $this->movements_to[] = $movementsTo;
-            $movementsTo->setStockTo($this);
-        }
+        $this->restaurant = $restaurant;
 
         return $this;
     }
 
-    public function removeMovementsTo(Movement $movementsTo): self
+    public function getZone(): ?Zone
     {
-        if ($this->movements_to->removeElement($movementsTo)) {
-            // set the owning side to null (unless already changed)
-            if ($movementsTo->getStockTo() === $this) {
-                $movementsTo->setStockTo(null);
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): self
+    {
+        $this->zone = $zone;
+
+        return $this;
+    }
+
+    public function getContainers(): array
+    {
+        $return = [];
+        /** @var Movement $movement */
+        foreach ($this->getMovementsComming() as $movement){
+            if (!isset($return[$movement->getContainer()->getId()])){
+                $return[$movement->getContainer()->getId()] = $movement->getQuantity();
+            }else{
+                $return[$movement->getContainer()->getId()] += $movement->getQuantity();
             }
         }
-
-        return $this;
+        foreach ($this->getMovementsLeaving() as $movement){
+            if (!isset($return[$movement->getContainer()->getId()])){
+                $return[$movement->getContainer()->getId()] = -$movement->getQuantity();
+            }else{
+                $return[$movement->getContainer()->getId()] -= $movement->getQuantity();
+            }
+        }
+        return $return;
     }
 
-    public function getTotalQty(): int
+    public function getLabel(): ?string
     {
-        $from = $this->getMovementsFrom()->count();
-        $to = $this->getMovementsTo()->count();
-        return $from - $to;
+        if ($this->label)
+            return $this->label;
+        else
+            return $this->__toString();
+    }
+
+    public function setLabel(?string $label): self
+    {
+        $this->label = $label;
+
+        return $this;
     }
 
 }

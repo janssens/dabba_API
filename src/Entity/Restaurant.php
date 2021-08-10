@@ -120,6 +120,11 @@ class Restaurant
      */
     private $yes;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Stock::class, mappedBy="restaurant", cascade={"persist", "remove"})
+     */
+    private $stock;
+
     public function __construct()
     {
         $this->fans = new ArrayCollection();
@@ -419,6 +424,28 @@ class Restaurant
                 $ye->setRestaurant(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStock(): ?Stock
+    {
+        return $this->stock;
+    }
+
+    public function setStock(?Stock $stock): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($stock === null && $this->stock !== null) {
+            $this->stock->setRestaurant(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($stock !== null && $stock->getRestaurant() !== $this) {
+            $stock->setRestaurant($this);
+        }
+
+        $this->stock = $stock;
 
         return $this;
     }

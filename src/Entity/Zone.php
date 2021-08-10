@@ -68,6 +68,11 @@ class Zone
      */
     private $is_default;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Stock::class, mappedBy="zone")
+     */
+    private $stocks;
+
     public function __toString(){
         return $this->getName();
     }
@@ -78,6 +83,7 @@ class Zone
         $this->admins = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->cms = new ArrayCollection();
+        $this->stocks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -222,6 +228,36 @@ class Zone
     public function setIsDefault(?bool $is_default): self
     {
         $this->is_default = $is_default;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Stock[]
+     */
+    public function getStocks(): Collection
+    {
+        return $this->stocks;
+    }
+
+    public function addStock(Stock $stock): self
+    {
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks[] = $stock;
+            $stock->setZone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStock(Stock $stock): self
+    {
+        if ($this->stocks->removeElement($stock)) {
+            // set the owning side to null (unless already changed)
+            if ($stock->getZone() === $this) {
+                $stock->setZone(null);
+            }
+        }
 
         return $this;
     }

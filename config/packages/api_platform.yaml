@@ -28,3 +28,8 @@ api_platform:
             mime_types: [ 'text/html' ]
     defaults:
         pagination_enabled: false
+    exception_to_status:
+        App\Exception\BadRequest: !php/const Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+        App\Exception\NotEnoughCredit: !php/const Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+        App\Exception\NotEnoughStock: !php/const Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+        App\Exception\NotFound: 404

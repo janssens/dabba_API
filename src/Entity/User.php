@@ -210,6 +210,11 @@ class User implements UserInterface
      */
     private $trades;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Stock::class, mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $stock;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -247,7 +252,27 @@ class User implements UserInterface
      */
     public function getContainers(): ?array
     {
-        return [1=>2];
+        if (!$this->getStock()){
+            return [];
+        }
+        $containers = $this->getStock()->getContainers();
+        foreach ($containers as $id => $container_qty){
+            if ($container_qty<=0){
+                unset($containers[$id]);
+            }
+        }
+        return $containers;
+    }
+
+    public function canGive(array $request): ?bool
+    {
+        $containers = $this->getContainers();
+        foreach ($request as $container_id => $qty){
+            if (!isset($containers[$container_id])||$containers[$container_id]<-$qty){
+                return false;
+            }
+        }
+        return true;
     }
 
     public function getId(): ?int
@@ -550,5 +575,27 @@ class User implements UserInterface
     public function getTrades(): Collection
     {
         return $this->trades;
+    }
+
+    public function getStock(): ?Stock
+    {
+        return $this->stock;
+    }
+
+    public function setStock(?Stock $stock): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($stock === null && $this->stock !== null) {
+            $this->stock->setUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($stock !== null && $stock->getUser() !== $this) {
+            $stock->setUser($this);
+        }
+
+        $this->stock = $stock;
+
+        return $this;
     }
 }

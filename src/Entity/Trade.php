@@ -18,6 +18,7 @@ use App\Dto\TradeInput;
  *     normalizationContext={"groups"={"trade:read"}},
  *     denormalizationContext={"groups"={"trade:write"}}
  * )
+ * @ORM\EntityListeners({"App\EventListener\TradetListener"})
  * @ORM\Entity(repositoryClass=TradeRepository::class)
  * @ORM\HasLifecycleCallbacks()
  */
@@ -132,5 +133,43 @@ class Trade
         }
 
         return $this;
+    }
+
+    public function getBalance(): float
+    {
+        $credit = 0;
+        $debit = 0;
+        foreach ($this->getItems() as $item){
+            if ($item->getType()===TradeItem::TYPE_WITHDRAW){
+                $debit += $item->getContainer()->getPrice()*$item->getQuantity();
+            }else{
+                $credit += $item->getContainer()->getPrice()*$item->getQuantity();
+            }
+        }
+        return $credit-$debit;
+    }
+
+    public function getItemsAsArray($type = null): array
+    {
+        $needs = array();
+        /** @var TradeItem $item */
+        foreach ($this->getItems() as $item){
+            if (!$type || $type == $item->getType()){
+                if ($item->getType()===TradeItem::TYPE_DEPOSIT){
+                    if (!isset($needs[$item->getContainer()->getId()])){
+                        $needs[$item->getContainer()->getId()] = -$item->getQuantity();
+                    }else{
+                        $needs[$item->getContainer()->getId()] -= $item->getQuantity();
+                    }
+                }else{
+                    if (!isset($needs[$item->getContainer()->getId()])){
+                        $needs[$item->getContainer()->getId()] = $item->getQuantity();
+                    }else{
+                        $needs[$item->getContainer()->getId()] += $item->getQuantity();
+                    }
+                }
+            }
+        }
+        return $needs;
     }
 }

@@ -3,7 +3,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\CodeRestaurant;
+use App\Entity\Movement;
 use App\Entity\Restaurant;
+use App\Entity\Stock;
 use App\Entity\Tag;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -34,5 +36,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('The Restaurants', 'fas fa-list', Restaurant::class);
         yield MenuItem::linkToCrud('Tags restaurant', 'fas fa-tag', Tag::class);
         yield MenuItem::linkToCrud('Codes restaurant', 'fas fa-key', CodeRestaurant::class);
+        yield MenuItem::linkToCrud('Movements', 'fas fa-arrows-alt-h', Movement::class);
+        yield MenuItem::linkToCrud('Stocks', 'fas fa-cubes', Stock::class);
     }
 }
