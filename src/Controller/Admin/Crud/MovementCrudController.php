@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class MovementCrudController extends AbstractCrudController
 {
@@ -24,7 +25,14 @@ class MovementCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             DateTimeField::new('created_at')->hideOnForm(),
             TextField::new('getReasonTxt')->hideOnForm(),
-            IntegerField::new('reason')->hideOnIndex(),
+            IntegerField::new('reason')->hideOnIndex()
+                ->setFormType(ChoiceType::class)
+                ->setFormTypeOptions(['choices'  => [
+                    'Inventaire' => Movement::TYPE_INVENTORY,
+                    'Perte' => Movement::TYPE_LOST,
+                    'Casse' => Movement::TYPE_BROKEN,
+                    'Logistique' => Movement::TYPE_LOGISTICS
+                ]]),
             AssociationField::new('container'),
             AssociationField::new('stock_from'),
             AssociationField::new('stock_to'),
