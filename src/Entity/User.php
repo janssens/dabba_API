@@ -233,10 +233,17 @@ class User implements UserInterface
      */
     public function getAvoidedWaste():?int
     {
-        return 42;
-//        $trades = $this->getTrades();
-//        $avoided_waste = 0;
-//        foreach ($carts)
+        $counter = 0;
+        /** @var Trade $trade */
+        foreach ($this->getTrades() as $trade){
+            /** @var TradeItem $item */
+            foreach ($trade->getItems() as $item){
+                if ($item->getType()==TradeItem::TYPE_WITHDRAW){
+                    $counter += $item->getQuantity();
+                }
+            }
+        }
+        return $counter;
     }
 
     /**
@@ -244,7 +251,17 @@ class User implements UserInterface
      */
     public function getMassOfAvoidedWaste(): ?float
     {
-        return 3.1;
+        $counter = 0;
+        /** @var Trade $trade */
+        foreach ($this->getTrades() as $trade){
+            /** @var TradeItem $item */
+            foreach ($trade->getItems() as $item){
+                if ($item->getType()==TradeItem::TYPE_WITHDRAW){
+                    $counter += $item->getQuantity()*$item->getContainer()->getWeightOfSavedWaste();
+                }
+            }
+        }
+        return $counter;
     }
 
     /**

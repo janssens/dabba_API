@@ -8,6 +8,8 @@ use App\Entity\Movement;
 use App\Entity\Order;
 use App\Entity\Restaurant;
 use App\Entity\Tag;
+use App\Entity\Trade;
+use App\Entity\TradeItem;
 use App\Entity\User;
 use App\Entity\Zone;
 use App\Service\SystemPay;
@@ -97,7 +99,21 @@ class DefaultController extends AbstractController
      */
     public function getGlobalStats(): array
     {
-        return ["avoidedWaste"=>431762,"massOfAvoidedWaste"=>4000.0];
+        $mass = 0;
+        $counter = 0;
+        $em = $this->getDoctrine()->getManager();
+        $trades = $em->getRepository(Trade::class)->findAll();
+        /** @var Trade $trade */
+        foreach ($trades as $trade){
+            /** @var TradeItem $item */
+            foreach ($trade->getItems() as $item){
+                if ($item->getType()==TradeItem::TYPE_WITHDRAW){
+                    $mass += $item->getQuantity()*$item->getContainer()->getWeightOfSavedWaste();
+                    $counter += $item->getQuantity();
+                }
+            }
+        }
+        return ["avoidedWaste"=>$counter,"massOfAvoidedWaste"=>$mass];
     }
 
 }

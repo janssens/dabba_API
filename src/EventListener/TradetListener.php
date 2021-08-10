@@ -5,10 +5,11 @@ namespace App\EventListener;
 use App\Entity\CodeRestaurant;
 use App\Entity\Container;
 use App\Entity\Movement;
+use App\Entity\Restaurant;
 use App\Entity\Stock;
 use App\Entity\TradeItem;
+use App\Exception\NotEnoughCredit;
 use App\Exception\NotEnoughStock;
-use App\Exception\WrongInputException;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use App\Entity\Trade;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -19,9 +20,18 @@ class TradetListener
     {
         //check if it's a valid trade
         $trade_balance = $trade->getBalance();
-        if ($trade->getUser()->getWallet()+$trade_balance<=0){
-            throw new \Exception('Inadequate wallet funding',400);
+        if ($trade->getUser()->getWallet()+$trade_balance<0){
+            throw new NotEnoughCredit('Inadequate wallet funding',400);
         }
+        $restaurant_containers = $trade->getRestaurant()->getContainers();
+        foreach ($trade->getItems() as $item){
+            if ($item->getType()==TradeItem::TYPE_WITHDRAW){
+                if (!isset($restaurant_containers[$item->getContainer()->getId()]) || $item->getQuantity()>$restaurant_containers[$item->getContainer()->getId()]){
+                    throw new NotEnoughStock('This restaurant has not enough containers "'.$item->getContainer()->getName().'" to deliver.');
+                }
+            }
+        }
+        //cannot return without stock
 //        if (!$trade->getUser()->canGive($trade->getItemsAsArray(TradeItem::TYPE_DEPOSIT))){
 //            throw new NotEnoughStock('User has not enough containers to hand back.');
 //        }
@@ -31,6 +41,11 @@ class TradetListener
     {
         //create needed movements
         $em = $eventArgs->getEntityManager();
+        $trade_balance = $trade->getBalance();
+        $user = $trade->getUser();
+        $user->setWallet($trade->getUser()->getWallet()+$trade_balance);
+        $em->persist($user);
+
         if (!$trade->getUser()->getStock()){ //missing stock
             $stock_user = new Stock();
             $stock_user->setType(Stock::TYPE_USER);
@@ -77,11 +92,18 @@ class TradetListener
                 $move->setStockTo($trade->getRestaurant()->getStock());
                 $move->setReason(Movement::TYPE_EXCHANGE);
                 $em->persist($move);
-            }
-            if ($user_containers[$container_id]<$returned_qty[$container_id]) { //returned more than stock
                 $move = new Movement();
                 $move->setContainer($container);
-                $move->setQuantity($returned_qty[$container_id]-$user_containers[$container_id]);
+                $move->setQuantity($exchanged_qyt[$container_id]);
+                $move->setStockTo($trade->getUser()->getStock());
+                $move->setStockFrom($trade->getRestaurant()->getStock());
+                $move->setReason(Movement::TYPE_EXCHANGE);
+                $em->persist($move);
+            }
+            if ($user_containers[$container_id]<$returned_qty[$container_id]+$exchanged_qyt[$container_id]) { //returned more than stock
+                $move = new Movement();
+                $move->setContainer($container);
+                $move->setQuantity($returned_qty[$container_id]+$exchanged_qyt[$container_id]-$user_containers[$container_id]);
                 $move->setStockFrom(null);
                 $move->setStockTo($trade->getUser()->getStock());
                 $move->setReason(Movement::TYPE_INVENTORY);

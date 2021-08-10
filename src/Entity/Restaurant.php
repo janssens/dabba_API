@@ -264,20 +264,6 @@ class Restaurant
         return $this;
     }
 
-
-
-    public function getZip(): ?string
-    {
-        return $this->zip;
-    }
-
-    public function setZip(string $zip): self
-    {
-        $this->zip = $zip;
-
-        return $this;
-    }
-
     public function getFormattedAddress(): ?string
     {
         return $this->formatted_address;
@@ -448,5 +434,19 @@ class Restaurant
         $this->stock = $stock;
 
         return $this;
+    }
+
+    public function getContainers(): ?array
+    {
+        if (!$this->getStock()){
+            return [];
+        }
+        $containers = $this->getStock()->getContainers();
+        foreach ($containers as $id => $container_qty){
+            if ($container_qty<=0){
+                unset($containers[$id]);
+            }
+        }
+        return $containers;
     }
 }
