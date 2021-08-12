@@ -119,6 +119,8 @@ class Stock
      */
     public function getMovementsLeaving(): Collection
     {
+        if (!$this->movements_comming)
+            return new ArrayCollection();
         return $this->movements_leaving;
     }
 
@@ -147,6 +149,8 @@ class Stock
      */
     public function getMovementsComming(): Collection
     {
+        if (!$this->movements_comming)
+            return new ArrayCollection();
         return $this->movements_comming;
     }
 

@@ -55,6 +55,7 @@ final class RestaurantOutput {
 
     /**
      * @var string
+     * @Groups({"restaurant:read"})
      */
     public $address;
 
