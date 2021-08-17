@@ -124,7 +124,7 @@ class SystemPay
             $error .= (isset($response['error']['errorMessage'])) ? ' : '.$response['error']['errorMessage'] : '';
             $error .= (isset($response['error']['detailedErrorMessage'])) ? ' ('.$response['error']['detailedErrorMessage'].')' : '';
 //            throw new \Exception('SystemPay Api call failed. '.$error);
-            $this->logger('SystemPay Api call failed. '.$error);
+            $this->logger->error('SystemPay Api call failed. '.$error);
             return null;
         }
     }
