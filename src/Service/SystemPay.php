@@ -109,7 +109,7 @@ class SystemPay
         }
     }
 
-    public function getTokenInfo(string $tokenId){
+    public function getTokenInfo(string $tokenId ){
         $uri = '/api-payment/V4/Token/Get';
         $body = json_encode(["paymentMethodToken" => $tokenId]);
         $this->logger->info('System Pay '.$uri.' '.$body);
@@ -120,8 +120,12 @@ class SystemPay
             if (isset($response['error']['errorCode'])&&$response['error']['errorCode']=='PSP_030'){ //payment token not found
                 return [];
             }
-            throw new \Exception('System Pay form token cannot be generated. '.$response['error']);
-            //return null;
+            $error = (isset($response['error']['errorCode'])) ? '['.$response['error']['errorCode'].']' : '';
+            $error .= (isset($response['error']['errorMessage'])) ? ' : '.$response['error']['errorMessage'] : '';
+            $error .= (isset($response['error']['detailedErrorMessage'])) ? ' ('.$response['error']['detailedErrorMessage'].')' : '';
+//            throw new \Exception('SystemPay Api call failed. '.$error);
+            $this->logger('SystemPay Api call failed. '.$error);
+            return null;
         }
     }
 
