@@ -32,7 +32,8 @@ class RestaurantCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             ImageField::new('image')
                 ->setBasePath($this->getParameter('app.path.restaurant_images'))
-                ->setUploadDir('/public'.$this->getParameter('app.path.restaurant_images')),
+                ->setUploadDir('/public'.$this->getParameter('app.path.restaurant_images'))
+                ->setUploadedFileNamePattern("[year][month][contenthash]-[slug].[extension]"),
             TextField::new('name'),
             NumberField::new('lat')->hideOnForm(),
             NumberField::new('lng')->hideOnForm(),
