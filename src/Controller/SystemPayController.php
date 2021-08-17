@@ -3,8 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Order;
+use App\Entity\PaymentToken;
 use App\Entity\Transaction;
 use App\Entity\User;
+use App\Exception\AlreadyPaid;
+use App\Exception\BadRequest;
+use App\Exception\NotFound;
+use App\Service\SystemPay;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,6 +103,41 @@ class SystemPayController extends AbstractController
         }
 
         return $this->render('ipn.html.twig');
+    }
+
+    /**
+     * @Route(
+     *     "/api/orders/{id}/pay/",
+     *     name="api_pay_order",
+     *     methods={"POST"},
+     *     defaults={
+     *          "_api_resource_class" = Order::class,
+     *          "_api_item_operation_name" = "pay",
+     *     })
+     */
+    public function api_pay_order(Order $order,Request $request,SystemPay $systemPay): Order
+    {
+        if ($order->getState()!=Order::STATE_NEW){
+            throw new AlreadyPaid('You cannot pay an order twice !');
+        }
+        $post = json_decode($request->getContent());
+        if (!$post || !$post->token_id){
+            throw new BadRequest('please provide a valid input');
+        }
+        /** @var PaymentToken $token */
+        $token = $this->getDoctrine()->getManager()->getRepository(PaymentToken::class)->find($post->token_id);
+        if ($token){
+            $r = $systemPay->payWithToken($order,$token);
+            if (isset($r['orderStatus'])&&$r['orderStatus']=='PAID'){
+                $order->setState(Order::STATE_PAID);
+                if (isset($r['transactions'])&&isset($r['transactions'][0])&&isset($r['transactions'][0]['detailedStatus'])) {
+                    $order->setStatus(Order::statusFromString($r['transactions'][0]['detailedStatus']));
+                }
+            }
+        }else{
+            throw new NotFound('this token is not found');
+        }
+        return $order;
     }
 
     /**

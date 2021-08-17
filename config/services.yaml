@@ -75,3 +75,11 @@ services:
         arguments:
             $accessTokenRepository: '@App\Infrastructure\oAuth2Server\Bridge\AccessTokenRepository'
             $publicKey: '%env(OAUTH2_PUBLIC_KEY)%'
+    App\EventListener\PaymentTokenListener:
+        class: App\EventListener\PaymentTokenListener
+        tags :
+            - name: doctrine.orm.entity_listener
+              event: postRemove
+              entity: App\Entity\PaymentToken
+        arguments:
+            $systemPay: '@App\Service\SystemPay'

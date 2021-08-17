@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=TransactionRepository::class)
+ * @ORM\EntityListeners({"App\EventListener\TransactionListener"})
  */
 class Transaction
 {

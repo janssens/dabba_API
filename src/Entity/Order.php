@@ -17,7 +17,42 @@ use App\Dto\OrderOutput;
  *     collectionOperations={
  *          "post"={"output"=OrderOutput::class},
  *     },
- *     itemOperations={"get"},
+ *     itemOperations={
+ *          "get",
+ *          "pay" = {
+ *              "method" = "POST",
+ *              "route_name" = "api_pay_order",
+ *              "openapi_context"={
+ *                  "summary"="Pay order with alias",
+ *                  "description"="Pay an order using alias",
+ *                  "parameters" = {
+ *                      {
+ *                          "in" = "path",
+ *                          "name" = "id",
+ *                          "required" = true,
+ *                          "schema" = {
+ *                              "type" = "integer",
+ *                              "minimum" = 1,
+ *                          },
+ *                          "description" =  "The order Id",
+ *                      },
+ *                  },
+ *                  "requestBody"={
+ *                      "required"=true,
+ *                      "content"={
+ *                          "application/json"={
+ *                              "schema"={
+ *                                  "type"="object",
+ *                                  "properties"={
+ *                                      "token_id"={"type"="string","example"="TO_BE_DEFINED_123456789abcdefghi","description" =  "The token uuid"},
+ *                                  },
+ *                              },
+ *                          },
+ *                      },
+ *                  },
+ *              },
+ *          },
+ *     },
  *     normalizationContext={"groups"={"order:read"}},
  *     denormalizationContext={"groups"={"order:write"}}
  * )

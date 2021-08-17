@@ -215,12 +215,19 @@ class User implements UserInterface
      */
     private $stock;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PaymentToken::class, mappedBy="user", orphanRemoval=true)
+     * @Groups({"user:read"})
+     */
+    private $paymentTokens;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
         $this->accessTokens = new ArrayCollection();
         $this->restaurants = new ArrayCollection();
         $this->trades = new ArrayCollection();
+        $this->paymentTokens = new ArrayCollection();
     }
 
     public function __toString(): ?string
@@ -612,6 +619,36 @@ class User implements UserInterface
         }
 
         $this->stock = $stock;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PaymentToken[]
+     */
+    public function getPaymentTokens(): Collection
+    {
+        return $this->paymentTokens;
+    }
+
+    public function addPaymentToken(PaymentToken $paymentToken): self
+    {
+        if (!$this->paymentTokens->contains($paymentToken)) {
+            $this->paymentTokens[] = $paymentToken;
+            $paymentToken->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePaymentToken(PaymentToken $paymentToken): self
+    {
+        if ($this->paymentTokens->removeElement($paymentToken)) {
+            // set the owning side to null (unless already changed)
+            if ($paymentToken->getUser() === $this) {
+                $paymentToken->setUser(null);
+            }
+        }
 
         return $this;
     }

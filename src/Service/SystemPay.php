@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Order;
+use App\Entity\PaymentToken;
 use GuzzleHttp\Client;
 use JMS\Serializer\Serializer;
 use Monolog\Logger;
@@ -64,6 +65,7 @@ class SystemPay
         $body = json_encode([
             "amount" => $order->getAmount()*100,
             "currency" => $order->getCurrency(),
+            "formAction" => 'ASK_REGISTER_PAY',
             "orderId" =>  $order->getSystemPayId(),
             "ipnTargetUrl" => $this->router->generate('app_ipn',[],0),
             "customer" => [
@@ -75,6 +77,66 @@ class SystemPay
             return $response['success']['formToken'];
         }else{
             throw new \Exception('System Pay form token cannot be generated. '.$response['error']);
+            //return null;
+        }
+    }
+
+    public function payWithToken(Order $order,PaymentToken $paymentToken){
+        if ($order->getUser()!=$paymentToken->getUser()){
+            throw new \Exception('Users can only pay for their own orders.');
+        }
+        $uri = '/api-payment/V4/Charge/CreatePayment';
+        $body = json_encode([
+            "amount" => $order->getAmount()*100,
+            "currency" => $order->getCurrency(),
+            "formAction" => 'SILENT',
+            "paymentMethodToken" => $paymentToken->getUuid(),
+            "orderId" =>  $order->getSystemPayId(),
+            "ipnTargetUrl" => $this->router->generate('app_ipn',[],0),
+            "customer" => [
+                "email" => $order->getUser()->getEmail()
+            ]]);
+        $this->logger->info('System Pay '.$uri.' '.$body);
+        $response = $this->withErrorHandling($uri,$body);
+        if (isset($response['success'])){
+            return $response['success'];
+        }else{
+            $error = (isset($response['error']['errorCode'])) ? '['.$response['error']['errorCode'].']' : '';
+            $error .= (isset($response['error']['errorMessage'])) ? ' : '.$response['error']['errorMessage'] : '';
+            $error .= (isset($response['error']['detailedErrorMessage'])) ? ' ('.$response['error']['detailedErrorMessage'].')' : '';
+            throw new \Exception($error);
+            //return null;
+        }
+    }
+
+    public function getTokenInfo(string $tokenId){
+        $uri = '/api-payment/V4/Token/Get';
+        $body = json_encode(["paymentMethodToken" => $tokenId]);
+        $this->logger->info('System Pay '.$uri.' '.$body);
+        $response = $this->withErrorHandling($uri,$body);
+        if (isset($response['success'])){
+            return $response['success'];
+        }else{
+            if (isset($response['error']['errorCode'])&&$response['error']['errorCode']=='PSP_030'){ //payment token not found
+                return [];
+            }
+            throw new \Exception('System Pay form token cannot be generated. '.$response['error']);
+            //return null;
+        }
+    }
+
+    public function removeToken(PaymentToken $paymentToken){
+        $uri = '/api-payment/V4/Token/Cancel';
+        $body = json_encode(["paymentMethodToken" => $paymentToken->getUuid()]);
+        $this->logger->info('System Pay '.$uri.' '.$body);
+        $response = $this->withErrorHandling($uri,$body);
+        if (isset($response['success'])){
+            return $response['success'];
+        }else{
+            $error = (isset($response['error']['errorCode'])) ? '['.$response['error']['errorCode'].']' : '';
+            $error .= (isset($response['error']['errorMessage'])) ? ' : '.$response['error']['errorMessage'] : '';
+            $error .= (isset($response['error']['detailedErrorMessage'])) ? ' ('.$response['error']['detailedErrorMessage'].')' : '';
+            throw new \Exception($error);
             //return null;
         }
     }
