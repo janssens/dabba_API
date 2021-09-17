@@ -40,6 +40,10 @@ final class ImageNormalizer implements ContextAwareNormalizerInterface, Normaliz
                 $class = 'restaurant';
                 $object->setImage($this->cacheManager->getBrowserPath('uploads/images/'.$class.'/'.$object->getImage(),'square'));
             }
+        }else{
+            if ($object instanceof Restaurant){
+                $object->setImage($this->cacheManager->getBrowserPath('La_demarche_Dabba.png','square'));
+            }
         }
 
         return $this->normalizer->normalize($object, $format, $context);
