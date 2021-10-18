@@ -111,6 +111,29 @@ class Zone
         return $this->restaurants;
     }
 
+    public function computeBoundingBox(): array
+    {
+        $max_lat = 0;
+        $min_lat = 0;
+        $max_lng = 0;
+        $min_lng = 0;
+        foreach ($this->getRestaurants() as $restaurant){
+            if ($restaurant->getLat() > $max_lat){
+                $max_lat = $restaurant->getLat();
+            }
+            if ($restaurant->getLat() < $min_lat){
+                $min_lat = $restaurant->getLat();
+            }
+            if ($restaurant->getLng() > $max_lng){
+                $max_lng = $restaurant->getLng();
+            }
+            if ($restaurant->getLng() < $min_lng){
+                $min_lng = $restaurant->getLng();
+            }
+        }
+        return ['min_lat'=>$min_lat,'min_lng'=>$min_lng,'max_lat'=>$max_lat,'max_lng'=>$max_lng];
+    }
+
     public function addRestaurant(Restaurant $restaurant): self
     {
         if (!$this->restaurants->contains($restaurant)) {

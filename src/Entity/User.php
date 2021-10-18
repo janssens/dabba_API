@@ -221,6 +221,11 @@ class User implements UserInterface
      */
     private $paymentTokens;
 
+    /**
+     * @ORM\OneToMany(targetEntity=CodePromo::class, mappedBy="used_by")
+     */
+    private $codePromos;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -228,9 +233,10 @@ class User implements UserInterface
         $this->restaurants = new ArrayCollection();
         $this->trades = new ArrayCollection();
         $this->paymentTokens = new ArrayCollection();
+        $this->codePromos = new ArrayCollection();
     }
 
-    public function __toString(): ?string
+    public function __toString(): string
     {
         return $this->firstname.' '.$this->lastname.' ('.$this->getEmail().')';
     }
@@ -647,6 +653,36 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($paymentToken->getUser() === $this) {
                 $paymentToken->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CodePromo[]
+     */
+    public function getCodePromos(): Collection
+    {
+        return $this->codePromos;
+    }
+
+    public function addCodePromo(CodePromo $codePromo): self
+    {
+        if (!$this->codePromos->contains($codePromo)) {
+            $this->codePromos[] = $codePromo;
+            $codePromo->setUsedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCodePromo(CodePromo $codePromo): self
+    {
+        if ($this->codePromos->removeElement($codePromo)) {
+            // set the owning side to null (unless already changed)
+            if ($codePromo->getUsedBy() === $this) {
+                $codePromo->setUsedBy(null);
             }
         }
 
