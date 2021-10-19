@@ -110,7 +110,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
                 (new TemplatedEmail())
                     ->from(new Address($this->_params->get('app.transactional_mail_sender'), 'Dabba consigne'))
                     ->to($data->getEmail())
-                    ->subject('Please Confirm your Email')
+                    ->subject('Confirme ton adresse e-mail pour créer ton compte dabba')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
             // do anything else you need here, like send an email
