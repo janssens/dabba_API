@@ -39,9 +39,6 @@ class ResetPasswordController extends AbstractController
     /**
      * Display & process form to request a password reset.
      * @Route("/reset-password", name="app_forgot_password_request")
-     * @Rest\Post(
-     *     name = "app_forgot_password_request",
-     *     )
      */
     //     * @OA\Parameter(in="body", ref=@Model(type=ResetPasswordRequestFormType::class))
     public function request(Request $request, MailerInterface $mailer): Response
