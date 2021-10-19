@@ -68,6 +68,7 @@ class SystemPayController extends AbstractController
                 $transaction_id = $transaction->uuid;
                 $exist = $em->getRepository(Transaction::class)->find($transaction_id);
                 if (!$exist){
+                    $this->createAliasFromTransaction($transaction,$order->getUser());
                     $trans = new Transaction();
                     $trans->setModeFromString($mode);
                     $trans->setShopId($transaction->shopId);
@@ -103,6 +104,31 @@ class SystemPayController extends AbstractController
         }
 
         return $this->render('ipn.html.twig');
+    }
+
+    private function createAliasFromTransaction($transaction,User $user,$flush = false){
+        if ($transaction->paymentMethodType == Transaction::TYPE_CARD && $transaction->paymentMethodToken){
+            $uuid = $transaction->paymentMethodToken; //"eb62b1c418cc4535b1a2d101ef8e3548"
+            $em = $this->getDoctrine()->getManager();
+            $exist = $em->getRepository(PaymentToken::class)->find($uuid);
+            if (!$exist){
+
+                $card_details = $transaction->transactionDetails->cardDetails;
+
+                $payment_token = new PaymentToken($uuid,$user);
+                $payment_token->setBrand($card_details->effectiveBrand);
+                $payment_token->setCountry($card_details->country);
+                $payment_token->setExpiryMonth($card_details->expiryMonth);
+                $payment_token->setExpiryYear($card_details->expiryYear);
+                $payment_token->setPan($card_details->pan);
+
+                $em->persist($payment_token);
+
+                if ($flush){
+                    $em->flush();
+                }
+            }
+        }
     }
 
     /**

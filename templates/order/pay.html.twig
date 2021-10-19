@@ -16,16 +16,9 @@
 {#    </script>#}
 {% endblock %}
 
-{% block stylesheets %}
-{#    <!-- theme and plugins. should be loaded after the javascript library -->#}
-{#    <!-- not mandatory but helps to have a nice payment form out of the box -->#}
-{#    <link rel="stylesheet"#}
-{#          href="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic-reset.css">#}
-{% endblock %}
-
 {% block body %}
 <!-- payment form -->
-<div class="kr-embedded"
+<div class="kr-embedded p-5 bg-white w-full"
      kr-form-token="{{ form_token }}">
 
     <!-- payment form fields -->
@@ -34,7 +27,7 @@
     <div class="kr-security-code"></div>
 
     <!-- payment form submit button -->
-    <button class="kr-payment-button rounded-full bg-yellow-800"></button>
+    <button class="kr-payment-button rounded-full py-2 px-8 text-white font-bold shadow-md w-full" ></button>
 
     <!-- error zone -->
     <div class="kr-form-error"></div>

@@ -33,6 +33,31 @@ class PaymentToken
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    private $brand;
+
+    /**
+     * @ORM\Column(type="string", length=16)
+     */
+    private $pan;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $expiry_month;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $expiry_year;
+
+    /**
+     * @ORM\Column(type="string", length=3, nullable=true)
+     */
+    private $country;
+
     public function __construct(string $uuid,User $user)
     {
         $this->setUser($user);
@@ -59,6 +84,66 @@ class PaymentToken
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getBrand(): ?string
+    {
+        return $this->brand;
+    }
+
+    public function setBrand(string $brand): self
+    {
+        $this->brand = $brand;
+
+        return $this;
+    }
+
+    public function getPan(): ?string
+    {
+        return $this->pan;
+    }
+
+    public function setPan(string $pan): self
+    {
+        $this->pan = $pan;
+
+        return $this;
+    }
+
+    public function getExpiryMonth(): ?int
+    {
+        return $this->expiry_month;
+    }
+
+    public function setExpiryMonth(int $expiry_month): self
+    {
+        $this->expiry_month = $expiry_month;
+
+        return $this;
+    }
+
+    public function getExpiryYear(): ?int
+    {
+        return $this->expiry_year;
+    }
+
+    public function setExpiryYear(int $expiry_year): self
+    {
+        $this->expiry_year = $expiry_year;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): self
+    {
+        $this->country = $country;
 
         return $this;
     }

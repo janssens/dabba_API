@@ -22,6 +22,8 @@ class Transaction
     const MODE_PROD = 1;
     const MODE_TEST = 2;
 
+    const TYPE_CARD = "CARD";
+
     /**
      * @ORM\Id
      * @ORM\Column(type="string")
