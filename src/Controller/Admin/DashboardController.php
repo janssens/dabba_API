@@ -49,7 +49,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Stocks', 'fas fa-cubes', Stock::class);
 
         if ($this->isGranted('ROLE_SUPER_ADMIN')){
-            yield MenuItem::linkToRoute('Test System API', 'fas fa-key', 'system_pay_check');
+//            yield MenuItem::linkToRoute('Test System API', 'fas fa-key', 'system_pay_check');
             //yield MenuItem::linkToRoute('My Test', 'fas fa-', 'my_test');
             yield MenuItem::linkToCrud('API clients', 'fas fa-key', Client::class);
             yield MenuItem::linkToCrud('Contenus dynamiques', 'fas fa-edit', Cms::class);
