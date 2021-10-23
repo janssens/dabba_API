@@ -8,6 +8,7 @@ use App\Entity\CodePromo;
 use App\Entity\CodeRestaurant;
 use App\Entity\Color;
 use App\Entity\Container;
+use App\Entity\ExternalWasteSave;
 use App\Entity\MealType;
 use App\Entity\Movement;
 use App\Entity\Restaurant;
@@ -57,6 +58,7 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud('Zones', 'fas fa-map-marker-alt', Zone::class);
             yield MenuItem::linkToCrud('Couleurs', 'fas fa-palette', Color::class);
             yield MenuItem::linkToCrud('Conteneurs Dadda', 'fas fa-toolbox', Container::class);
+            yield MenuItem::linkToCrud('Déchets extérieur', 'fas fa-recycle', ExternalWasteSave::class);
             yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-user', User::class);
         }
 

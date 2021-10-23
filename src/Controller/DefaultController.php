@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Cms;
+use App\Entity\ExternalWasteSave;
 use App\Entity\HomeResponse;
 use App\Entity\Movement;
 use App\Entity\Order;
@@ -112,6 +113,12 @@ class DefaultController extends AbstractController
                     $counter += $item->getQuantity();
                 }
             }
+        }
+        $externalWastes= $em->getRepository(ExternalWasteSave::class)->findAll();
+        /** @var ExternalWasteSave $externalWaste */
+        foreach ($externalWastes as $externalWaste){
+            $mass += $externalWaste->getQuantity()*$externalWaste->getContainer()->getWeightOfSavedWaste();
+            $counter += $externalWaste->getQuantity();
         }
         return ["avoidedWaste"=>$counter,"massOfAvoidedWaste"=>$mass];
     }
