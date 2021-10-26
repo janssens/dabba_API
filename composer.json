@@ -28,6 +28,7 @@
         "easycorp/easyadmin-bundle": "^3.4",
         "endroid/qr-code-bundle": "^4.0",
         "friendsofsymfony/rest-bundle": "^3.0",
+        "google/apiclient": "^2.0",
         "jms/serializer-bundle": "^3.9",
         "khalyomede/systempay": "0.*",
         "league/oauth2-server": "^8.3",

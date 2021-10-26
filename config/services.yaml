@@ -46,6 +46,13 @@ services:
             - '@jms_serializer'
             - '%env(GMAP_API_KEY)%'
             - '@logger'
+    App\Service\GSheets:
+        class: App\Service\GSheets
+        public: true
+        arguments:
+            - '@logger'
+            - '%env(GSHEET_DOCUMENT_ID)%'
+            - '%env(JSON_CREDENTIALS_FILE)%'
     App\Service\SystemPay:
         public: true
         arguments:
