@@ -70,7 +70,7 @@ class UpdateGoogleSheetDB extends Command
         $this->exportEntity(["id"=>"ID","name"=>"Name"],Zone::class,$io);
         $this->exportEntity(["id"=>"ID","name"=>"Name"],Container::class,$io);
         $this->exportEntity(["id"=>"ID","name"=>"Name"],Restaurant::class,$io);
-        $this->exportEntity(["id"=>"ID","email"=>"Mail"],User::class,$io);
+        $this->exportEntity(["id"=>"ID","email"=>"Mail","zone"=>"Zone"],User::class,$io);
         $this->exportEntity(["id"=>"ID","created_at"=>"Date","reason_txt"=>"Raison","container"=>"Contenant","stock_from"=>"Depuis","stock_to"=>"Vers","quantity"=>"Quantité"],Movement::class,$io);
         $this->exportEntity(["id"=>"ID","type_to_string"=>"Type","link_id"=>"id associé"],Stock::class,$io);
         $this->exportEntity(["id"=>"ID","code"=>"Code","amount"=>"montant","enabled"=>"Activé","used_at"=>"utilisé le","used_by"=>"utilisé par","expired_at"=>"expire le"],CodePromo::class,$io);
