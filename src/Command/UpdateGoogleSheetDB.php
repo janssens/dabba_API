@@ -7,6 +7,7 @@ use App\Entity\Container;
 use App\Entity\Movement;
 use App\Entity\Restaurant;
 use App\Entity\Stock;
+use App\Entity\Trade;
 use App\Entity\User;
 use App\Entity\Zone;
 use App\Repository\UserRepository;
@@ -74,6 +75,7 @@ class UpdateGoogleSheetDB extends Command
         $this->exportEntity(["id"=>"ID","name"=>"Name"],Container::class,$io);
         $this->exportEntity(["id"=>"ID","name"=>"Name","zone"=>"Zone"],Restaurant::class,$io);
         $this->exportEntity(["id"=>"ID","email"=>"Mail","zone"=>"Zone"],User::class,$io);
+        $this->exportEntity(["id"=>"ID","created_at"=>"Date","user"=>"Utilisateur","restaurant"=>"Restaurant"],Trade::class,$io);
         $this->exportEntity(["id"=>"ID","created_at"=>"Date","reason_txt"=>"Raison","container"=>"Contenant","stock_from"=>"Depuis","stock_to"=>"Vers","quantity"=>"Quantité"],Movement::class,$io);
         $this->exportEntity(["id"=>"ID","type_to_string"=>"Type","link_id"=>"id associé"],Stock::class,$io);
         $this->exportEntity(["id"=>"ID","code"=>"Code","amount"=>"montant","enabled"=>"Activé","used_at"=>"utilisé le","used_by"=>"utilisé par","expired_at"=>"expire le"],CodePromo::class,$io);
