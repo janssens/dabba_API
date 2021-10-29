@@ -65,7 +65,7 @@ class CodePromo
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50, unique="true")
      */
     private $code;
 
@@ -93,6 +93,13 @@ class CodePromo
      * @ORM\Column(type="integer")
      */
     private $amount;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $reason;
+
+    private $times;
 
     public function __construct()
     {
@@ -122,6 +129,18 @@ class CodePromo
     public function setCode(string $code): self
     {
         $this->code = $code;
+
+        return $this;
+    }
+
+    public function getTimes(): ?int
+    {
+        return $this->times;
+    }
+
+    public function setTimes(int $times): self
+    {
+        $this->times = $times;
 
         return $this;
     }
@@ -182,6 +201,18 @@ class CodePromo
     public function setAmount(int $amount): self
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getReason(): ?string
+    {
+        return $this->reason;
+    }
+
+    public function setReason(?string $reason): self
+    {
+        $this->reason = $reason;
 
         return $this;
     }

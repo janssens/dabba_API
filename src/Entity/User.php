@@ -107,6 +107,7 @@ use ApiPlatform\Core\Action\NotFoundAction;
  *     denormalizationContext={"groups"={"user:write"}},
  *     attributes={"pagination_enabled"=false}
  * )
+ * @ORM\HasLifecycleCallbacks()
  */
 class User implements UserInterface
 {
@@ -226,6 +227,11 @@ class User implements UserInterface
      */
     private $codePromos;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $created_at;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -234,6 +240,14 @@ class User implements UserInterface
         $this->trades = new ArrayCollection();
         $this->paymentTokens = new ArrayCollection();
         $this->codePromos = new ArrayCollection();
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue(): void
+    {
+        $this->created_at = new \DateTimeImmutable();
     }
 
     public function __toString(): string
@@ -685,6 +699,18 @@ class User implements UserInterface
                 $codePromo->setUsedBy(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $created_at): self
+    {
+        $this->created_at = $created_at;
 
         return $this;
     }

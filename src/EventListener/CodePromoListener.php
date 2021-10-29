@@ -22,4 +22,14 @@ class CodePromoListener
         }
     }
 
+    public function prePersist(CodePromo $codePromo,LifecycleEventArgs $eventArgs)
+    {
+        //check if generated number is uniq
+        $em = $eventArgs->getEntityManager();
+        $exist = $em->getRepository(CodePromo::class)->findOneBy(array('code'=>$codePromo->getCode()));
+        while ($exist) {
+            $codePromo->setCode(CodePromo::makeCode());
+            $exist = $em->getRepository(CodePromo::class)->findOneBy(array('code'=>$codePromo->getCode()));
+        }
+    }
 }

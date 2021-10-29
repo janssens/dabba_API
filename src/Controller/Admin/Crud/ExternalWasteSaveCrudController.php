@@ -3,6 +3,7 @@
 namespace App\Controller\Admin\Crud;
 
 use App\Entity\ExternalWasteSave;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -13,6 +14,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class ExternalWasteSaveCrudController extends AbstractCrudController
 {
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('Déchets extérieur')
+            ->setEntityLabelInPlural('Déchets extérieur')
+            ->setEntityPermission('ROLE_SUPER_ADMIN');
+    }
+
     public static function getEntityFqcn(): string
     {
         return ExternalWasteSave::class;
@@ -22,10 +31,10 @@ class ExternalWasteSaveCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            DateTimeField::new('created_at')->hideOnForm(),
-            TextField::new('raison'),
-            AssociationField::new('container'),
-            IntegerField::new('quantity'),
+            DateTimeField::new('created_at','créé le')->hideOnForm(),
+            TextField::new('raison','raison'),
+            AssociationField::new('container','conteneur'),
+            IntegerField::new('quantity','quantité'),
         ];
     }
 

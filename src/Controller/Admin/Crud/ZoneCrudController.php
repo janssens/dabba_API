@@ -3,6 +3,7 @@
 namespace App\Controller\Admin\Crud;
 
 use App\Entity\Zone;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -11,6 +12,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class ZoneCrudController extends AbstractCrudController
 {
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('Zone')
+            ->setEntityLabelInPlural('Zones')
+            ->setEntityPermission('ROLE_SUPER_ADMIN');
+    }
+
     public static function getEntityFqcn(): string
     {
         return Zone::class;
@@ -21,8 +31,8 @@ class ZoneCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('name'),
-            BooleanField::new('is_default','is the default zone for new user')
+            TextField::new('name','nom'),
+            BooleanField::new('is_default','Est-ce la zone par defaut pour les nouveaux utilisateurs ?')
         ];
     }
 
