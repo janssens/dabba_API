@@ -43,10 +43,13 @@ class UpdateGoogleSheetDB extends Command
      */
     private $gsheets;
 
+    private $parameter_bag;
+
     public function __construct(EntityManagerInterface $em,GSheets $gsheets,ParameterBagInterface $bag)
     {
         $this->em = $em;
         $this->gsheets = $gsheets;
+        $this->parameter_bag = $bag;
         parent::__construct();
     }
     
@@ -69,18 +72,31 @@ class UpdateGoogleSheetDB extends Command
 
         $this->exportEntity(["id"=>"ID","name"=>"Name"],Zone::class,$io);
         $this->exportEntity(["id"=>"ID","name"=>"Name"],Container::class,$io);
-        $this->exportEntity(["id"=>"ID","name"=>"Name"],Restaurant::class,$io);
+        $this->exportEntity(["id"=>"ID","name"=>"Name","zone"=>"Zone"],Restaurant::class,$io);
         $this->exportEntity(["id"=>"ID","email"=>"Mail","zone"=>"Zone"],User::class,$io);
         $this->exportEntity(["id"=>"ID","created_at"=>"Date","reason_txt"=>"Raison","container"=>"Contenant","stock_from"=>"Depuis","stock_to"=>"Vers","quantity"=>"Quantité"],Movement::class,$io);
         $this->exportEntity(["id"=>"ID","type_to_string"=>"Type","link_id"=>"id associé"],Stock::class,$io);
         $this->exportEntity(["id"=>"ID","code"=>"Code","amount"=>"montant","enabled"=>"Activé","used_at"=>"utilisé le","used_by"=>"utilisé par","expired_at"=>"expire le"],CodePromo::class,$io);
 
+        $this->writeMeta($io);
+
         return self::SUCCESS;
+    }
+
+    protected function writeMeta($io){
+        $io->writeln('WRITE META DATA');
+        $now = new \DateTime();
+        $data = [
+            ['App mode',$this->parameter_bag->get('app.env')],
+            ['Last sync date',$now->format(DATE_W3C)],
+            ['Author name','Gaëtan Janssens'],
+            ['Author email','contact@plopcom.fr'],
+        ];
+        $this->gsheets->update("meta",$data);
     }
 
     protected function exportEntity($fields,$className,$io){
         $io->writeln('EXPORT '.$className);
-        $io->writeln('');
 
         $progress = new ProgressBar($io);
         $items = $this->em->getRepository($className)->findAll();
@@ -94,7 +110,7 @@ class UpdateGoogleSheetDB extends Command
                 $r = $item->$getter();
                 if (is_object($r)){
                     if (get_class($r) == 'DateTime'){
-                        $a[] = $r->format('Y-m-d H:i:s');
+                        $a[] = $r->format(DATE_W3C);
                     }else if(method_exists($r, 'getId')){
                         $a[] = $this->entityNameFromClassName(get_class($r))."#".$r->getId();
                     }else{

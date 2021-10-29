@@ -13,6 +13,7 @@ parameters:
     app.system_pay.client_secret: '%env(API_SYSTEM_PAY_CLIENT_SECRET)%'
     app.system_pay.public_key: '%env(API_SYSTEM_PAY_PUBLIC_KEY)%'
     app.system_pay.hmac: '%env(API_SYSTEM_PAY_HMAC)%'
+    app.env: '%env(APP_ENV)%'
 services:
     # default configuration for services in *this* file
     _defaults:
