@@ -2,11 +2,13 @@
 // src/EventListener/StockListener.php
 namespace App\EventListener;
 
+use App\Entity\CodeRestaurant;
 use App\Entity\Restaurant;
 use App\Entity\User;
 use App\Entity\Zone;
 use App\Exception\DabbaException;
 use App\Service\Place;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\UsageTrackingTokenStorage as TokenStorage;
 use Symfony\Component\Security\Core\Security;
 
@@ -78,5 +80,20 @@ class RestaurantListener
             $zone = $em->getRepository(Zone::class)->findDefault();
             $restaurant->setZone($zone);
         }
+    }
+
+    public function postPersist(Restaurant $restaurant,LifecycleEventArgs $eventArgs)
+    {
+        //create associated qr
+        $em = $eventArgs->getEntityManager();
+
+        if (!$restaurant->hasValidCode()){
+            $qr = new CodeRestaurant();
+            $qr->setRestaurant($restaurant);
+            $qr->setEnabled(true);
+            $em->persist($qr);
+        }
+
+        $em->flush();
     }
 }

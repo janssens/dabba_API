@@ -362,6 +362,17 @@ class Restaurant
         return $this->codes;
     }
 
+    public function hasValidCode(): bool
+    {
+        /** @var CodeRestaurant $code */
+        foreach ($this->codes as $code){
+            if ($code->getEnabled()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function addCode(CodeRestaurant $code): self
     {
         if (!$this->codes->contains($code)) {
