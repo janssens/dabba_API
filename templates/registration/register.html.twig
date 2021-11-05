@@ -3,12 +3,14 @@
 {% block title %}Register{% endblock %}
 
 {% block body %}
+</section>
+
     {% for flashError in app.flashes('verify_email_error') %}
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
 
-    <div class="w-screen h-screen flex justify-center items-center">
-        <div class="p-10 bg-white rounded flex justify-center items-center flex-col shadow-md">
+    <div class="w-full sm:h-screen flex justify-center items-center bg-image bg-no-repeat bg-cover bg-center" style="--bg-image:url('{{ asset('food-photographer-david-fedulov-FtpgFeUQuAY-unsplash.jpg') }}');">
+        <div class="p-10 bg-white w-full sm:w-auto rounded flex justify-center items-center flex-col shadow-md">
             <h1>Créer un compte</h1>
 
             {{ form_start(registrationForm) }}
@@ -31,4 +33,6 @@
             {{ form_end(registrationForm) }}
         </div>
     </div>
+
+    <section>
 {% endblock %}

@@ -6,13 +6,8 @@
     {% for flashError in app.flashes('verify_email_error') %}
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
-
-    <h1>Dabba consigne</h1>
-
-    <a href="/api/docs">Api doc</a>
-
-    {% if is_granted('ROLE_ADMIN') %}
-    <a href="{{ path('admin') }}">admin</a>
-    {% endif %}
-
+    </section>
+        <div class="w-full sm:h-screen flex justify-center items-center bg-image bg-no-repeat bg-cover bg-center" style="--bg-image:url('{{ asset('co-fondatrices-Grenoble-Lyon.jpg') }}');">
+        </div>
+    <section>
 {% endblock %}

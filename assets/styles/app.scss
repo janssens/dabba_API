@@ -3,12 +3,11 @@
 @tailwind utilities;
 @tailwind forms;
 
+.bg-image{
+    background-image: var(--bg-image);
+}
 body {
     background-color: lightgray;
-    &.login{
-        background-image: url("../img/food-photographer-david-fedulov-FtpgFeUQuAY-unsplash.jpg");
-        @apply bg-no-repeat bg-cover bg-center;
-    }
 }
 a{
     @apply text-purple-600 hover:text-purple-900;
