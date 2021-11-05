@@ -39,7 +39,6 @@ class RestaurantCrudController extends AbstractCrudController
             NumberField::new('lng')->hideOnForm(),
             TextField::new('formatted_address'),
             TelephoneField::new('phone'),
-            TextField::new('zone'),
             TextField::new('website')->onlyWhenUpdating(),
             AssociationField::new('tags'),
             AssociationField::new('mealTypes')

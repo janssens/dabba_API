@@ -5,6 +5,7 @@ namespace App\EventListener;
 use App\Entity\Restaurant;
 use App\Entity\User;
 use App\Entity\Zone;
+use App\Exception\DabbaException;
 use App\Service\Place;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\UsageTrackingTokenStorage as TokenStorage;
 use Symfony\Component\Security\Core\Security;
@@ -29,6 +30,11 @@ class RestaurantListener
 
     public function prePersist(Restaurant $restaurant, \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs)
     {
+        $em = $eventArgs->getObjectManager();
+        $exist = $em->getRepository(Restaurant::class)->findOneBy(['name'=>$restaurant->getName()]);
+        if ($exist){
+            throw new \Exception('This name is already used');
+        }
         $data = $this->place->search($restaurant->getName(),$restaurant->getFormattedAddress());
         if (!isset($data['error'])){
             if (count($data['success'])>1){
@@ -39,6 +45,12 @@ class RestaurantListener
                 $restaurant->setLng($found['geometry']['location']['lng']);
                 $restaurant->setFormattedAddress($found['formatted_address']);
                 $restaurant->setGooglePlaceId($found['place_id']);
+
+                $exist = $em->getRepository(Restaurant::class)->findOneBy(['google_place_id'=>$restaurant->getGooglePlaceId()]);
+                /** @var Restaurant $exist */
+                if ($exist){
+                    throw new \Exception('A restaurant with the same google place id already exist : #'.$exist->getId().' '.$exist->getName().' (google place id = "'.$exist->getGooglePlaceId().'")');
+                }
                 $details = $this->place->getDetails($found['place_id']);
                 if (isset($details['success'])){
                     if (isset($details['success']['opening_hours'])) {
@@ -55,7 +67,6 @@ class RestaurantListener
                 $user = $this->token_storage->getToken()->getUser();
                 $zone = $user->getZone();
                 if (!$zone){
-                    $em = $eventArgs->getObjectManager();
                     $zone = $em->getRepository(Zone::class)->findDefault();
                 }
                 $restaurant->setZone($zone);
