@@ -326,12 +326,12 @@ class User implements UserInterface
 
     public function getEmail(): ?string
     {
-        return $this->email;
+        return trim($this->email);
     }
 
     public function setEmail(string $email): self
     {
-        $this->email = $email;
+        $this->email = trim($email);
 
         return $this;
     }
