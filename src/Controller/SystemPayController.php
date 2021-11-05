@@ -79,7 +79,7 @@ class SystemPayController extends AbstractController
                     $trans->setPaymentMethodToken($transaction->paymentMethodToken);
                     $trans->setStatusFromString($transaction->status);
                     if ($transaction->errorCode){
-                        $trans->setErrorCode($transaction->errorCode);
+                        $trans->setErrorCode(intval($transaction->errorCode));
                         $trans->setErrorMessage($transaction->errorMessage);
                         $trans->setDetailedErrorCode($transaction->detailedErrorCode);
                         $trans->setDetailedErrorMessage($transaction->detailedErrorMessage);

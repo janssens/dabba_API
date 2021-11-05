@@ -61,5 +61,11 @@ class RestaurantListener
                 $restaurant->setZone($zone);
             }
         }
+        $zone = $restaurant->getZone();
+        if (!$zone){
+            $em = $eventArgs->getObjectManager();
+            $zone = $em->getRepository(Zone::class)->findDefault();
+            $restaurant->setZone($zone);
+        }
     }
 }

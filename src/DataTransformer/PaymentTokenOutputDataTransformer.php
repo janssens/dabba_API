@@ -28,7 +28,7 @@ final class PaymentTokenOutputDataTransformer implements DataTransformerInterfac
     {
         $output = new PaymentTokenOutput();
         $output->uuid = $data->getUuid();
-        $data = $this->system_pay->getTokenInfo($data->getUuid());
+        /*$data = $this->system_pay->getTokenInfo($data->getUuid());
         if (!$data){
             return null;
         }
@@ -36,6 +36,11 @@ final class PaymentTokenOutputDataTransformer implements DataTransformerInterfac
         $output->expiryMonth = $data['tokenDetails']['expiryMonth'];
         $output->expiryYear = $data['tokenDetails']['expiryYear'];
         $output->brand = $data['tokenDetails']['effectiveBrand'];
+        */
+        $output->pan = $data->getPan();
+        $output->expiryMonth = $data->getExpiryMonth();
+        $output->expiryYear = $data->getExpiryYear();
+        $output->brand = $data->getBrand();
         return $output;
     }
 

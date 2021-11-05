@@ -53,6 +53,9 @@ final class CmsCollectionDataProvider implements ContextAwareCollectionDataProvi
         if (!$zone){
             $zone = $mz->getRepository(Zone::class)->findDefault();
         }
+        if (!$zone){
+            throw new \Exception('please define a default Zone');
+        }
         $manager = $this->managerRegistry->getManagerForClass($resourceClass);
         $repository = $manager->getRepository($resourceClass);
         if ($user){

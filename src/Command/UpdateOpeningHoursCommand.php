@@ -79,7 +79,7 @@ class UpdateOpeningHoursCommand extends Command
         $this->em->flush();
         $progress->finish();
 
-        $io->writeln();
+        $io->writeln('');
 
         return self::SUCCESS;
     }

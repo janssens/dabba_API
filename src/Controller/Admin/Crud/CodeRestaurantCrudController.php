@@ -19,6 +19,14 @@ use Endroid\QrCodeBundle\Response\QrCodeResponse;
 
 class CodeRestaurantCrudController extends AbstractCrudController
 {
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('QR Code')
+            ->setEntityLabelInPlural('QR Codes')
+            ->setEntityPermission('ROLE_ADMIN');
+    }
+
     public static function getEntityFqcn(): string
     {
         return CodeRestaurant::class;

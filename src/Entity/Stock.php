@@ -80,6 +80,20 @@ class Stock
         }
     }
 
+    public function getLinkId(){
+        switch ($this->type){
+            case self::TYPE_RESTAURANT:
+                return "Restaurant#".$this->getRestaurant()->getId();
+                break;
+            case self::TYPE_USER:
+                return "User#".$this->getUser()->getId();
+                break;
+            case self::TYPE_ZONE:
+                return "Zone#".$this->getId();
+                break;
+        }
+    }
+
     public function getId(): ?int
     {
         return $this->id;
