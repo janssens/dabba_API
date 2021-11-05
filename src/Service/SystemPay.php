@@ -76,10 +76,8 @@ class SystemPay
         if (isset($response['success'])){
             return $response['success']['formToken'];
         }else{
-            if (!is_array($response) || !isset($response['error'])){
-                $response['error'] = $response;
-            }
-            throw new \Exception('System Pay form token cannot be generated. '.$response['error']);
+            $this->logger->error(print_r($response,true));
+            throw new \Exception('System Pay form token cannot be generated. '.print_r($response['error'],true));
             //return null;
         }
     }
