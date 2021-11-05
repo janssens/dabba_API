@@ -8,6 +8,7 @@ use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Restaurant;
 use App\Entity\User;
 use App\Entity\Zone;
+use App\Exception\InvalidEmailFormat;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -99,6 +100,12 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
         if ($is_new){
             if (!$data->getZone())
                 $data->setZone($this->_entityManager->getRepository(Zone::class)->findDefault());
+        }
+
+        $data->setEmail(trim($data->getEmail()));
+
+        if (!filter_var($data->getEmail(), FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidEmailFormat("Invalid email format");
         }
 
         $this->_entityManager->persist($data);
