@@ -427,6 +427,11 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
+    public function getRolesList(): string
+    {
+        return implode(',',$this->getRoles());
+    }
+
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -438,6 +443,19 @@ class User implements UserInterface
     {
         $roles = $this->roles;
         $roles[] = $role;
+        $this->roles = array_unique($roles);
+        return $this;
+    }
+
+    public function removeRole(string $role): self
+    {
+        $roles = $this->roles;
+        $roles = array_unique($roles);
+        foreach ($roles as $k => $r){
+            if ($r == $role) {
+                unset($roles[$k]);
+            }
+        }
         $this->roles = array_unique($roles);
         return $this;
     }
