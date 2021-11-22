@@ -44,7 +44,7 @@ class MovementCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            DateTimeField::new('created_at')->hideOnForm(),
+            DateTimeField::new('created_at','date')->hideOnForm(),
             TextField::new('getReasonTxt','raison')->hideOnForm(),
             IntegerField::new('reason','raison')->hideOnIndex()
                 ->setFormType(ChoiceType::class)
@@ -55,9 +55,9 @@ class MovementCrudController extends AbstractCrudController
                     'Logistique' => Movement::TYPE_LOGISTICS
                 ]]),
             AssociationField::new('container'),
-            AssociationField::new('stock_from'),
-            AssociationField::new('stock_to'),
-            IntegerField::new('quantity'),
+            AssociationField::new('stock_from','depuis'),
+            AssociationField::new('stock_to','vers'),
+            IntegerField::new('quantity','quantité'),
         ];
     }
 
