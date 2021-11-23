@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserCrudController extends AbstractCrudController
 {
@@ -72,10 +73,19 @@ class UserCrudController extends AbstractCrudController
         $actions->add(Crud::PAGE_INDEX, $make_admin_action);
         $actions->add(Crud::PAGE_INDEX, $remove_admin_action);
         $actions->add(Crud::PAGE_INDEX, $make_super_action);
+
+        $actions
+            ->addBatchAction(Action::new('download', 'Exporter les utilisateurs')
+                ->linkToCrudAction('csvDownload')
+                ->addCssClass('btn btn-secondary')
+                ->setIcon('fa fa-file-download'))
+        ;
+
         $actions->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN');
         $actions->setPermission('makeAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('makeSuperAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('removeAdmin', 'ROLE_SUPER_ADMIN');
+        $actions->setPermission('download', 'ROLE_SUPER_ADMIN');
         return $actions;
     }
 
@@ -155,6 +165,37 @@ class UserCrudController extends AbstractCrudController
             TextField::new('Zone'),
             BooleanField::new('isVerified','email validé'),
         ];
+    }
+
+    public function csvDownload(BatchActionDto $batchActionDto)
+    {
+        $entityManager = $this->getDoctrine()->getManagerForClass($batchActionDto->getEntityFqcn());
+        $users = [];
+        foreach ($batchActionDto->getEntityIds() as $id) {
+            /** @var User $user */
+            $user = $entityManager->find(User::class,$id);
+            $users[] = [
+                'id'=>$user->getId(),
+                'name'=>$user->getFullname(),
+                'email'=>$user->getEmail(),
+                'created_at'=> $user->getCreatedAt()->format(DATE_W3C),
+                'cagnotte'=> $user->getWallet(),
+                'zone'=> ($user->getZone()) ? $user->getZone()->getName() : '',
+            ];
+        }
+        $response = new StreamedResponse();
+        $response->setCallback(function () use ($users) {
+            $handle = fopen('php://output', 'w+');
+            // Add header
+            fputcsv($handle, array_keys($users[0]));
+            foreach ($users as $user) {
+                fputcsv($handle, array_values($user));
+            }
+            fclose($handle);
+        });
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="users.csv"');
+        return $response;
     }
 
 }
