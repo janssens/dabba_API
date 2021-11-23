@@ -39,6 +39,7 @@ class RestaurantCrudController extends AbstractCrudController
         return $filters
             ->add('name')
             ->add('tags')
+            ->add('zone')
             ->add('mealTypes')
             ;
     }
@@ -64,6 +65,7 @@ class RestaurantCrudController extends AbstractCrudController
                 ->setUploadedFileNamePattern("[year][month][contenthash]-[slug].[extension]"),
             TextField::new('name','nom'),
             TextField::new('formatted_address','adresse'),
+            AssociationField::new('zone')->hideOnForm(),
             TelephoneField::new('phone','telephone')->hideOnIndex(),
             BooleanField::new('hasValidCode','Qr code valide')->onlyOnIndex(),
             TextField::new('website')->onlyWhenUpdating(),
