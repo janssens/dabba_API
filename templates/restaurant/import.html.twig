@@ -1,0 +1,23 @@
+{# templates/admin/business_stats/index.html.twig #}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title 'Import restaurants' %}
+{% block page_content %}
+    {% if return is defined %}
+        <ul style="color: mediumseagreen;">
+        {% for message in return['info'] %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+        <ul style="color: orangered">
+            {% for message in return['error'] %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <p>
+    Enregistrez vos données au format csv (seules les collone "nom" et "adresse" au singulier en minuscule sont prise en compte) <br>
+    Utilisez ensuite <a href="https://csvjson.com/csv2json">csvjson.com</a> pour convertir ce contenu au format Json et collez le ici :
+    </p>
+    {{ form(form) }}
+{% endblock %}
