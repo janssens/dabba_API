@@ -1,5 +1,5 @@
 <?php
-// src/EventListener/StockListener.php
+// src/EventListener/RestaurantListener.php
 namespace App\EventListener;
 
 use App\Entity\CodeRestaurant;
@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\Zone;
 use App\Exception\DabbaException;
 use App\Service\Place;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\UsageTrackingTokenStorage as TokenStorage;
 use Symfony\Component\Security\Core\Security;
@@ -94,6 +95,17 @@ class RestaurantListener
             $em->persist($qr);
         }
 
+        $em->flush();
+    }
+
+    public function preRemove(Restaurant $restaurant,LifecycleEventArgs $eventArgs): void
+    {
+        /** @var EntityManager $em */
+        $em = $eventArgs->getEntityManager();
+        $stock = $restaurant->getStock();
+        $stock->setRestaurant(null)
+            ->setLabel('restaurant '.substr($restaurant->getName(),0,24).' #'.str_pad($restaurant->getId(),3,'0',STR_PAD_LEFT).' [REMOVED]');
+        $em->persist($stock);
         $em->flush();
     }
 }
