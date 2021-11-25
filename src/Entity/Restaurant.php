@@ -22,7 +22,8 @@ use App\Dto\RestaurantOutput;
  *     collectionOperations={"get"},
  *     itemOperations={"get"},
  *     normalizationContext={"groups"={"restaurant:read"}},
- *     denormalizationContext={"groups"={"restaurant:write"}}
+ *     denormalizationContext={"groups"={"restaurant:write"}},
+ *     attributes={"order"={"featured": "DESC","id": "ASC"}}
  * )
  * @ApiFilter(SearchFilter::class, properties={"name": "partial"})
  * @ApiFilter(RangeFilter::class, properties={"lat","lng"})
@@ -91,12 +92,12 @@ class Restaurant
     private $formatted_address;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="restaurants",cascade={"persist", "merge", "remove"})
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="restaurants",cascade={"persist", "merge"})
      */
     private $tags;
 
     /**
-     * @ORM\ManyToMany(targetEntity=MealType::class, inversedBy="restaurants",cascade={"persist", "merge", "remove"})
+     * @ORM\ManyToMany(targetEntity=MealType::class, inversedBy="restaurants",cascade={"persist", "merge"})
      */
     private $mealTypes;
 
@@ -121,9 +122,14 @@ class Restaurant
     private $yes;
 
     /**
-     * @ORM\OneToOne(targetEntity=Stock::class, mappedBy="restaurant", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Stock::class, mappedBy="restaurant", cascade={"persist"})
      */
     private $stock;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $featured;
 
     public function __construct()
     {
@@ -459,5 +465,17 @@ class Restaurant
             }
         }
         return $containers;
+    }
+
+    public function getFeatured(): ?bool
+    {
+        return $this->featured;
+    }
+
+    public function setFeatured(bool $featured): self
+    {
+        $this->featured = $featured;
+
+        return $this;
     }
 }
