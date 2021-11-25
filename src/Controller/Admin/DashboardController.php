@@ -62,6 +62,7 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud('Conteneurs Dadda', 'fas fa-toolbox', Container::class);
             yield MenuItem::linkToCrud('Déchets extérieur', 'fas fa-recycle', ExternalWasteSave::class);
             yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-user', User::class);
+            yield MenuItem::linkToRoute('Import restaurants','fas fa-file-import','restaurant_import');
         }
 
     }
