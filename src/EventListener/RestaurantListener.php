@@ -100,12 +100,15 @@ class RestaurantListener
 
     public function preRemove(Restaurant $restaurant,LifecycleEventArgs $eventArgs): void
     {
-        /** @var EntityManager $em */
-        $em = $eventArgs->getEntityManager();
         $stock = $restaurant->getStock();
-        $stock->setRestaurant(null)
-            ->setLabel('restaurant '.substr($restaurant->getName(),0,24).' #'.str_pad($restaurant->getId(),3,'0',STR_PAD_LEFT).' [REMOVED]');
-        $em->persist($stock);
-        $em->flush();
+        if ($stock){
+            /** @var EntityManager $em */
+            $em = $eventArgs->getEntityManager();
+            $stock->setRestaurant(null)
+                ->setLabel('restaurant '.substr($restaurant->getName(),0,24).' #'.str_pad($restaurant->getId(),3,'0',STR_PAD_LEFT).' [REMOVED]');
+            $em->persist($stock);
+            $em->flush();
+        }
+
     }
 }

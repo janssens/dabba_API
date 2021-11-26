@@ -6,12 +6,12 @@
     {% if return is defined %}
         <ul style="color: mediumseagreen;">
         {% for message in return['info'] %}
-            <li>{{ message }}</li>
+            <li>{{ message | raw }}</li>
         {% endfor %}
         </ul>
         <ul style="color: orangered">
             {% for message in return['error'] %}
-                <li>{{ message }}</li>
+                <li>{{ message | raw }}</li>
             {% endfor %}
         </ul>
     {% endif %}

@@ -98,8 +98,8 @@ class RestaurantController extends AbstractController
                     $return['error'][] = 'Missing \'adresse\' property for '.json_encode($restaurant);
                     continue;
                 }
-                $name = strtolower(utf8_decode($restaurant['nom']));
-                $address = utf8_decode($restaurant['adresse']);
+                $name = strtolower($restaurant['nom']);
+                $address = $restaurant['adresse'];
                 if ($name&$address){
                     $exist = $this->em->getRepository(Restaurant::class)->findOneBy(array('name'=>$name));
                     if (!$exist){

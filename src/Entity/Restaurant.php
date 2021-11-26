@@ -133,6 +133,7 @@ class Restaurant
 
     public function __construct()
     {
+        $this->featured = false;
         $this->fans = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->mealTypes = new ArrayCollection();
