@@ -95,6 +95,9 @@ services:
         class: App\EventListener\RestaurantListener
         tags :
             - name: doctrine.orm.entity_listener
+              event: preUpdate
+              entity: App\Entity\Restaurant
+            - name: doctrine.orm.entity_listener
               event: prePersist
               entity: App\Entity\Restaurant
             - name: doctrine.orm.entity_listener

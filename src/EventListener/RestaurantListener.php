@@ -31,6 +31,14 @@ class RestaurantListener
         $this->token_storage = $token_storage;
     }
 
+    public function preUpdate(Restaurant $restaurant, \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs)
+    {
+        if (!$restaurant->getGooglePlaceId()){
+            $em = $eventArgs->getObjectManager();
+            $this->getPlaceId($restaurant,$em);
+        }
+    }
+
     public function prePersist(Restaurant $restaurant, \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs)
     {
         $em = $eventArgs->getObjectManager();
@@ -38,6 +46,16 @@ class RestaurantListener
         if ($exist){
             throw new \Exception('This name is already used');
         }
+        $this->getPlaceId($restaurant,$em);
+        $zone = $restaurant->getZone();
+        if (!$zone){
+            $em = $eventArgs->getObjectManager();
+            $zone = $em->getRepository(Zone::class)->findDefault();
+            $restaurant->setZone($zone);
+        }
+    }
+
+    private function setPlaceId(&$restaurant,$em){
         $data = $this->place->search($restaurant->getName(),$restaurant->getFormattedAddress());
         if (!isset($data['error'])){
             if (count($data['success'])>1){
@@ -75,12 +93,7 @@ class RestaurantListener
                 $restaurant->setZone($zone);
             }
         }
-        $zone = $restaurant->getZone();
-        if (!$zone){
-            $em = $eventArgs->getObjectManager();
-            $zone = $em->getRepository(Zone::class)->findDefault();
-            $restaurant->setZone($zone);
-        }
+        return $restaurant;
     }
 
     public function postPersist(Restaurant $restaurant,LifecycleEventArgs $eventArgs)

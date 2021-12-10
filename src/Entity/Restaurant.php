@@ -131,6 +131,11 @@ class Restaurant
      */
     private $featured;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $show_on_map;
+
     public function __construct()
     {
         $this->featured = false;
@@ -139,6 +144,7 @@ class Restaurant
         $this->mealTypes = new ArrayCollection();
         $this->codes = new ArrayCollection();
         $this->yes = new ArrayCollection();
+        $this->show_on_map = false;
     }
 
     public function __toString()
@@ -165,6 +171,8 @@ class Restaurant
 
     public function getLat(): ?float
     {
+        if (!$this->getShowOnMap())
+            return 0;
         return $this->lat;
     }
 
@@ -177,6 +185,8 @@ class Restaurant
 
     public function getLng(): ?float
     {
+        if (!$this->getShowOnMap())
+            return 0;
         return $this->lng;
     }
 
@@ -476,6 +486,21 @@ class Restaurant
     public function setFeatured(bool $featured): self
     {
         $this->featured = $featured;
+
+        return $this;
+    }
+
+    public function getShowOnMap(): ?bool
+    {
+        if (!$this->getLat() || !$this->getLng()){
+            return false;
+        }
+        return $this->show_on_map;
+    }
+
+    public function setShowOnMap(bool $show_on_map): self
+    {
+        $this->show_on_map = $show_on_map;
 
         return $this;
     }
