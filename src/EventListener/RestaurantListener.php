@@ -35,7 +35,7 @@ class RestaurantListener
     {
         if (!$restaurant->getGooglePlaceId()){
             $em = $eventArgs->getObjectManager();
-            $this->getPlaceId($restaurant,$em);
+            $this->setPlaceId($restaurant,$em);
         }
     }
 
@@ -46,7 +46,7 @@ class RestaurantListener
         if ($exist){
             throw new \Exception('This name is already used');
         }
-        $this->getPlaceId($restaurant,$em);
+        $this->setPlaceId($restaurant,$em);
         $zone = $restaurant->getZone();
         if (!$zone){
             $em = $eventArgs->getObjectManager();

@@ -67,7 +67,10 @@ class RestaurantCrudController extends AbstractCrudController
             TextField::new('formatted_address','adresse'),
             AssociationField::new('zone')->hideOnForm(),
             BooleanField::new('featured','Mis en avant'),
-            BooleanField::new('show_on_map','visible sur la carte'),
+            TextField::new('canBeShownOnMap','visible sur la carte')->formatValue(function ($value) {
+                return intval($value) < 0 ? 'Coordonnées non calculées' : (($value) ? 'oui' : 'non');
+            })->onlyOnIndex(),
+            BooleanField::new('show_on_map','visible sur la carte')->onlyWhenUpdating(),
             TelephoneField::new('phone','telephone')->hideOnIndex(),
             BooleanField::new('hasValidCode','Qr code valide')->onlyOnIndex(),
             TextField::new('website')->onlyWhenUpdating(),

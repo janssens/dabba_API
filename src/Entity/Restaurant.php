@@ -490,9 +490,17 @@ class Restaurant
         return $this;
     }
 
+    public function canBeShownOnMap(): ?string
+    {
+        if ( !$this->lat || !$this->lng ) {
+            return "-1";
+        }
+        return $this->show_on_map;
+    }
+
     public function getShowOnMap(): ?bool
     {
-        if (!$this->getLat() || !$this->getLng()){
+        if (!$this->lat || !$this->lng){
             return false;
         }
         return $this->show_on_map;

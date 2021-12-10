@@ -21,7 +21,7 @@ final class Version20211209160946 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE restaurant ADD show_on_map TINYINT(1) NOT NULL');
-        $this->addSql('UPDATE restaurant SET show_on_map=1 WHERE show_on_map IS NULL;');
+        $this->addSql('UPDATE restaurant SET show_on_map=1;');
     }
 
     public function down(Schema $schema): void
