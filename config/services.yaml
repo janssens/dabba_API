@@ -109,3 +109,7 @@ services:
         arguments:
             $place: '@App\Service\Place'
             $token_storage: '@security.token_storage'
+    App\Doctrine\VisibleRestaurantExtension:
+        class: App\Doctrine\VisibleRestaurantExtension
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection, priority: 9 }
