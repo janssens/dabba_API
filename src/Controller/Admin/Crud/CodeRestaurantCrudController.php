@@ -6,6 +6,7 @@ use App\Entity\CodeRestaurant;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -25,6 +26,13 @@ class CodeRestaurantCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('QR Code')
             ->setEntityLabelInPlural('QR Codes')
             ->setEntityPermission('ROLE_ADMIN');
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add('restaurant')
+            ;
     }
 
     public static function getEntityFqcn(): string
