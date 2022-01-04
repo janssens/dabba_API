@@ -33,6 +33,9 @@ class MovementRepository extends ServiceEntityRepository
     //  */
     public function findLastForRestaurant(Restaurant $restaurant,$limit = 10)
     {
+        if (!$restaurant->getStock()){
+            return [];
+        }
         $stock_id = $restaurant->getStock()->getId();
         return $this->createQueryBuilder('m')
             ->andWhere('m.stock_from = :from')
