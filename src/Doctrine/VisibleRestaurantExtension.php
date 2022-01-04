@@ -40,9 +40,9 @@ final class VisibleRestaurantExtension implements QueryCollectionExtensionInterf
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass)
     {
         // Add the where clause if we're operating on a Product resource, and the user is not an admin.
-//        if (Restaurant::class === $resourceClass && !$this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+        if (Restaurant::class === $resourceClass /*&& !$this->authorizationChecker->isGranted('ROLE_ADMIN'))*/) {
             $rootAlias = $queryBuilder->getRootAliases()[0];
             $queryBuilder->andWhere(sprintf('%s.show_on_map = true', $rootAlias));
-//        }
+        }
     }
 }
