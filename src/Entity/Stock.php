@@ -83,13 +83,19 @@ class Stock
     public function getLinkId(){
         switch ($this->type){
             case self::TYPE_RESTAURANT:
+                if (!$this->getRestaurant())
+                    return "/!\ Restaurant NOT DEFINED";
                 return "Restaurant#".$this->getRestaurant()->getId();
                 break;
             case self::TYPE_USER:
+                if (!$this->getUser())
+                    return "/!\ User NOT DEFINED";
                 return "User#".$this->getUser()->getId();
                 break;
             case self::TYPE_ZONE:
-                return "Zone#".$this->getId();
+                if (!$this->getZone())
+                    return "/!\ Zone NOT DEFINED";
+                return "Zone#".$this->getZone()->getId();
                 break;
         }
     }
@@ -248,6 +254,35 @@ class Stock
             }
         }
         return $return;
+    }
+
+    public function getContainersToTxt(): ?string
+    {
+        $containers = [];
+        $containers_names = [];
+        /** @var Movement $movement */
+        foreach ($this->getMovementsComming() as $movement){
+            if (!isset($containers[$movement->getContainer()->getId()])){
+                $containers_names[$movement->getContainer()->getId()] = $movement->getContainer()->getName();
+                $containers[$movement->getContainer()->getId()] = $movement->getQuantity();
+            }else{
+                $containers[$movement->getContainer()->getId()] += $movement->getQuantity();
+            }
+        }
+        foreach ($this->getMovementsLeaving() as $movement){
+            if (!isset($containers[$movement->getContainer()->getId()])){
+                $containers_names[$movement->getContainer()->getId()] = $movement->getContainer()->getName();
+                $containers[$movement->getContainer()->getId()] = -$movement->getQuantity();
+            }else{
+                $containers[$movement->getContainer()->getId()] -= $movement->getQuantity();
+            }
+        }
+
+        $return = [];
+        foreach ($containers as $container_id => $qty){
+            $return[] = $qty . ' x ' . $containers_names[$container_id];
+        }
+        return implode('<br />',$return);
     }
 
     public function getLabel(): ?string

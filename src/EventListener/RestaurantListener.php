@@ -4,6 +4,7 @@ namespace App\EventListener;
 
 use App\Entity\CodeRestaurant;
 use App\Entity\Restaurant;
+use App\Entity\Stock;
 use App\Entity\User;
 use App\Entity\Zone;
 use App\Exception\DabbaException;
@@ -106,6 +107,13 @@ class RestaurantListener
             $qr->setRestaurant($restaurant);
             $qr->setEnabled(true);
             $em->persist($qr);
+        }
+
+        if (!$restaurant->getStock()){
+            $stock = new Stock();
+            $stock->setType(Stock::TYPE_RESTAURANT);
+            $stock->setRestaurant($restaurant);
+            $em->persist($stock);
         }
 
         $em->flush();

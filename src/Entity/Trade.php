@@ -18,7 +18,6 @@ use App\Dto\TradeInput;
  *     normalizationContext={"groups"={"trade:read"}},
  *     denormalizationContext={"groups"={"trade:write"}}
  * )
- * @ORM\EntityListeners({"App\EventListener\TradetListener"})
  * @ORM\Entity(repositoryClass=TradeRepository::class)
  * @ORM\HasLifecycleCallbacks()
  */
@@ -39,7 +38,7 @@ class Trade
     private $created_at;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="restaurant")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="trades")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"trade:read"})
      */
