@@ -2,20 +2,23 @@
 // src/EventListener/TradetListener.php
 namespace App\EventListener;
 
-use App\Entity\CodeRestaurant;
 use App\Entity\Container;
 use App\Entity\Movement;
-use App\Entity\Restaurant;
 use App\Entity\Stock;
 use App\Entity\TradeItem;
 use App\Exception\NotEnoughCredit;
 use App\Exception\NotEnoughStock;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use App\Entity\Trade;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class TradetListener
 {
+    private $allowNegativeStock;
+
+    public function __construct($allowNegativeStock){
+        $this->allowNegativeStock = $allowNegativeStock;
+    }
+
     public function prePersist(Trade $trade,LifecycleEventArgs $eventArgs)
     {
         //check if it's a valid trade
@@ -26,7 +29,10 @@ class TradetListener
         $restaurant_containers = $trade->getRestaurant()->getContainers();
         foreach ($trade->getItems() as $item){
             if ($item->getType()==TradeItem::TYPE_WITHDRAW){
-                if (!isset($restaurant_containers[$item->getContainer()->getId()]) || $item->getQuantity()>$restaurant_containers[$item->getContainer()->getId()]){
+                if (
+                    (!$this->allowNegativeStock) &&
+                    (!isset($restaurant_containers[$item->getContainer()->getId()]) || $item->getQuantity()>$restaurant_containers[$item->getContainer()->getId()])
+                ){
                     throw new NotEnoughStock('This restaurant has not enough containers "'.$item->getContainer()->getName().'" to deliver.');
                 }
             }

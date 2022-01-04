@@ -442,6 +442,13 @@ class Restaurant
         return $this;
     }
 
+    public function stockAsText(): ?string
+    {
+        if (!$this->getStock())
+            return 'No Stock';
+        return $this->getStock()->getContainersToTxt();
+    }
+
     public function getStock(): ?Stock
     {
         return $this->stock;
@@ -470,11 +477,11 @@ class Restaurant
             return [];
         }
         $containers = $this->getStock()->getContainers();
-        foreach ($containers as $id => $container_qty){
+/*        foreach ($containers as $id => $container_qty){
             if ($container_qty<=0){
                 unset($containers[$id]);
             }
-        }
+        }*/
         return $containers;
     }
 

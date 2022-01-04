@@ -1,0 +1,56 @@
+{# templates/admin/crud/inventory.html.twig #}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title 'Inventaire pour '~restaurant.name %}
+{% block page_content %}
+    <h3><i class="fa-fw fas fa-cubes"></i>Stocks</h3>
+    Actuellement en stock chez {{ restaurant.name }}
+    <div style="padding: 1rem; display: block; background: #efefef; border: 2px solid black; border-radius: var(--border-radius);margin: 1rem 0;">
+        <strong>{{ restaurant.stockAsText }}</strong>
+    </div>
+    <h3>Derniers mouvements</h3>
+    <table class="table datagrid with-rounded-top ">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>date</th>
+                <th>container</th>
+                <th>stock source</th>
+                <th>stock destination</th>
+                <th>quantité</th>
+                <th>raison</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>...</td>
+                <td colspan="6" style="text-align: center">...</td>
+            </tr>
+        {% for movement in last_movements|reverse %}
+            <tr>
+                <td style="padding: 0.35rem;">{{ movement.id }}</td>
+                <td style="padding: 0.35rem;">{{ movement.createdAt | date }}</td>
+                <td style="padding: 0.35rem;">{{ movement.container }}</td>
+                <td style="padding: 0.35rem;">{{ movement.stockFrom }}</td>
+                <td style="padding: 0.35rem;">{{ movement.stockTo }}</td>
+                <td style="padding: 0.35rem;">{{ movement.quantity }}</td>
+                <td style="padding: 0.35rem;">{{ movement.reasonTxt }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div style="display: flex;flex-direction: row;flex-wrap: nowrap;justify-content: space-between; align-items: stretch;margin: 2rem 0;">
+        <div>
+            <h3>Inventaire</h3>
+            <div style="padding: 1rem; display: block; border: 1px solid #dddddd; border-radius: var(--border-radius);margin: 1rem 0;">
+                {{ form(inventory_form) }}
+            </div>
+        </div>
+        <div>
+            <h3>Correction</h3>
+            <div style="padding: 1rem; display: block; border: 1px solid #dddddd; border-radius: var(--border-radius);margin: 1rem 0;">
+                {{ form(fix_form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

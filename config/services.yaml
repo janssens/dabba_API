@@ -13,6 +13,7 @@ parameters:
     app.system_pay.client_secret: '%env(API_SYSTEM_PAY_CLIENT_SECRET)%'
     app.system_pay.public_key: '%env(API_SYSTEM_PAY_PUBLIC_KEY)%'
     app.system_pay.hmac: '%env(API_SYSTEM_PAY_HMAC)%'
+    app.allow_negative_stock: '%env(ALLOW_NEGATIVE_STOCK)%'
     app.env: '%env(APP_ENV)%'
 services:
     # default configuration for services in *this* file
@@ -85,12 +86,23 @@ services:
             $publicKey: '%env(OAUTH2_PUBLIC_KEY)%'
     App\EventListener\PaymentTokenListener:
         class: App\EventListener\PaymentTokenListener
-        tags :
+        tags:
             - name: doctrine.orm.entity_listener
               event: postRemove
               entity: App\Entity\PaymentToken
         arguments:
             $systemPay: '@App\Service\SystemPay'
+    App\EventListener\TradetListener:
+        class: App\EventListener\TradetListener
+        tags :
+            - name: doctrine.orm.entity_listener
+              event: prePersist
+              entity: App\Entity\Trade
+            - name: doctrine.orm.entity_listener
+              event: postPersist
+              entity: App\Entity\Trade
+        arguments:
+            $allowNegativeStock: '%env(ALLOW_NEGATIVE_STOCK)%'
     App\EventListener\RestaurantListener:
         class: App\EventListener\RestaurantListener
         tags :
