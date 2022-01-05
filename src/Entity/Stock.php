@@ -69,12 +69,18 @@ class Stock
     {
         switch ($this->type){
             case self::TYPE_RESTAURANT:
+                if (!$this->getRestaurant())
+                    return $this->getLabel();
                 return 'RESTAURANT '.$this->getRestaurant()->getName();
                 break;
             case self::TYPE_USER:
+                if (!$this->getUser())
+                    return $this->getLabel();
                 return 'UTILISATEUR #'.$this->getUser()->getId().' '.$this->getUser()->getFullname();
                 break;
             case self::TYPE_ZONE:
+                if (!$this->getZone())
+                    return $this->getLabel();
                 return 'ZONE '.$this->getZone()->getName().' #'.$this->getId().' '.$this->getLabel();
                 break;
         }
@@ -84,17 +90,17 @@ class Stock
         switch ($this->type){
             case self::TYPE_RESTAURANT:
                 if (!$this->getRestaurant())
-                    return "/!\ Restaurant NOT DEFINED";
+                    return $this->getLabel();
                 return "Restaurant#".$this->getRestaurant()->getId();
                 break;
             case self::TYPE_USER:
                 if (!$this->getUser())
-                    return "/!\ User NOT DEFINED";
+                    return $this->getLabel();
                 return "User#".$this->getUser()->getId();
                 break;
             case self::TYPE_ZONE:
                 if (!$this->getZone())
-                    return "/!\ Zone NOT DEFINED";
+                    return $this->getLabel();
                 return "Zone#".$this->getZone()->getId();
                 break;
         }
