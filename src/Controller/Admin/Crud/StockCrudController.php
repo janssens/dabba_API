@@ -33,6 +33,7 @@ class StockCrudController extends AbstractCrudController
                 'Zone' => Stock::TYPE_ZONE
             ]))
             ->add('restaurant')
+            ->add('user')
             ;
     }
 

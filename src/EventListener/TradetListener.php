@@ -51,6 +51,7 @@ class TradetListener
         $user = $trade->getUser();
         $user->setWallet($trade->getUser()->getWallet()+$trade_balance);
         $em->persist($user);
+        $em->flush();
 
         if (!$trade->getUser()->getStock()){ //missing stock
             $stock_user = new Stock();
