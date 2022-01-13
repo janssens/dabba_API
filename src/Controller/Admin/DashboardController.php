@@ -11,10 +11,12 @@ use App\Entity\Container;
 use App\Entity\ExternalWasteSave;
 use App\Entity\MealType;
 use App\Entity\Movement;
+use App\Entity\Order;
 use App\Entity\Restaurant;
 use App\Entity\Stock;
 use App\Entity\Tag;
 use App\Entity\User;
+use App\Entity\WalletAdjustment;
 use App\Entity\Zone;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -62,6 +64,7 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud('Conteneurs Dadda', 'fas fa-toolbox', Container::class);
             yield MenuItem::linkToCrud('Déchets extérieur', 'fas fa-recycle', ExternalWasteSave::class);
             yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-user', User::class);
+            yield MenuItem::linkToCrud('Commandes', 'fas fa-credit-card', Order::class);
             yield MenuItem::linkToRoute('Import restaurants','fas fa-file-import','restaurant_import');
         }
 

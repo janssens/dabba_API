@@ -92,6 +92,18 @@ services:
               entity: App\Entity\PaymentToken
         arguments:
             $systemPay: '@App\Service\SystemPay'
+    App\EventListener\CodePromoListener:
+        class: App\EventListener\CodePromoListener
+        tags:
+            - name: doctrine.orm.entity_listener
+              event: preUpdate
+              entity: App\Entity\CodePromo
+            - name: doctrine.orm.entity_listener
+              event: prePersist
+              entity: App\Entity\CodePromo
+            - name: doctrine.orm.entity_listener
+              event: postUpdate
+              entity: App\Entity\CodePromo
     App\EventListener\TradetListener:
         class: App\EventListener\TradetListener
         tags :

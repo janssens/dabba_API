@@ -1,0 +1,49 @@
+{# templates/admin/crud/inventory.html.twig #}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title 'Cagnotte de '~user %}
+{% block page_content %}
+    Cagnotte actuelle de {{ user.firstname }} {{ user.lastname }}
+    <div style="padding: 1rem; display: block; background: #efefef; border: 2px solid black; border-radius: var(--border-radius);margin: 1rem 0;width: 5rem; text-align: center; margin: auto">
+        <strong>{{ user.wallet }}&nbsp;&euro;</strong>
+    </div>
+    <h3><i class="fa-fw fas fa-wallet"></i>Registre de la cagnotte</h3>
+    <table class="table datagrid with-rounded-top ">
+        <thead>
+            <tr>
+                <th style="padding: 0.35rem;">date</th>
+                <th style="padding: 0.35rem;">type</th>
+                <th style="padding: 0.35rem;">montant</th>
+                <th style="padding: 0.35rem;">opérateur</th>
+                <th style="padding: 0.35rem;">notes</th>
+                <th style="padding: 0.35rem;">extra data</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for wa in user.WalletAdjustments %}
+            <tr data-id="{{ wa.id }}">
+                <td style="padding: 0.35rem;">{{ wa.createdAt | date }}</td>
+                <td style="padding: 0.35rem;">{{ wa.typeAsTxt }}</td>
+                <td style="padding: 0.35rem;">{{ wa.amount }}</td>
+                <td style="padding: 0.35rem;">{{ wa.operateur }}</td>
+                <td style="padding: 0.35rem;">{{ wa.notes }}</td>
+                <td style="padding: 0.35rem;">{{ wa.extra }}</td>
+            </tr>
+        {% endfor %}
+            <tr>
+                <td></td>
+                <td style="text-align: right;font-weight: bold;" >Total</td>
+                <td style="font-weight: bold;">{{ user.computedWallet }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="margin-top: 1rem;">
+        <h3>Ajuster le montant de la cagnotte</h3>
+        <div style="padding: 1rem; display: block; border: 1px solid #dddddd; border-radius: var(--border-radius);margin: 1rem 0;">
+            {{ form(form) }}
+        </div>
+    </div>
+{% endblock %}

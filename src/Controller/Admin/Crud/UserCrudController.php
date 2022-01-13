@@ -4,6 +4,7 @@ namespace App\Controller\Admin\Crud;
 
 use App\Entity\CodePromo;
 use App\Entity\User;
+use App\Entity\WalletAdjustment;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -16,12 +17,26 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserCrudController extends AbstractCrudController
 {
+    private $adminUrlGenerator;
+
+    public function __construct(AdminUrlGenerator $adminUrlGenerator)
+    {
+        $this->adminUrlGenerator = $adminUrlGenerator;
+    }
+
     public static function getEntityFqcn(): string
     {
         return User::class;
@@ -45,19 +60,10 @@ class UserCrudController extends AbstractCrudController
             ;
     }
 
+
     public function configureActions(Actions $actions): Actions
     {
         $actions = parent::configureActions($actions);
-//        $actions->addBatchAction(Action::new('makeAdminDto', 'ajouter role Admin')
-//            ->linkToCrudAction('makeAdminDto')
-//            ->addCssClass('btn btn-secondary')
-//            ->setIcon('fa fa-user-shield'))
-//        ;
-//        $actions->addBatchAction(Action::new('removeAdminDto', 'supprimer role Admin')
-//            ->linkToCrudAction('removeAdminDto')
-//            ->addCssClass('btn btn-danger')
-//            ->setIcon('fa fa-user'))
-//        ;
         $make_admin_action = Action::new('makeAdmin', 'Make ADMIN','fas fa-user-shield')
             ->displayIf(static function ($entity) { /** @var User $entity */
                 return !$entity->hasRoles('ROLE_ADMIN') && !$entity->hasRoles('ROLE_SUPER_ADMIN');
@@ -81,12 +87,70 @@ class UserCrudController extends AbstractCrudController
                 ->setIcon('fa fa-file-download'))
         ;
 
+        $wallet = Action::new('wallet', 'Cagnotte', 'fa fa-wallet')
+            ->linkToCrudAction('wallet');
+        $actions->add(Crud::PAGE_INDEX, $wallet);
+
         $actions->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN');
         $actions->setPermission('makeAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('makeSuperAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('removeAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('download', 'ROLE_SUPER_ADMIN');
         return $actions;
+    }
+
+    public function wallet(AdminContext $context,Request $request)
+    {
+        /** @var User $user */
+        $user = $context->getEntity()->getInstance();
+        $em = $this->getDoctrine()->getManager();
+
+        $formBuilder = $this->createFormBuilder()
+            ->add('qty', IntegerType::class, ['label' => 'Nouveau montant'])
+            ->add('notes', TextType::class, ['label' => 'Notes'])
+            ->add('save', SubmitType::class, ['label' => 'Valider nouveau montant']);
+
+        $form = $formBuilder->getForm();
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $new_wallet = $form->get('qty')->getData();
+            if ($new_wallet<0 ){
+                throw new \Exception('negative wallet is not allowed');
+            }
+
+            $delta = $new_wallet - $user->getWallet();
+
+            $wa = new WalletAdjustment();
+            $wa->setCreatedAt(new \DateTimeImmutable());
+            $wa->setAmount(abs($delta));
+            $wa->setNotes($form->get('notes')->getData());
+            $wa->setUser($user);
+            if ($delta<0){
+                $wa->setType(WalletAdjustment::TYPE_REFUND);
+            }else{
+                $wa->setType(WalletAdjustment::TYPE_CREDIT);
+            }
+            $wa->setAdmin($this->getUser());
+
+            $user->setWallet($new_wallet);
+
+            $em->persist($wa);
+            $em->persist($user);
+            $em->flush();
+
+            $url = $this->adminUrlGenerator
+                ->setController(UserCrudController::class)
+                ->setAction('wallet')
+                ->generateUrl();
+
+            return $this->redirect($url);
+        }
+
+        return $this->render('admin/crud/wallet.html.twig',
+            [
+                'user'=>$user,
+                'form' => $form->createView()
+            ]);
     }
 
     public function makeAdmin(AdminContext $context)
@@ -124,32 +188,6 @@ class UserCrudController extends AbstractCrudController
     }
 
 
-//    public function makeAdminDto(BatchActionDto $batchActionDto)
-//    {
-//        $entityManager = $this->getDoctrine()->getManagerForClass($batchActionDto->getEntityFqcn());
-//        foreach ($batchActionDto->getEntityIds() as $id) {
-//            /** @var User $user */
-//            $user = $entityManager->find(User::class,$id);
-//            $user->addRole('ROLE_ADMIN');
-//            $entityManager->persist($user);
-//        }
-//        $entityManager->flush();
-//        return $this->redirect($batchActionDto->getReferrerUrl());
-//    }
-//
-//    public function removeAdminDto(BatchActionDto $batchActionDto)
-//    {
-//        $entityManager = $this->getDoctrine()->getManagerForClass($batchActionDto->getEntityFqcn());
-//        foreach ($batchActionDto->getEntityIds() as $id) {
-//            /** @var User $user */
-//            $user = $entityManager->find(User::class,$id);
-//            $user->removeRole('ROLE_ADMIN');
-//            $entityManager->persist($user);
-//        }
-//        $entityManager->flush();
-//        return $this->redirect($batchActionDto->getReferrerUrl());
-//    }
-
     public function configureFields(string $pageName): iterable
     {
         return [
@@ -162,7 +200,7 @@ class UserCrudController extends AbstractCrudController
             EmailField::new('email'),
             IntegerField::new('wallet','cagnotte'),
             TextField::new('getRolesList','Roles'),
-            TextField::new('Zone'),
+            AssociationField::new('zone'),
             BooleanField::new('isVerified','email validé'),
         ];
     }

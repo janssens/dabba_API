@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=CodePromoRepository::class)
- * @ORM\EntityListeners({"App\EventListener\CodePromoListener"})
  * @ApiResource(
  *     collectionOperations={
  *          "promocode_apply" = {
