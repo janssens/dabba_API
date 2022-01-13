@@ -208,5 +208,6 @@ class WalletAdjustment
         if ($this->getFromTrade()){
             return 'RESTAURANT #'.$this->getFromTrade()->getRestaurant()->getId().' '.$this->getFromTrade()->getRestaurant()->getName();
         }
+        return '';
     }
 }
