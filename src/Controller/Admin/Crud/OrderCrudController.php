@@ -40,6 +40,7 @@ class OrderCrudController extends AbstractCrudController
         return $filters
             ->add('id')
             ->add(DateTimeFilter::new('created_at','date de creation'))
+            ->add('user')
             ->add(ChoiceFilter::new('state','etat')->setChoices([
                 'NEW' => Order::STATE_NEW,
                 'PAID' => Order::STATE_PAID,
