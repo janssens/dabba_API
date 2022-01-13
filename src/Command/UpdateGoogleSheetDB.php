@@ -75,8 +75,8 @@ class UpdateGoogleSheetDB extends Command
         $this->exportEntity(["id"=>"ID","name"=>"Name"],Zone::class,$io);
         $this->exportEntity(["id"=>"ID","name"=>"Name"],Container::class,$io);
         $this->exportEntity(["id"=>"ID","name"=>"Name","zone"=>"Zone"],Restaurant::class,$io);
-        $this->exportEntity(["id"=>"ID","email"=>"Mail","zone"=>"Zone"],User::class,$io);
-        $this->exportEntity(["id"=>"ID","created_at"=>"Date","user"=>"Utilisateur","restaurant"=>"Restaurant"],Trade::class,$io);
+        $this->exportEntity(["id"=>"ID","email"=>"Mail","zone"=>"Zone","created_at"=>"Date d'enregistrement"],User::class,$io);
+        $this->exportEntity(["id"=>"ID","created_at"=>"Date","user"=>"Utilisateur","restaurant"=>"Restaurant","items_as_txt"=>"Contenants"],Trade::class,$io);
         $this->exportEntity(["id"=>"ID","created_at"=>"Date","amount"=>"montant","user"=>"Utilisateur","current_state"=>"state"],Order::class,$io);
         $this->exportEntity(["id"=>"ID","created_at"=>"Date","reason_txt"=>"Raison","container"=>"Contenant","stock_from"=>"Depuis","stock_to"=>"Vers","quantity"=>"Quantité"],Movement::class,$io);
         $this->exportEntity(["id"=>"ID","type_to_string"=>"Type","link_id"=>"id associé"],Stock::class,$io);
