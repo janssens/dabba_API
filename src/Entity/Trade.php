@@ -171,4 +171,17 @@ class Trade
         }
         return $needs;
     }
+
+    public function getItemsAsTxt($type = null): string
+    {
+        $lines = [];
+        foreach ($this->getItems() as $item){
+            if (!$type || $type == $item->getType()) {
+                $line = ($item->getType() === TradeItem::TYPE_DEPOSIT) ? 'Depot' : 'Retrait';
+                $line .= ' ' . $item->getQuantity() . 'x ' . $item->getContainer()->getName();
+                $lines[] = $line;
+            }
+        }
+        return implode("\n",$lines);
+    }
 }

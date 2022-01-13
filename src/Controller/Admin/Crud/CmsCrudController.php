@@ -4,6 +4,7 @@ namespace App\Controller\Admin\Crud;
 
 use App\Entity\Cms;
 use App\Entity\Color;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -26,6 +27,13 @@ class CmsCrudController extends AbstractCrudController
         return Cms::class;
     }
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('Contenu dynamique')
+            ->setEntityLabelInPlural('Contenus dynamiques')
+            ->setEntityPermission('ROLE_ADMIN');
+    }
 
     public function configureFields(string $pageName): iterable
     {

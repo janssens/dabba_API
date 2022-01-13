@@ -232,6 +232,12 @@ class User implements UserInterface
      */
     private $created_at;
 
+    /**
+     * @ORM\OneToMany(targetEntity=WalletAdjustment::class, mappedBy="user")
+     * @ORM\OrderBy({"created_at" = "ASC"})
+     */
+    private $walletAdjustments;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -240,6 +246,7 @@ class User implements UserInterface
         $this->trades = new ArrayCollection();
         $this->paymentTokens = new ArrayCollection();
         $this->codePromos = new ArrayCollection();
+        $this->walletAdjustments = new ArrayCollection();
     }
 
     /**
@@ -617,6 +624,22 @@ class User implements UserInterface
         return $this;
     }
 
+    public function addToWallet(?float $amount): self
+    {
+        $this->wallet += $amount;
+
+        return $this;
+    }
+
+    public function getComputedWallet(): ?float
+    {
+        $b = 0;
+        foreach ($this->getWalletAdjustments() as $walletAdjustment){
+            $b += $walletAdjustment->getBalance();
+        }
+        return $b;
+    }
+
     public function getFidelity(): ?int
     {
         if (!$this->fidelity)
@@ -729,6 +752,36 @@ class User implements UserInterface
     public function setCreatedAt(?\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|WalletAdjustment[]
+     */
+    public function getWalletAdjustments(): Collection
+    {
+        return $this->walletAdjustments;
+    }
+
+    public function addWalletAdjustment(WalletAdjustment $walletAdjustment): self
+    {
+        if (!$this->walletAdjustments->contains($walletAdjustment)) {
+            $this->walletAdjustments[] = $walletAdjustment;
+            $walletAdjustment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWalletAdjustment(WalletAdjustment $walletAdjustment): self
+    {
+        if ($this->walletAdjustments->removeElement($walletAdjustment)) {
+            // set the owning side to null (unless already changed)
+            if ($walletAdjustment->getUser() === $this) {
+                $walletAdjustment->setUser(null);
+            }
+        }
 
         return $this;
     }

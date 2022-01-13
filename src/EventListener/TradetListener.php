@@ -6,6 +6,7 @@ use App\Entity\Container;
 use App\Entity\Movement;
 use App\Entity\Stock;
 use App\Entity\TradeItem;
+use App\Entity\WalletAdjustment;
 use App\Exception\NotEnoughCredit;
 use App\Exception\NotEnoughStock;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -49,9 +50,27 @@ class TradetListener
         $em = $eventArgs->getEntityManager();
         $trade_balance = $trade->getBalance();
         $user = $trade->getUser();
-        $user->setWallet($trade->getUser()->getWallet()+$trade_balance);
+        $user->addToWallet($trade_balance);
         $em->persist($user);
         $em->flush();
+
+        $amount = intval($trade->getBalance());
+        if ($amount != 0){
+            $walletAdjustment = new WalletAdjustment();
+            $walletAdjustment->setCreatedAt($trade->getCreatedAt());
+            $walletAdjustment->setAmount(abs($amount));
+            $walletAdjustment->setUser($trade->getUser());
+            if ($amount < 0) {
+                $walletAdjustment->setType(WalletAdjustment::TYPE_DEBIT);
+                $walletAdjustment->setNotes($trade->getItemsAsTxt());
+            }else{
+                $walletAdjustment->setType(WalletAdjustment::TYPE_CREDIT);
+                $walletAdjustment->setNotes($trade->getItemsAsTxt());
+            }
+            $walletAdjustment->setFromTrade($trade);
+            $em->persist($walletAdjustment);
+            $em->flush();
+        }
 
         if (!$trade->getUser()->getStock()){ //missing stock
             $stock_user = new Stock();
@@ -60,6 +79,15 @@ class TradetListener
             $trade->getUser()->setStock($stock_user);
             $em->persist($stock_user);
         }
+        //affect the right Zone
+        if (!$user->getZone() || $user->getZone()->getIsDefault()){
+            if ($zone = $trade->getRestaurant()->getZone()){
+                $user->setZone($zone);
+                $em->persist($user);
+                $em->flush();
+            }
+        }
+
         if (!$trade->getRestaurant()->getStock()){ //missing stock
             $stock_restaurant = new Stock();
             $stock_restaurant->setType(Stock::TYPE_RESTAURANT);

@@ -19,32 +19,14 @@ class CodePromoRepository extends ServiceEntityRepository
         parent::__construct($registry, CodePromo::class);
     }
 
-    // /**
-    //  * @return CodePromo[] Returns an array of CodePromo objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findUsed()
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('c.used_at IS NOT NULL')
             ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
-        ;
+            ;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?CodePromo
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

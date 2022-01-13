@@ -116,9 +116,15 @@ class Transaction
      */
     private $mode;
 
-    public function getId(): ?int
+    public function __toString() :string
     {
-        return $this->id;
+        //$this->getCreationDate()->format(\DateTime::ATOM)
+        $r = '[#'.$this->getUuid().']'.' CARD + '.$this->getAmount().' '.$this->getCurrency();
+        //.' MODE '.(($this->getMode()==Transaction::MODE_PROD) ? 'PROD' : 'TEST');
+        if ($this->getErrorMessage()){
+            $r.='-> ERROR '.$this->getErrorMessage();
+        }
+        return $r;
     }
 
     public function getUuid()

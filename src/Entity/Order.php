@@ -127,6 +127,7 @@ class Order
 
     /**
      * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="parent", orphanRemoval=true)
+     * @ORM\OrderBy({"creationDate" = "ASC"})
      */
     private $transactions;
 
@@ -172,6 +173,11 @@ class Order
         return $this;
     }
 
+    public function getStatusAsString(): ?string
+    {
+        return self::statusToString($this->status);
+    }
+
     public function getUser(): ?User
     {
         return $this->user;
@@ -195,6 +201,11 @@ class Order
     public function getState(): ?int
     {
         return $this->state;
+    }
+
+    public function getStateAsString(): ?string
+    {
+        return self::stateToString($this->state);
     }
 
     public function setState(int $state): self
@@ -286,6 +297,47 @@ class Order
         return $code;
     }
 
+    static function statusToString(int $satus) : string
+    {
+        switch ($satus) {
+            case self::STATUS_ACCEPTED:
+                return 'ACCEPTED';
+                break;
+            case self::STATUS_AUTHORISED;
+                return 'AUTHORISED';
+                break;
+            case self::STATUS_CAPTURED;
+                return 'CAPTURED';
+                break;
+            case self::STATUS_PARTIALLY_AUTHORISED;
+                return 'PARTIALLY_AUTHORISED';
+                break;
+            case self::STATUS_WAITING_AUTHORISATION;
+                return 'WAITING_AUTHORISATION';
+                break;
+            case self::STATUS_AUTHORISED_TO_VALIDATE;
+                return 'AUTHORISED_TO_VALIDATE';
+                break;
+            case self::STATUS_WAITING_AUTHORISATION_TO_VALIDATE;
+                return 'WAITING_AUTHORISATION_TO_VALIDATE';
+                break;
+            case self::STATUS_REFUSED;
+                return 'REFUSED';
+                break;
+            case self::STATUS_ERROR;
+                return 'ERROR';
+                break;
+            case self::STATUS_CANCELLED;
+                return 'CANCELLED';
+                break;
+            case self::STATUS_EXPIRED;
+                return 'EXPIRED';
+                break;
+            default:
+                return 'N/A';
+        }
+    }
+
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
@@ -304,6 +356,15 @@ class Order
     public function getTransactions(): Collection
     {
         return $this->transactions;
+    }
+
+    public function getTransactionsAsTxt(): string
+    {
+        $transations = [];
+        foreach ($this->getTransactions() as $transaction){
+            $transations[] = $transaction->__toString();
+        }
+        return implode(",\n",$transations);
     }
 
     public function addTransaction(Transaction $transaction): self
