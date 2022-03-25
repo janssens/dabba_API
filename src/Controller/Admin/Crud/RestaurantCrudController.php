@@ -9,6 +9,7 @@ use App\Entity\Restaurant;
 use App\Entity\Stock;
 use App\Entity\Zone;
 use App\Form\ZoneType;
+use App\Service\Place;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -42,10 +43,12 @@ use function PHPUnit\Framework\throwException;
 class RestaurantCrudController extends AbstractCrudController
 {
     private $adminUrlGenerator;
+    private $place;
 
-    public function __construct(AdminUrlGenerator $adminUrlGenerator)
+    public function __construct(AdminUrlGenerator $adminUrlGenerator,Place $place)
     {
         $this->adminUrlGenerator = $adminUrlGenerator;
+        $this->place = $place;
     }
 
     public static function getEntityFqcn(): string
@@ -71,6 +74,11 @@ class RestaurantCrudController extends AbstractCrudController
                 ->linkToCrudAction('createMissingQr')
                 ->addCssClass('btn btn-secondary')
                 ->setIcon('fa fa-qrcode'));
+        $actions
+            ->addBatchAction(Action::new('createMissingPlaceId', 'trouver Google Place Id si manquant')
+                ->linkToCrudAction('createMissingPlaceId')
+                ->addCssClass('btn btn-secondary')
+                ->setIcon('fa fa-map-marker'));
         $inventory = Action::new('inventory', 'Inventaire', 'fa fa-box')
             ->linkToCrudAction('inventory');
         $actions->add(Crud::PAGE_INDEX, $inventory);
@@ -94,6 +102,7 @@ class RestaurantCrudController extends AbstractCrudController
             BooleanField::new('show_on_map','visible sur la carte')->onlyWhenUpdating(),
             TelephoneField::new('phone','telephone')->hideOnIndex(),
             BooleanField::new('hasValidCode','Qr code valide')->onlyOnIndex(),
+            TextField::new('google_place_id','Google Place ID ')->onlyOnIndex(),
             TextField::new('website')->onlyWhenUpdating(),
             AssociationField::new('tags')->hideOnIndex(),
             AssociationField::new('mealTypes')->hideOnIndex()
@@ -117,6 +126,52 @@ class RestaurantCrudController extends AbstractCrudController
                 $qr->setRestaurant($restaurant);
                 $qr->setEnabled(true);
                 $entityManager->persist($qr);
+            }
+        }
+        $entityManager->flush();
+        return $this->redirect($batchActionDto->getReferrerUrl());
+    }
+
+    public function createMissingPlaceId(BatchActionDto $batchActionDto)
+    {
+        $entityManager = $this->getDoctrine()->getManagerForClass($batchActionDto->getEntityFqcn());
+        foreach ($batchActionDto->getEntityIds() as $id) {
+            /** @var Restaurant $restaurant */
+            $restaurant = $entityManager->find(Restaurant::class,$id);
+            if (!$restaurant->getGooglePlaceId()){
+                $data = $this->place->search($restaurant->getName(),$restaurant->getFormattedAddress());
+                if (!isset($data['error'])){
+                    if (count($data['success'])>1){
+                        throw new \Exception('Not only one result');
+                    }else{
+                        $found = $data['success'][0];
+                        $restaurant->setLat($found['geometry']['location']['lat']);
+                        $restaurant->setLng($found['geometry']['location']['lng']);
+                        $restaurant->setFormattedAddress($found['formatted_address']);
+                        $restaurant->setGooglePlaceId($found['place_id']);
+
+                        $exist = $entityManager->getRepository(Restaurant::class)->findOneBy(['google_place_id'=>$restaurant->getGooglePlaceId()]);
+                        /** @var Restaurant $exist */
+                        if ($exist){
+                            throw new \Exception('A restaurant with the same google place id already exist : #'.$exist->getId().' '.$exist->getName().' (google place id = "'.$exist->getGooglePlaceId().'")');
+                        }
+                        $details = $this->place->getDetails($found['place_id']);
+                        if (isset($details['success'])){
+                            if (isset($details['success']['opening_hours'])) {
+                                $restaurant->setOpeningHours($details['success']['opening_hours']['weekday_text']);
+                            }
+                            if (isset($details['success']['website'])){
+                                $restaurant->setWebsite($details['success']['website']);
+                            }
+                            if (isset($details['success']['formatted_phone_number'])) {
+                                $restaurant->setPhone($details['success']['formatted_phone_number']);
+                            }
+                        }
+                    }
+                }else{
+                    throw new \Exception($data['error']);
+                }
+                $entityManager->persist($restaurant);
             }
         }
         $entityManager->flush();
