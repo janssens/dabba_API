@@ -2,31 +2,30 @@
 
 namespace App\Controller;
 
-use App\Entity\Cms;
-use App\Entity\HomeResponse;
-use App\Entity\Movement;
+use App\Entity\AccessToken;
 use App\Entity\Restaurant;
-use App\Entity\Tag;
 use App\Entity\User;
-use App\Entity\Zone;
-use App\Service\SystemPay;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use http\Header;
-use PhpParser\Node\Expr\Array_;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
+use App\Repository\AccessTokenRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
-use OpenApi\Annotations as OA;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class UserController extends AbstractController
 {
+    /** @var UserPasswordEncoderInterface  */
+    private $passwordEncoder;
+    /** @var AccessTokenRepository  */
+    private $accessTokentRepo;
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder,AccessTokenRepository $accessTokenRepository)
+    {
+        $this->passwordEncoder = $passwordEncoder;
+        $this->accessTokentRepo = $accessTokenRepository;
+    }
 
     /**
      * @Route(
@@ -83,6 +82,46 @@ class UserController extends AbstractController
         $em->persist($current_user);
         $em->flush();
         return $current_user;
+    }
+
+    /**
+     * @param Request $request
+     * @Route("/api/users/forget_me",name="api_user_forget")
+     */
+    public function forgetMe(Request $request): Response
+    {
+        $em = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        if (!$user){
+            return $this->json(['message'=>'Please login','code'=>503],503);
+        }
+
+        $password = $request->get('password');
+
+        if (!$password){
+            return $this->json(['message'=>'Please provide the user current password','code'=>400],400);
+        }
+
+        $test = $this->passwordEncoder->isPasswordValid($user,$password);
+
+        if ($test){
+            $user->eraseCredentials();
+            $user->setIsVerified(false);
+            $user->setFirstname('');
+            $user->setLastName('');
+            $user->setEmail('anonymous_'.date('YmdHis').'@localhost');
+            $user->setDob(null);
+            $user->setRoles(['ROLE_ANONYMOUS']);
+            $em->persist($user);
+            foreach ($this->accessTokentRepo->findAllActiveForUser($user) as $token){
+                $token->revoke();
+                $em->persist($token);
+            }
+            $em->flush();
+        }else{
+            throw new AccessDeniedException();
+        }
+        return $this->json([],200);
     }
 
 }
