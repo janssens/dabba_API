@@ -50,7 +50,31 @@ use ApiPlatform\Core\Action\NotFoundAction;
  *                  "summary"="Get current user data",
  *                  "description"="Get current user data",
  *              },
- *          }
+ *          },
+ *         "forget_me"={
+ *              "method"="POST",
+ *              "route_name"="api_user_forget",
+ *              "openapi_context"={
+ *                  "summary"="Forget user",
+ *                  "description"="Remove all user data",
+ *                  "requestBody" = {
+ *                      "required"=true,
+ *                      "content"={
+ *                          "application/x-www-form-urlencoded"={
+ *                              "schema"={
+ *                                  "type"="object",
+ *                                  "properties"={
+ *                                      "password"={
+ *                                          "type"="string",
+ *                                          "format" = "password",
+ *                                      },
+ *                                  },
+ *                              },
+ *                          },
+ *                      },
+ *                  },
+ *              },
+ *         },
  *     },
  *     itemOperations={
  *         "get"={

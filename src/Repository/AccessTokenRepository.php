@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\AccessToken;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -23,5 +24,22 @@ class AccessTokenRepository extends ServiceEntityRepository
     {
         $this->_em->persist($accessToken);
         $this->_em->flush();
+    }
+
+    /**
+     * @param User $user
+     * @return AccessToken[]
+     */
+    public function findAllActiveForUser(User $user)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.userId = :userId')
+            ->andWhere('a.revoked = 0')
+            ->setParameter('userId', $user->getId())
+            ->orderBy('a.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+            ;
     }
 }
