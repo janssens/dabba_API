@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\NotFoundAction;
 use App\Entity\User;
 use App\Form\ChangePasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -25,7 +26,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 /**
  *  @Route("")
  */
-class ResetPasswordController extends AbstractController
+class ResetPasswordController extends AbstractDashboardController
 {
     use ResetPasswordControllerTrait;
 
@@ -52,9 +53,8 @@ class ResetPasswordController extends AbstractController
                 $mailer
             );
         }
-
         return $this->render('reset_password/request.html.twig', [
-            'requestForm' => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 
