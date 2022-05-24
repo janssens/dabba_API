@@ -7,14 +7,18 @@
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
 
-<div class="w-screen h-screen flex justify-center items-center">
+<div class="flex h-screen justify-center items-center">
     <div class="p-10 bg-white rounded flex justify-center items-center flex-col shadow-md">
     <h1>Redéfinir mon mot de passe</h1>
 
-    {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email, {
+    {{ form_start(form) }}
+        <div class="alert alert-danger">
+            {{ form_errors(form) }}
+        </div>
+        {{ form_row(form.email, {
             label: 'E-mail'
         }) }}
+        {{ form_row(form._token) }}
         <div>
             <small>
                 Entre ton email et on t'envera un lien pour re-définir ton mot de passe.
@@ -23,7 +27,7 @@
         <div class="text-center w-full">
             <button class="bg-purple-600 hover:bg-purple-900 text-white font-bold p-2 rounded w-80 m-auto">Envoyer l'e-mail</button>
         </div>
-    {{ form_end(requestForm) }}
+    {{ form_end(form) }}
     </div>
 </div>
 {% endblock %}

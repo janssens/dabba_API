@@ -5,6 +5,7 @@ namespace App\Controller\Admin\Crud;
 use App\Entity\CodePromo;
 use App\Entity\User;
 use App\Entity\WalletAdjustment;
+use App\Repository\AccessTokenRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -31,10 +32,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class UserCrudController extends AbstractCrudController
 {
     private $adminUrlGenerator;
+    /** @var AccessTokenRepository  */
+    private $accessTokentRepo;
 
-    public function __construct(AdminUrlGenerator $adminUrlGenerator)
+    public function __construct(
+        AdminUrlGenerator $adminUrlGenerator,
+        AccessTokenRepository $accessTokenRepository
+    )
     {
         $this->adminUrlGenerator = $adminUrlGenerator;
+        $this->accessTokentRepo = $accessTokenRepository;
     }
 
     public static function getEntityFqcn(): string
@@ -76,9 +83,17 @@ class UserCrudController extends AbstractCrudController
             ->displayIf(static function ($entity) { /** @var User $entity */
                 return $entity->hasRoles('ROLE_ADMIN') && !$entity->hasRoles('ROLE_SUPER_ADMIN');
             })->linkToCrudAction('makeSuperAdmin');
+        $anonymize_action = Action::new('anonymize', 'Anonymiser','fas fa-user-secret')
+            ->displayIf(static function ($entity) { /** @var User $entity */
+                return !$entity->hasRoles('ROLE_ADMIN') && !$entity->hasRoles('ROLE_SUPER_ADMIN');
+            })->linkToCrudAction('anonymize');
         $actions->add(Crud::PAGE_INDEX, $make_admin_action);
         $actions->add(Crud::PAGE_INDEX, $remove_admin_action);
         $actions->add(Crud::PAGE_INDEX, $make_super_action);
+        $actions->add(Crud::PAGE_INDEX, $anonymize_action);
+
+        $actions->remove(Crud::PAGE_INDEX,Action::DELETE);
+        $actions->remove(Crud::PAGE_DETAIL,Action::DELETE);
 
         $actions
             ->addBatchAction(Action::new('download', 'Exporter les utilisateurs')
@@ -91,7 +106,7 @@ class UserCrudController extends AbstractCrudController
             ->linkToCrudAction('wallet');
         $actions->add(Crud::PAGE_INDEX, $wallet);
 
-        $actions->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN');
+        //$actions->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN');
         $actions->setPermission('makeAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('makeSuperAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('removeAdmin', 'ROLE_SUPER_ADMIN');
@@ -171,6 +186,27 @@ class UserCrudController extends AbstractCrudController
         $user->removeRole('ROLE_ADMIN');
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
+        $em->flush();
+        return $this->redirect($context->getReferrer());
+    }
+
+    public function anonymize(AdminContext $context)
+    {
+        /** @var User $user */
+        $user = $context->getEntity()->getInstance();
+        $user->eraseCredentials();
+        $user->setIsVerified(false);
+        $user->setFirstname('');
+        $user->setLastName('');
+        $user->setEmail('anonymous_'.date('YmdHis').'@localhost');
+        $user->setDob(null);
+        $user->setRoles(['ROLE_ANONYMOUS']);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        foreach ($this->accessTokentRepo->findAllActiveForUser($user) as $token){
+            $token->revoke();
+            $em->persist($token);
+        }
         $em->flush();
         return $this->redirect($context->getReferrer());
     }
