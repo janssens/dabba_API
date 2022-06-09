@@ -5,8 +5,6 @@ namespace App\Controller;
 use App\Infrastructure\oAuth2Server\Bridge\User;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use League\OAuth2\Server\Grant\PasswordGrant;
-use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -44,14 +42,16 @@ final class OAuth2Controller extends AbstractController
      */
     public function __construct(
         AuthorizationServer $authorizationServer,
-        PasswordGrant $passwordGrant,
-        RefreshTokenGrant $refreshTokenGrant,
-        AuthCodeGrant $authCodeGrant
-    ) {
+        AuthCodeGrant $authCodeGrant)
+    {
+        $authCodeGrant->disableRequireCodeChallengeForPublicClients();
+
+        $authorizationServer->enableGrantType(
+            $authCodeGrant,
+            new \DateInterval('PT1H') // access tokens will expire after 1 hour
+        );
+
         $this->authorizationServer = $authorizationServer;
-        $this->passwordGrant = $passwordGrant;
-        $this->refreshTokenGrant = $refreshTokenGrant;
-        $this->authCodeGrant = $authCodeGrant;
     }
 
     /**
@@ -59,13 +59,6 @@ final class OAuth2Controller extends AbstractController
      */
     public function authorize(ServerRequestInterface $request): ?Psr7Response
     {
-        $this->authCodeGrant->disableRequireCodeChallengeForPublicClients();
-
-        $this->authorizationServer->enableGrantType(
-            $this->authCodeGrant,
-            new \DateInterval('PT1H') // access tokens will expire after 1 hour
-        );
-
         $response = new Psr7Response();
 
         // https://oauth2.thephpleague.com/authorization-server/auth-code-grant/
@@ -110,13 +103,6 @@ final class OAuth2Controller extends AbstractController
      */
     public function token(ServerRequestInterface $request): ?Psr7Response
     {
-        $this->authCodeGrant->disableRequireCodeChallengeForPublicClients();
-
-        $this->authorizationServer->enableGrantType(
-            $this->authCodeGrant,
-            new \DateInterval('PT1H') // access tokens will expire after 1 hour
-        );
-
         $response = new Psr7Response();
 
         try {
