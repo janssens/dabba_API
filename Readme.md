@@ -10,3 +10,17 @@ REF: https://oauth2.thephpleague.com/installation/
     webpack encore build
 
     symfony run -d yarn encore prod
+
+## Running the project locally using Docker
+
+Install Docker, and run the command below
+
+```
+docker compose up
+```
+
+You will need to define the `DATABASE_URL` variable like below (using a `.env.local` file, for example)
+
+```
+DATABASE_URL="postgresql://postgres:dabba@postgres:5432/dabba?serverVersion=14&charset=utf8"
+```
