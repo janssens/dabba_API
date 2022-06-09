@@ -104,4 +104,37 @@ final class OAuth2Controller extends AbstractController
             return $response->withStatus(500)->withBody($body);
         }
     }
+
+    /**
+     * @Route("/token", name="oauth2_token", methods={"POST"})
+     */
+    public function token(ServerRequestInterface $request): ?Psr7Response
+    {
+        $this->authCodeGrant->disableRequireCodeChallengeForPublicClients();
+
+        $this->authorizationServer->enableGrantType(
+            $this->authCodeGrant,
+            new \DateInterval('PT1H') // access tokens will expire after 1 hour
+        );
+
+        $response = new Psr7Response();
+
+        try {
+
+            // Try to respond to the request
+            return $this->authorizationServer->respondToAccessTokenRequest($request, $response);
+
+        } catch (OAuthServerException $exception) {
+
+            // All instances of OAuthServerException can be formatted into a HTTP response
+            return $exception->generateHttpResponse($response);
+
+        } catch (\Exception $exception) {
+
+            // Unknown exception
+            $body = new Stream(fopen('php://temp', 'r+'));
+            $body->write($exception->getMessage());
+            return $response->withStatus(500)->withBody($body);
+        }
+    }
 }
