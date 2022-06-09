@@ -3,6 +3,7 @@
 REF: https://oauth2.thephpleague.com/installation/
 
     openssl genrsa -out private.key 2048
+    chmod 660 private.key
     openssl rsa -in private.key -pubout -out public.key
 
     php -r 'echo base64_encode(random_bytes(32)), PHP_EOL;'
