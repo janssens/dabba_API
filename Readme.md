@@ -22,5 +22,5 @@ docker compose up
 You will need to define the `DATABASE_URL` variable like below (using a `.env.local` file, for example)
 
 ```
-DATABASE_URL="postgresql://postgres:dabba@postgres:5432/dabba?serverVersion=14&charset=utf8"
+DATABASE_URL="mysql://dabba:dabba@mariadb:3306/dabba?serverVersion=10.3"
 ```
