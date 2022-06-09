@@ -49,7 +49,10 @@ final class AuthCodeRepository implements AuthCodeRepositoryInterface
      */
     public function revokeAuthCode($codeId)
     {
+        $authCode = $this->authCodeRepository->find($codeId);
+        $authCode->revoke();
 
+        $this->authCodeRepository->save($authCode);
     }
 
     /**
@@ -57,6 +60,8 @@ final class AuthCodeRepository implements AuthCodeRepositoryInterface
      */
     public function isAuthCodeRevoked($codeId)
     {
+        $authCode = $this->authCodeRepository->find($codeId);
 
+        return $authCode->isRevoked();
     }
 }

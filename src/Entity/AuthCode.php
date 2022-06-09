@@ -90,4 +90,14 @@ final class AuthCode
     {
         $this->client = $client;
     }
+
+    public function isRevoked()
+    {
+        return $this->revoked;
+    }
+
+    public function revoke()
+    {
+        $this->revoked = true;
+    }
 }
