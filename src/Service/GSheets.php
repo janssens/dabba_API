@@ -10,19 +10,28 @@ class GSheets
     private $logger;
     private $service;
     private $spreadsheetId;
+    private $credentials;
 
     public function __construct( Logger $logger,string $doc_id,string $credentials)
     {
         $this->logger = $logger;
-
-        $client = new \Google_Client();
-        $client->setApplicationName('Google Sheets and PHP');
-        $client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
-        $client->setAccessType('offline');
-        $client->setAuthConfig(__DIR__ . '/../../'.$credentials);
-        $this->service = new \Google_Service_Sheets($client);
-
+        $this->credentials = $credentials;
         $this->spreadsheetId = $doc_id;
+    }
+
+    private function getService()
+    {
+        if (null === $this->service) {
+            $client = new \Google_Client();
+            $client->setApplicationName('Google Sheets and PHP');
+            $client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
+            $client->setAccessType('offline');
+            $client->setAuthConfig(__DIR__ . '/../../'.$this->credentials);
+
+            $this->service = new \Google_Service_Sheets($client);
+        }
+
+        return $this->service;
     }
 
     public function update($class_name,$data){
@@ -31,11 +40,11 @@ class GSheets
         $body = new \Google_Service_Sheets_ValueRange(['values' => $data]);
         $params = ['valueInputOption' => 'RAW'];
         $this->createPageIfMissing($update_range);
-        $update_sheet = $this->service->spreadsheets_values->update($this->spreadsheetId, $update_range, $body, $params);
+        $update_sheet = $this->getService()->spreadsheets_values->update($this->spreadsheetId, $update_range, $body, $params);
     }
 
     private function createPageIfMissing($page){
-        $sheetInfo = $this->service->spreadsheets->get($this->spreadsheetId);
+        $sheetInfo = $this->getService()->spreadsheets->get($this->spreadsheetId);
         $all_sheet_info = $sheetInfo['sheets'];
         $idCats = array_column($all_sheet_info, 'properties');
         if (!$this->myArrayContainsWord($idCats, $page)) {
@@ -48,7 +57,7 @@ class GSheets
                     )
                 )
             ));
-            $result1 = $this->service->spreadsheets->batchUpdate($this->spreadsheetId,$bodyBatchUpdate);
+            $result1 = $this->getService()->spreadsheets->batchUpdate($this->spreadsheetId,$bodyBatchUpdate);
         }
     }
 
