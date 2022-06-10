@@ -12,8 +12,8 @@ class AuthorizeForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('approve', SubmitType::class, ['label' => 'Approve'])
-            ->add('deny', SubmitType::class, ['label' => 'Deny'])
+            ->add('approve', SubmitType::class, ['label' => 'Accepter'])
+            ->add('deny', SubmitType::class, ['label' => 'Refuser'])
         ;
     }
 }

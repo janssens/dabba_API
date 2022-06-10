@@ -4,8 +4,15 @@
 {% block title %}Authorize{% endblock %}
 
 {% block body %}
-    {{ form_start(form) }}
-        <p>Autorisez-vous "{{ client_name }}" à gérer votre compte Dabba ?</p>
-        {{ form_widget(form) }}
-    {{ form_end(form) }}
+    <div class="w-full sm:h-screen flex justify-center items-center bg-image bg-no-repeat bg-cover bg-center">
+        <div class="p-10 bg-white w-full sm:w-auto rounded flex justify-center items-center flex-col shadow-md">
+        {{ form_start(form) }}
+            <p class="text-center mb-2">Autorisez-vous "{{ client_name }}" à gérer votre compte Dabba ?</p>
+            <div class="flex flex-row gap-2">
+                {{ form_widget(form.approve, { attr: { class: 'bg-purple-600 hover:bg-purple-900 text-white font-bold p-2 rounded w-1/2' } }) }}
+                {{ form_widget(form.deny, { attr: { class: 'bg-purple-600 hover:bg-purple-900 text-white font-bold p-2 rounded w-1/2' } }) }}
+            </div>
+        {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}
