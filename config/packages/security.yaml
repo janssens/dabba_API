@@ -39,7 +39,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/oauth2/authorize, roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/oauth2/authorize, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/restaurants, roles: PUBLIC_ACCESS }
         - { path: ^/api/tags, roles: PUBLIC_ACCESS }
         - { path: ^/api/meal_types, roles: PUBLIC_ACCESS }
