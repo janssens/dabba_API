@@ -79,7 +79,7 @@ final class OAuth2Controller extends AbstractController
             // You will probably want to redirect the user at this point to a login endpoint.
 
             // Once the user has logged in set the user on the AuthorizationRequest
-            $authRequest->setUser(new User($this->getUser()->getEmail())); // an instance of UserEntityInterface
+            $authRequest->setUser(new User($this->getUser()->getId())); // an instance of UserEntityInterface
 
             if ($form->isSubmitted() && $form->isValid()) {
 
