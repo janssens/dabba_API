@@ -80,6 +80,15 @@ services:
     League\OAuth2\Server\Grant\RefreshTokenGrant:
         arguments:
             $refreshTokenRepository: '@App\Infrastructure\oAuth2Server\Bridge\RefreshTokenRepository'
+    oauth2.grants.auth_code.ttl:
+        class: \DateInterval
+        arguments:
+            - PT10M
+    League\OAuth2\Server\Grant\AuthCodeGrant:
+        arguments:
+            $authCodeRepository: '@App\Infrastructure\oAuth2Server\Bridge\AuthCodeRepository'
+            $refreshTokenRepository: '@App\Infrastructure\oAuth2Server\Bridge\RefreshTokenRepository'
+            $authCodeTTL: '@oauth2.grants.auth_code.ttl'
     App\MyResourceServer:
         arguments:
             $accessTokenRepository: '@App\Infrastructure\oAuth2Server\Bridge\AccessTokenRepository'
