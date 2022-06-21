@@ -41,6 +41,7 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/oauth2/authorize, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/restaurants, roles: PUBLIC_ACCESS }
+        - { path: ^/api/container, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api/tags, roles: PUBLIC_ACCESS }
         - { path: ^/api/meal_types, roles: PUBLIC_ACCESS }
         - { path: ^/api/cms, roles: PUBLIC_ACCESS, methods: [GET] }
