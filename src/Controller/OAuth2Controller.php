@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Infrastructure\oAuth2Server\Bridge\User;
+use App\Entity\Order;
 use App\Form\AuthorizeForm;
+use App\Service\SystemPay;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
@@ -45,7 +47,8 @@ final class OAuth2Controller extends AbstractController
      */
     public function __construct(
         AuthorizationServer $authorizationServer,
-        AuthCodeGrant $authCodeGrant)
+        AuthCodeGrant $authCodeGrant,
+        SystemPay $systemPay)
     {
         $authCodeGrant->disableRequireCodeChallengeForPublicClients();
 
@@ -55,6 +58,7 @@ final class OAuth2Controller extends AbstractController
         );
 
         $this->authorizationServer = $authorizationServer;
+        $this->systemPay = $systemPay;
     }
 
     /**
@@ -63,6 +67,35 @@ final class OAuth2Controller extends AbstractController
     public function authorize(Request $request, HttpMessageFactoryInterface $psrHttpFactory)
     {
         $response = new Psr7Response();
+
+        if ($request->query->has('expected_wallet')) {
+
+            // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/javascript/guide/payment_form.html
+            // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/kb/payment_done.html
+            // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/javascript/spa/
+
+            $currentWallet = $this->getUser()->getWallet();
+            $expectedAmount = $request->query->get('expected_wallet');
+            $amount = $expectedAmount - $currentWallet;
+
+            if ($amount > 0) {
+
+                $order = new Order();
+                $order->setAmount($amount);
+                $order->setUser($this->getUser());
+                $order->setState(Order::STATE_NEW);
+                $order->setStatus(Order::STATUS_NEW);
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($order);
+                $em->flush();
+
+                return $this->render('oauth2/wallet.html.twig', [
+                    'public_key' => $this->systemPay->getPublicKey(),
+                    'form_token' => $this->systemPay->getTokenForOrder($order),
+                ]);
+            }
+        }
 
         $form = $this->createForm(AuthorizeForm::class);
         $form->handleRequest($request);
