@@ -1,6 +1,6 @@
-{% extends 'base.html.twig' %}
+{% extends 'oauth.html.twig' %}
 
-{% block page_title 'OAuth2 wallet' %}
+{% block title 'Cagnotte' %}
 
 {% block javascripts %}
 
@@ -20,22 +20,23 @@
 {% endblock %}
 
 {% block body %}
-<div class="w-full sm:h-screen flex justify-center items-center bg-image bg-no-repeat bg-cover bg-center">
-    <div class="kr-embedded p-5 bg-white w-full"
-        kr-form-token="{{ form_token }}">
+<div class="w-full lg:w-1/2">
+    <div class="flex flex-col justify-center items-center">
+        <h3 class="text-center mb-3">Veuillez recharger votre cagnotte pour continuer</h3>
+        <div class="kr-embedded p-5 bg-white w-full rounded shadow-md"
+            kr-form-token="{{ form_token }}">
 
-        <h3>Veuillez recharger votre cagnotte pour continuer</h3>
+            <!-- payment form fields -->
+            <div class="kr-pan"></div>
+            <div class="kr-expiry"></div>
+            <div class="kr-security-code"></div>
 
-        <!-- payment form fields -->
-        <div class="kr-pan"></div>
-        <div class="kr-expiry"></div>
-        <div class="kr-security-code"></div>
+            <!-- payment form submit button -->
+            <button class="kr-payment-button rounded py-2 px-8 text-white font-bold shadow-md w-full mt-5 dabba-orange" ></button>
 
-        <!-- payment form submit button -->
-        <button class="kr-payment-button rounded-full py-2 px-8 bg-purple-600 hover:bg-purple-900 text-white font-bold shadow-md w-full" ></button>
-
-        <!-- error zone -->
-        <div class="kr-form-error"></div>
+            <!-- error zone -->
+            <div class="kr-form-error"></div>
+        </div>
     </div>
 </div>
 {% endblock %}

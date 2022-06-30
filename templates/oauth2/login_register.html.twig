@@ -1,0 +1,64 @@
+{% extends 'oauth.html.twig' %}
+
+{% form_theme registration_form 'form/login_register.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block javascripts %}
+    <script>
+    document.querySelectorAll('[data-toggle]').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector('form[name="registration_form"]').classList.toggle('hidden');
+            document.getElementById('login_form').classList.toggle('hidden');
+        });
+    });
+    </script>
+{% endblock %}
+
+{% block body %}
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <div class="w-full lg:w-1/2">
+        <h3 class="text-lg text-center mb-4">
+            Pour utiliser Dabba sur "{{ client_name }}", connectez-vous ou créez votre compte.
+        </h3>
+        <div class="p-8 bg-white rounded shadow-md">
+            <form id="login_form" class="flex justify-center items-center flex-col" method="post" action="{{ path('app_login') }}">
+                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="mb-5 p-3 w-full focus:border-purple-700 rounded border-2 outline-none" autocomplete="email" placeholder="E-mail" required autofocus>
+                <input type="password" name="password" class="mb-5 p-3 w-full focus:border-purple-700 rounded border-2 outline-none" placeholder="Mot de passe" autocomplete="current-password" required>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" >
+                <button class="bg-purple-600 hover:bg-purple-900 text-white font-bold p-4 rounded w-full dabba-orange" id="login" type="submit"><span>Connexion</span></button>
+                <p class="text-center mt-8">Vous n'avez pas de compte ? <a href="#" data-toggle>Créez votre compte Dabba</a>.</p>
+            </form>
+            {{ form_start(registration_form, { attr: { class: 'hidden' } }) }}
+                {{ form_row(registration_form.firstname, {
+                    label: false,
+                    attr: { placeholder: 'Mon prénom' }
+                }) }}
+                {{ form_row(registration_form.lastname, {
+                    label: false,
+                    attr: { placeholder: 'Mon nom' }
+                }) }}
+                {{ form_row(registration_form.email, {
+                    label: false,
+                    attr: { placeholder: 'E-mail' }
+                }) }}
+                {{ form_row(registration_form.plainPassword, {
+                    label: false,
+                    attr: { placeholder: 'Mot de passe' }
+                }) }}
+                <div class="mb-6">
+                    {{ form_label(registration_form.agreeTerms, 'Je valide les conditions générales', {
+                        widget: form_widget(registration_form.agreeTerms)
+                    }) }}
+                </div>
+                <button class="bg-purple-600 hover:bg-purple-900 text-white font-bold p-4 rounded w-full dabba-orange" type="submit"><span>Créer mon compte</span></button>
+                <p class="text-center mt-8">Vous avez déjà un compte ? <a href="#" data-toggle>Connectez-vous</a>.</p>
+            {{ form_end(registration_form) }}
+        </div>
+    </div>
+
+{% endblock %}

@@ -3,6 +3,8 @@
 @tailwind utilities;
 @tailwind forms;
 
+$dabba-orange: #F96C26;
+
 .bg-image{
     background-image: var(--bg-image);
 }
@@ -16,9 +18,21 @@ a{
 body#in_app{
     background-color: white;
     .kr-payment-button{
-        background: #F96C26;
+        background: $dabba-orange;
     }
     #inputField{
         background: red;
+    }
+}
+
+body.oauth {
+    background-color: #FEF9F4;
+    font-family: "Montserrat", Sans-serif;
+
+    button.dabba-orange {
+        background-color: $dabba-orange;
+        &:hover {
+            background-color: darken($dabba-orange, 10%);
+        }
     }
 }

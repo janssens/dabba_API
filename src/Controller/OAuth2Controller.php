@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use App\Infrastructure\oAuth2Server\Bridge\User;
 use App\Entity\Order;
+use App\Entity\Zone;
 use App\Form\AuthorizeForm;
+use App\Form\RegistrationFormType;
+use App\Security\LoginFormAuthenticator;
 use App\Service\SystemPay;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -17,6 +20,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Zend\Diactoros\Response as Psr7Response;
 use Zend\Diactoros\Stream;
 use ApiPlatform\Core\Documentation\Documentation;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 
 /**
@@ -64,38 +69,13 @@ final class OAuth2Controller extends AbstractController
     /**
      * @Route("/authorize", name="oauth2_authorize", methods={"GET", "POST"})
      */
-    public function authorize(Request $request, HttpMessageFactoryInterface $psrHttpFactory)
+    public function authorize(Request $request,
+        HttpMessageFactoryInterface $psrHttpFactory,
+        UserPasswordEncoderInterface $passwordEncoder,
+        LoginFormAuthenticator $loginAuthenticator,
+        GuardAuthenticatorHandler $guard)
     {
         $response = new Psr7Response();
-
-        if ($request->query->has('expected_wallet')) {
-
-            // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/javascript/guide/payment_form.html
-            // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/kb/payment_done.html
-            // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/javascript/spa/
-
-            $currentWallet = $this->getUser()->getWallet();
-            $expectedAmount = $request->query->get('expected_wallet');
-            $amount = $expectedAmount - $currentWallet;
-
-            if ($amount > 0) {
-
-                $order = new Order();
-                $order->setAmount($amount);
-                $order->setUser($this->getUser());
-                $order->setState(Order::STATE_NEW);
-                $order->setStatus(Order::STATUS_NEW);
-
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($order);
-                $em->flush();
-
-                return $this->render('oauth2/wallet.html.twig', [
-                    'public_key' => $this->systemPay->getPublicKey(),
-                    'form_token' => $this->systemPay->getTokenForOrder($order),
-                ]);
-            }
-        }
 
         $form = $this->createForm(AuthorizeForm::class);
         $form->handleRequest($request);
@@ -107,6 +87,83 @@ final class OAuth2Controller extends AbstractController
             $authRequest = $this->authorizationServer->validateAuthorizationRequest(
                 $psrHttpFactory->createRequest($request)
             );
+
+            $user = $this->getUser();
+
+            if (null === $user) {
+
+                $registrationForm = $this->createForm(RegistrationFormType::class);
+                $registrationForm->handleRequest($request);
+
+                if ($registrationForm->isSubmitted() && $registrationForm->isValid()) {
+
+                    $user = $registrationForm->getData();
+
+                    $user->setPassword(
+                        $passwordEncoder->encodePassword(
+                            $user,
+                            $registrationForm->get('plainPassword')->getData()
+                        )
+                    );
+                    $user->setIsVerified(true);
+
+                    $entityManager = $this->getDoctrine()->getManager();
+
+                    if (!$user->getZone())
+                        $user->setZone($entityManager->getRepository(Zone::class)->findDefault());
+
+                    $entityManager->persist($user);
+                    $entityManager->flush();
+
+                    // https://ourcodeworld.com/articles/read/1490/how-to-manually-sign-in-a-registered-user-in-symfony-5
+                    // https://stackoverflow.com/questions/66924935/how-to-manually-authenticate-user-after-registration-with-the-new-symfony-5-auth
+
+                    $guard->authenticateUserAndHandleSuccess(
+                        $user,
+                        $request,
+                        $loginAuthenticator,
+                        'main'
+                    );
+
+                    return $this->redirectToRoute('oauth2_authorize', $request->query->all());
+                }
+
+                return $this->render('oauth2/login_register.html.twig', [
+                    'client_name' => $authRequest->getClient()->getName(),
+                    'last_username' => '',
+                    'error' => '',
+                    'registration_form' => $registrationForm->createView(),
+                ]);
+            }
+
+            if ($request->query->has('expected_wallet')) {
+
+                // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/javascript/guide/payment_form.html
+                // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/kb/payment_done.html
+                // https://paiement.systempay.fr/doc/fr-FR/rest/V4.0/javascript/spa/
+
+                $currentWallet = $user->getWallet();
+                $expectedAmount = $request->query->get('expected_wallet');
+                $amount = $expectedAmount - $currentWallet;
+
+                if ($amount > 0) {
+
+                    $order = new Order();
+                    $order->setAmount($amount);
+                    $order->setUser($user);
+                    $order->setState(Order::STATE_NEW);
+                    $order->setStatus(Order::STATUS_NEW);
+
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($order);
+                    $em->flush();
+
+                    return $this->render('oauth2/wallet.html.twig', [
+                        'public_key' => $this->systemPay->getPublicKey(),
+                        'form_token' => $this->systemPay->getTokenForOrder($order),
+                    ]);
+                }
+            }
 
             // The auth request object can be serialized and saved into a user's session.
             // You will probably want to redirect the user at this point to a login endpoint.
