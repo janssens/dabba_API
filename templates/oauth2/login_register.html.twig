@@ -27,9 +27,10 @@
         </h3>
         <div class="p-8 bg-white rounded shadow-md">
             <form id="login_form" class="flex justify-center items-center flex-col" method="post" action="{{ path('app_login') }}">
-                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="mb-5 p-3 w-full focus:border-purple-700 rounded border-2 outline-none" autocomplete="email" placeholder="E-mail" required autofocus>
+                <input type="email" name="email" class="mb-5 p-3 w-full focus:border-purple-700 rounded border-2 outline-none" autocomplete="email" placeholder="E-mail" required autofocus>
                 <input type="password" name="password" class="mb-5 p-3 w-full focus:border-purple-700 rounded border-2 outline-none" placeholder="Mot de passe" autocomplete="current-password" required>
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" >
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <input type="hidden" name="_target_path" value="{{ path('oauth2_authorize', app.request.query.all) }}">
                 <button class="bg-purple-600 hover:bg-purple-900 text-white font-bold p-4 rounded w-full dabba-orange" id="login" type="submit"><span>Connexion</span></button>
                 <p class="text-center mt-8">Vous n'avez pas de compte ? <a href="#" data-toggle>Créez votre compte Dabba</a>.</p>
             </form>
