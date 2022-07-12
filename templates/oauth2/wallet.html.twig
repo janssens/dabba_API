@@ -1,0 +1,42 @@
+{% extends 'oauth.html.twig' %}
+
+{% block title 'Cagnotte' %}
+
+{% block javascripts %}
+
+    {#
+    On success, this will redirect to the authorization page,
+    but *WITHOUT* the expected_wallet parameter.
+    This way, the authorization flow will continue.
+    #}
+    {% set query_params = app.request.query|filter((v, k) => k != 'expected_wallet')|merge([]) %}
+    {% set post_url_success = url(app.request.get('_route'), query_params) %}
+
+    <script
+        src="https://api.systempay.fr/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
+        kr-public-key="{{ public_key }}"
+        kr-post-url-success="{{ post_url_success }}">
+    </script>
+{% endblock %}
+
+{% block body %}
+<div class="w-full lg:w-1/2">
+    <div class="flex flex-col justify-center items-center">
+        <h3 class="text-center mb-3">Veuillez recharger votre cagnotte pour continuer</h3>
+        <div class="kr-embedded p-5 bg-white w-full rounded shadow-md"
+            kr-form-token="{{ form_token }}">
+
+            <!-- payment form fields -->
+            <div class="kr-pan"></div>
+            <div class="kr-expiry"></div>
+            <div class="kr-security-code"></div>
+
+            <!-- payment form submit button -->
+            <button class="kr-payment-button rounded py-2 px-8 text-white font-bold shadow-md w-full mt-5 dabba-orange" ></button>
+
+            <!-- error zone -->
+            <div class="kr-form-error"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

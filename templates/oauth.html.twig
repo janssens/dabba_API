@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Dabba | {% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+    </head>
+    <body class="oauth">
+        <header>
+            <nav class="bg-white">
+                <div class="max-w-6xl mx-auto px-4">
+                    <div class="flex justify-between">
+                        <div>
+                            <a href="#" class="flex items-center py-4 px-2">
+                                <img src="{{ asset('logo.png') }}" alt="Dabba" class="block h-8 w-auto" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <section class="flex items-center justify-center h-screen px-4">
+            {% block body %}{% endblock %}
+        </section>
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </body>
+</html>
