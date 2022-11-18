@@ -13,7 +13,7 @@
     {% set post_url_success = url(app.request.get('_route'), query_params) %}
 
     <script
-        src="https://api.systempay.fr/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
+        src="https://static.systempay.fr/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
         kr-public-key="{{ public_key }}"
         kr-post-url-success="{{ post_url_success }}">
     </script>

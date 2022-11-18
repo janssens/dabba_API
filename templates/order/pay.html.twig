@@ -5,14 +5,14 @@
 {% block javascripts %}
     <!-- Javascript library. Should be loaded in head section -->
     <script
-            src="https://api.systempay.fr/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
+            src="https://static.systempay.fr/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
             kr-public-key="{{ public_key }}"
             kr-post-url-success="{{ absolute_url(path('app_order_payed')) }}">
     </script>
     <!-- theme and plugins. should be loaded after the javascript library -->
     <!-- not mandatory but helps to have a nice payment form out of the box -->
 {#    <script#}
-{#            src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">#}
+{#            src="https://static.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">#}
 {#    </script>#}
 {% endblock %}
 
