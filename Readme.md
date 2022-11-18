@@ -1,6 +1,6 @@
 # Dabba api
 
-REF: https://oauth2.thephpleague.com/installation/
+REF: [https://oauth2.thephpleague.com/installation/](https://oauth2.thephpleague.com/installation/)
 
     openssl genrsa -out private.key 2048
     chmod 660 private.key
@@ -25,4 +25,32 @@ You will need to define the `DATABASE_URL` variable like below (using a `.env.lo
 
 ```
 DATABASE_URL="mysql://dabba:dabba@mariadb:3306/dabba?serverVersion=10.3"
+```
+
+composer install
+```
+docker-compose exec php composer install
+```
+
+yarn install & watch (webpack)
+```
+docker-compose exec php yarn
+docker-compose exec php yarn watch
+```
+```
+docker-compose exec php bin/console assets:install
+```
+
+clean cache
+```
+docker-compose exec php bin/console cache:clear
+```
+
+mysql
+```
+docker-compose exec mariadb mysql -u dabba -pdabba dabba -e "SHOW TABLES;"
+```
+
+```
+docker-compose exec php chown www-data:www-data public.key private.key
 ```
