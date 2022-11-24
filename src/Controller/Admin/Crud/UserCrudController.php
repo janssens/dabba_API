@@ -95,7 +95,7 @@ class UserCrudController extends AbstractCrudController
             ->displayIf(static function ($entity) { /** @var User $entity */
                 return !$entity->hasRoles('ROLE_ADMIN') && !$entity->hasRoles('ROLE_SUPER_ADMIN');
             })->linkToCrudAction('anonymize');
-        $send_verify = Action::new('sendVerify', 'Send verify Email','fas fa-envelop')
+        $send_verify = Action::new('sendVerify', 'Send verify Email','fas fa-envelope')
             ->displayIf(static function ($entity) { /** @var User $entity */
                 return !$entity->isVerified();
             })->linkToCrudAction('sendVerify');
@@ -124,6 +124,7 @@ class UserCrudController extends AbstractCrudController
         $actions->setPermission('makeSuperAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('removeAdmin', 'ROLE_SUPER_ADMIN');
         $actions->setPermission('download', 'ROLE_SUPER_ADMIN');
+        $actions->setPermission('sendVerify', 'ROLE_ADMIN');
         return $actions;
     }
 
