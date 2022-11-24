@@ -102,6 +102,7 @@ class UserCrudController extends AbstractCrudController
         $actions->add(Crud::PAGE_INDEX, $make_admin_action);
         $actions->add(Crud::PAGE_INDEX, $remove_admin_action);
         $actions->add(Crud::PAGE_INDEX, $make_super_action);
+        $actions->add(Crud::PAGE_INDEX, $send_verify);
         $actions->add(Crud::PAGE_INDEX, $anonymize_action);
 
         $actions->remove(Crud::PAGE_INDEX,Action::DELETE);
