@@ -11,7 +11,7 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 /**
  * @ORM\Entity
  */
-final class AuthCode
+class AuthCode
 {
     /**
      * @ORM\Id

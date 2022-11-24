@@ -6,6 +6,7 @@ use App\Entity\CodePromo;
 use App\Entity\User;
 use App\Entity\WalletAdjustment;
 use App\Repository\AccessTokenRepository;
+use App\Security\EmailVerifier;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -23,25 +24,32 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Mime\Address;
 
 class UserCrudController extends AbstractCrudController
 {
     private $adminUrlGenerator;
     /** @var AccessTokenRepository  */
     private $accessTokentRepo;
+    /** @var EmailVerifier */
+    private $emailVerifier;
+
 
     public function __construct(
         AdminUrlGenerator $adminUrlGenerator,
-        AccessTokenRepository $accessTokenRepository
+        AccessTokenRepository $accessTokenRepository,
+        EmailVerifier $emailVerifier
     )
     {
         $this->adminUrlGenerator = $adminUrlGenerator;
         $this->accessTokentRepo = $accessTokenRepository;
+        $this->emailVerifier = $emailVerifier;
     }
 
     public static function getEntityFqcn(): string
@@ -87,6 +95,10 @@ class UserCrudController extends AbstractCrudController
             ->displayIf(static function ($entity) { /** @var User $entity */
                 return !$entity->hasRoles('ROLE_ADMIN') && !$entity->hasRoles('ROLE_SUPER_ADMIN');
             })->linkToCrudAction('anonymize');
+        $send_verify = Action::new('sendVerify', 'Send verify Email','fas fa-envelop')
+            ->displayIf(static function ($entity) { /** @var User $entity */
+                return !$entity->isVerified();
+            })->linkToCrudAction('sendVerify');
         $actions->add(Crud::PAGE_INDEX, $make_admin_action);
         $actions->add(Crud::PAGE_INDEX, $remove_admin_action);
         $actions->add(Crud::PAGE_INDEX, $make_super_action);
@@ -166,6 +178,20 @@ class UserCrudController extends AbstractCrudController
                 'user'=>$user,
                 'form' => $form->createView()
             ]);
+    }
+
+    public function sendVerify(AdminContext $context)
+    {
+        /** @var User $user */
+        $user = $context->getEntity()->getInstance();
+        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            (new TemplatedEmail())
+                ->from(new Address($this->getParameter('app.transactional_mail_sender'), 'Dabba consigne'))
+                ->to($user->getEmail())
+                ->subject('Confirme ton adresse e-mail pour créer ton compte dabba')
+                ->htmlTemplate('registration/confirmation_email.html.twig')
+        );
+        return $this->redirect($context->getReferrer());
     }
 
     public function makeAdmin(AdminContext $context)
