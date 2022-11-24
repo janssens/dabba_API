@@ -37,6 +37,5 @@ services:
     image: sj26/mailcatcher
     ports:
       - "1080:1080"
-      - "1080:1080"
 volumes:
   mariadb_data:
