@@ -95,7 +95,7 @@ class UserCrudController extends AbstractCrudController
             ->displayIf(static function ($entity) { /** @var User $entity */
                 return !$entity->hasRoles('ROLE_ADMIN') && !$entity->hasRoles('ROLE_SUPER_ADMIN');
             })->linkToCrudAction('anonymize');
-        $send_verify = Action::new('sendVerify', 'Send verify Email','fas fa-envelope')
+        $send_verify = Action::new('sendVerify', 'Envoyer email vérification','fas fa-envelope')
             ->displayIf(static function ($entity) { /** @var User $entity */
                 return !$entity->isVerified();
             })->linkToCrudAction('sendVerify');
