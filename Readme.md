@@ -27,7 +27,7 @@ You will need to define the `DATABASE_URL` variable like below (using a `.env.lo
 DATABASE_URL="mysql://dabba:dabba@mariadb:3306/dabba?serverVersion=10.3"
 ```
 
-When running the project for the the first time, you will need to create the database schema.
+When running the project for the first time, you will need to create the database schema.
 You can also create a user to access the admin area.
 
 ```
