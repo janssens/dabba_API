@@ -149,9 +149,9 @@ class UserCreateCommand extends Command
         );
         
         if ($input->getOption('inactive')) {
-            $user->setEnabled(false);
+            $user->setIsVerified(false);
         } else {
-            $user->setEnabled(true);
+            $user->setIsVerified(true);
         }
         
         if ($input->getOption('super-admin')) {
